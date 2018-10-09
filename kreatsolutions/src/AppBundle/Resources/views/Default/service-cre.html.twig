@@ -1,0 +1,129 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block title %}CRE | {{ parent() }}{% endblock %}
+
+{% block services %}
+    current
+{% endblock %}
+
+{% block body %}
+    <div class="about">
+        <section class="contact section_sapce2">
+            <div class="row ">
+                <div class="container">
+                    <div class="section-title margin-b30">
+                        <h2 class="wow pulse animated" data-wow-delay="300ms" data-wow-iteration="infinite" data-wow-duration="2s" style="visibility: visible; animation-duration: 2s; animation-delay: 300ms; animation-iteration-count: infinite; animation-name: pulse;">CRE</h2>
+                    </div>
+                    <div class="text-content">
+                        <blockquote class="text-center">
+                            Preparamos su negocio para que cumpla de manera positiva con las actividades que demanda la CRE
+                        </blockquote>
+                    </div>
+
+                    <div class="col-md-3 col-sm-12 col-xs-12 mb-30">
+                        <div class="single-contact">
+                            <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios." style="color: white">
+                                <h4 style="color: white">Contáctanos</h4>
+                                <p>Estas interesado en este servicio o tienes dudas, envíanos un mensaje.</p>
+                                <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios."><h5 style="color: white"> <i class="fa fa-whatsapp"></i> WhatsApp</h5></a>
+                                <a href="{{ path('contact') }}"><h5 style="color: white"><i class="fa fa-envelope"></i> Correo Electrónico</h5></a>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Left Side End -->
+                    <div class="col-md-9 col-sm-12 col-xs-12 margin-bottom-30 wow slideInDown">
+                        <img src="{{ asset('assets/img/imagen11.jpg') }}" class="img-rounded margin-top-20 img-responsive" alt="service-consulting" style="border: solid 1px #007B8A; margin-top: -.5px; height: 405px; display: block; margin: auto ;">
+                    </div>
+                    <!--Accordions -->
+                    <div class="col-md-12 col-sm-12 col-xs-12 margin-bottom-30">
+                            <div class="accordion-example">
+                                <div class="panel-group" id="accordion">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseEigth">MUESTREO Y RESULTADO CALIDAD DE PETROLIFEROS
+                                                            <br>
+                                                            (NOM-016-CRE-2016) </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseEigth" class="panel-collapse collapse in">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Brindamos servicio de muestreo y análisis para verificar si los productos
+                                                            cumplen con las especificaciones requeridas en la NOM-016-CRE-2016. Este
+                                                            servicio es para toda la cadena de suministro y producción de Hidrocarburos.
+
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">DICTAMEN CALIDAD DE PETROLIFEROS
+                                                            <br>
+                                                            (NOM-016-CRE-2016)</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseOne" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Posterior al muestreo y resultado obtenido de la calidad de los
+                                                            petrolíferos, gestionamos ante la Unidad de Verificación su dictamen con la
+                                                            finalidad de que cumpla de manera anual con lo requerido por la
+                                                            NOM-016-CRE-2016. </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseNine"> SIRETRAC </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseNine" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!--Fin de columna -->
+
+                                        <div class="col-lg-6">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwuelve">REPORTES DE VOLUMENES Y PRECIOS DE ADQUISICION DE PRODUCTOS
+                                                            <br>
+                                                            (DIARIOS, TRIMESTRALES, ANUALES) </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseTwuelve" class="panel-collapse collapse">
+                                                    <div class="panel-body text-justify">
+                                                        Es un requisito que pide la Comisión Reguladora de Energía, que deben de cumplir todos los titulares de un permiso de expendió en estación de servicio de gasolina y diésel, del cual se brinda el servicio, atendiéndose de manera diaria, trimestral y anual.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">PERMISO DE VENTA DE PETROLIFEROS MODALIDAD EXPENDIO Y TRANSPORTE</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseFour" class="panel-collapse collapse">
+                                                    <div class="panel-body text-justify">
+                                                        Realizamos el trámite de permiso de venta de petrolíferos a través de la Comisión Reguladora de Energía para realizar la actividad de comercialización de petrolíferos en territorio nacional.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                            <!--End of Accordions -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        </section>
+    </div>
+{% endblock %}

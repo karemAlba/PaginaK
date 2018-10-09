@@ -1,0 +1,89 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script>
+    $(document).ready(function() {
+        $('#tabla').DataTable({
+            "sDom": '<l<t>ip>',
+            "paging": true,
+            "bLengthChange": true,
+            "language":{
+                "decimal":        ".",
+                "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrando _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Buscar:",
+                "searchPlaceholder": "Ingresa el nombre del Plan",
+                "zeroRecords":    "Sin Resultados",
+                "paginate": {
+                    "first":      "Primero",
+                    "last":       "Último",
+                    "next":       "Siguiente",
+                    "previous":   "Anterior"
+                }
+            }
+        });
+    });
+    </script>
+{% endblock %}
+
+{% block body %}
+<header class="section-header">
+    <div class="tbl">
+        <div class="tbl-row">
+            <div class="tbl-cell">
+                <h2 class="inline-block">Prospección</h2>
+            </div>
+            <div class="tbl-cell text-right">
+                <nav class="inline-block" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ path('prospeccion') }}">Prospección</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Prospectar</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+<hr>
+<div class="tabs-section">
+    <div class="box-typical box-typical-padding">
+        <h2>Clientes a Prospectar</h2>
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="tabla" style="width: 100%;">
+            <thead>
+            <tr>
+                <th class="text-center"># de Permiso</th>
+                <th class="text-center">Razón Social</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center">Estatus Seguimiento</th>
+                <th class="text-center"></th>
+            </tr>
+            </thead>
+            <tbody class="text-center">
+            {% for p in pca %}
+                {% if p.planClientes.planProspeccion.id == id %}
+                    <tr>
+                        <td>{{ p.planClientes.clientes.numeroPermiso }}</td>
+                        <td>{{ p.planClientes.clientes.razonSocial }}</td>
+                        <td>{{ p.planClientes.clientes.id|estadoporid }}</td>
+                        <td>{{ p.id|estatusSeguimiento }}</td>
+                        <td><a href="{{ path('cliente-prospectar',{'id':p.planClientes.clientes.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

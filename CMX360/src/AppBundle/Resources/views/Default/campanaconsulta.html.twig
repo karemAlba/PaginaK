@@ -1,0 +1,129 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#table-sm').dataTable({
+                "searching": false,
+                "bLengthChange": false,
+                "language":{
+                    "decimal":        ".",
+                    "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                    "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                    "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Mostrando _MENU_ registros",
+                    "loadingRecords": "Cargando...",
+                    "processing":     "Procesando...",
+                    "search":         "Buscar:",
+                    "searchPlaceholder": "Buscar Correo",
+                    "zeroRecords":    "Sin Resultados",
+                    "paginate": {
+                        "first":      "Primero",
+                        "last":       "Último",
+                        "next":       "Siguiente",
+                        "previous":   "Anterior"
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Consulta SendinBlue</h2>
+                </div>
+                <div class="tbl-cell text-right" >
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regCampanas') }}">SendinBlue</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb1">Consulta</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="box-typical box-typical-padding campana">
+        <section class="tabs-section">
+            <div class="tabs-section-nav tabs-section-nav-inline">
+                <ul class="nav" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#tabs-4-tab-1" role="tab" data-toggle="tab">
+                            Datos generales
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-4-tab-2" role="tab" data-toggle="tab">
+                            Destinatarios
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="tabs-4-tab-1">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h6>Número</h6>
+                            <p>{{ campana.numero }}</p>
+                            <h6>Nombre</h6>
+                            <p>{{ campana.nombre }}</p>
+                            <h6>Asunto</h6>
+                            <p>{{ campana.asunto }}</p>
+                            <h6>Remitente</h6>
+                            <p>{{ campana.nombreremitente }}</p>
+                        </div>
+                        <div class="col-lg-6">
+                            <h6>Correo de Remitente</h6>
+                            {% if campana.correoremitente != '' %}
+                                <p>{{ campana.correoremitente }}</p>
+                            {% else %}
+                                <p>Sin datos</p>
+                            {% endif %}
+                            <h6>Fecha de Envío</h6>
+                            <p>{{ campana.fechaEnvio|localizeddate('long','none','es',null,"cccc QQ-MM-Y") }}</p>
+                            <h6>Tipo de la Campaña</h6>
+                            {% if campana.tipoCampana is not null %}
+                                <p>{{ campana.tipoCampana.nombre }}</p>
+                            {% else %}
+                                <p>Sin datos</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div><!--Fin de Datos generales-->
+                <div role="tabpanel" class="tab-pane fade" id="tabs-4-tab-2"><!--Inicio de Domicilio-->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <table id="table-sm" class="table table-bordered table-hover table-sm" style="margin-bottom: 25px;">
+                                <thead>
+                                <tr>
+                                    <th>Correo</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for c in correos %}
+                                        <tr>
+                                            <td>{{ c.correodestinatario }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div><!--Fin de Domicilio-->
+            </div>
+        </section>
+    </div>
+{% endblock %}

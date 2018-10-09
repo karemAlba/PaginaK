@@ -1,0 +1,193 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block title %}STPS | {{ parent() }}{% endblock %}
+
+{% block services %}
+    current
+{% endblock %}
+
+{% block body %}
+    <div class="about">
+        <section class="contact section_sapce2">
+            <div class="row" >
+                <div class="container">
+                    <div class="section-title margin-b30">
+                        <h2 class="wow pulse animated" data-wow-delay="300ms" data-wow-iteration="infinite" data-wow-duration="2s" style="visibility: visible; animation-duration: 2s; animation-delay: 300ms; animation-iteration-count: infinite; animation-name: pulse;">STPS</h2>
+                    </div>
+                    <div class="text-content">
+                        <blockquote class="text-center">
+                            Acondicionamos su centro de
+                            trabajo y capacitamos al personal para responder efectivamente ante la
+                            presencia de riesgos
+                        </blockquote>
+                    </div>
+                    <div class="col-md-3 col-sm-12 col-xs-12 mb-30">
+
+                        <div class="single-contact">
+                            <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios." style="color: white">
+                                <h4 style="color: white">Contáctanos</h4>
+                                <p>Estas interesado en este servicio o tienes dudas, envíanos un mensaje.</p>
+                                <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios."><h5 style="color: white"> <i class="fa fa-whatsapp"></i> WhatsApp</h5></a>
+                                <a href="{{ path('contact') }}"><h5 style="color: white"><i class="fa fa-envelope"></i> Correo Electrónico</h5></a>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Left Side End -->
+                    <div class="col-md-9 col-sm-12 col-xs-12 margin-bottom-30 wow slideInDown">
+                        <img src="{{ asset('assets/img/imagen13.jpg') }}" class="img-rounded margin-top-20 img-responsive" alt="service-consulting" style="border: solid 1px #007B8A; margin-top: -.5px; height: 405px; display: block; margin: auto ;">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container">
+                    <div class="col-md-12 col-sm-12 col-xs-12 margin-bottom-30">
+
+
+                        <!--Accordions -->
+                        <div class="accordion-example">
+                            <div class="panel-group" id="accordion">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">PROGRAMA ESPECÍFICO DE PROTECCIÓN CIVIL (PEPC)</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseOne" class="panel-collapse collapse in">
+                                                <div class="panel-body">
+                                                    <p style="text-align: justify">El Programa Específico de Protección Civil (PEPC) es un instrumento de
+                                                        planeación y operación que previene y prepara al centro de trabajo para
+                                                        responder efectivamente ante la presencia de riesgos que pudieran generar
+                                                        una emergencia o desastre. </p>
+                                                    <br>
+                                                    <p style="text-align: justify">Tiene como objetivo salvaguardar la integridad física de los empleados y de
+                                                        las personas que concurren a las instalaciones del centro de trabajo, así
+                                                        como de asegurar la Continuidad de Operaciones ante la ocurrencia de una
+                                                        calamidad. </p>
+                                                    <br>
+                                                    <p style="text-align: justify">Dicho programa es ingresado a la dependencia estatal correspondiente, la
+                                                        cual es la encargada de evaluar el mismo para poder de esta manera obtener
+                                                        el visto bueno (Vo.Bo.) y tener una vigencia de un año. Quitar información
+                                                        de línea de tiempo del proceso</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">SEGURIDAD E HIGIENE</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseTwo" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p>La seguridad e higiene refiere a la aplicación de un conjunto de medidas sobre la seguridad y prevención de riesgos laborales para los trabajadores.</p>
+                                                    <br>
+                                                    <p>El objetivo es contar y mantener puestos de trabajo seguro y digno para que las personas puedan desarrollar sus funciones sin deteriorar su salud y ni comprometer su seguridad personal.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">CAPACITACIÓN Y ADIESTRAMIENTO</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseThree" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p style="text-align: justify" >Capacitación y adiestramiento (C.A.) es una de las obligaciones del patrón para ser proporcionada a sus trabajadores, con la cual se evalúa la competencia laboral, dichas capacitaciones tienen como finalidad llevar a cabo actividades seguras, prevenir riesgos, accidentes de trabajo y mejorar la productividad.</p>
+                                                    <br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">ISEM / COFEPRIS</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseFour" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p style="text-align: justify">Alineados a lo solicitado por el sector salud, ayudamos a vigilar las
+                                                        condiciones salubres en las que laboran los trabajadores. Nuestras
+                                                        actividades están enfocadas para evitar riesgos, capacitar al personal así
+                                                        como adecuar las instalaciones para desarrollar cada una de las actividades
+                                                        que se requieran.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!--Fin de columna -->
+                                    <div class="col-lg-6">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">ESTUDIO DE TIERRAS FÍSICAS</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseFive" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p style="text-align: justify">Es un estudio que solicita la Secretaria de Trabajo y Previsión Social de manera anual para constatar que a toda la electricidad estática, se le está dando la disipación apropiada, para evitar riesgos como, chispas que generen un incendio, descargas sobre el personal, descargas sobre maquinaria o equipo que se puedan dañar fácilmente.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">ESTUDIO DE ILUMINACIÓN</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseSix" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p style="text-align: justify">Es un estudio solicitado por la Secretaria de Trabajo y Previsión
+                                                        Social de manera bianual, tiene como objetivo evaluar los niveles de
+                                                        iluminación en todas las áreas o puestos de un centro de trabajo, con la
+                                                        finalidad de establecer los requerimientos óptimos y proveer un ambiente
+                                                        seguro y saludable en la realización de las actividades de los trabajadores.
+                                                        Quitar información de línea de tiempo del proceso </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven">ESTUDIO DEL COMPRESOR</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseSeven" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p style="text-align: justify">Es un estudio solicitado por la Secretaria de Trabajo y Previsión Social
+                                                        cada cinco años una vez que el recipiente sujeto a presión tiene diez años
+                                                        en operación. Tiene como objetivo determinar las condiciones con las cuales
+                                                        está trabajando y se determina por medio de una prueba destructiva. La
+                                                        finalidad es prevenir cualquier tipo de riesgo que este pudiera generar a
+                                                        los trabajadores, medio ambiente y centro de trabajo.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseEight">DICTAMEN ELÉCTRICO</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseEight" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p style="text-align: justify">Es un estudio solicitado por la Secretaria de Trabajo y Previsión Social,
+                                                        el cual prueba la resistencia de aislamiento de los cables alimentadores, la
+                                                        continuidad eléctrica, la resistencia de los electrodos y la red de tierra,
+                                                        todo ello tomando como base el plano de diagrama unifilar con su respectivo
+                                                        cuadro de cargas. La UVIE certificará que la instalación eléctrica del
+                                                        centro de trabajo cumple con la NOM vigente.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!--Fin de columna -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

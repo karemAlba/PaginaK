@@ -1,0 +1,16 @@
+core:
+    resource: "@CoreBundle/Controller/"
+    type:     annotation
+    prefix:   /core
+
+logout:
+    path: /logout
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+pageNotFound:
+    path: /{path}
+    defaults: {_controller: AppBundle:Default:Error}

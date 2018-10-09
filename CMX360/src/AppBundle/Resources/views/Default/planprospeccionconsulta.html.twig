@@ -1,0 +1,532 @@
+{% extends '@App/layout.html.twig' %}
+{% block javascript %}
+<script src="{{ asset('assets/js/moment/moment.min.js') }}"></script>
+<script src="{{ asset('assets/js/moment/moment-precise-range.js') }}"></script>
+<script>
+
+  var x = document.getElementById("fechai").innerHTML;
+  var y = document.getElementById("fechaf").innerHTML;
+
+  var fechai = moment(x);
+  var fechaf = moment(y);
+
+  var tiempo = fechaf.diff(fechai, 'days');
+
+  var periodo = document.getElementById("periodo");
+  periodo.innerHTML = tiempo  ;
+
+</script>
+
+
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Consulta Plan de Prospección</h2>
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regClientes') }}">Plan Prospección</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Consulta</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding cliente">
+            <h4><strong>Cliente</strong></h4>
+            <hr>
+
+                <div class="tabs-section-nav tabs-section-nav-inline" style="margin-bottom: 15px;">
+                    <ul class="nav" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#tabs-4-tab-1" role="tab" data-toggle="tab">
+                                Datos generales
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#tabs-4-tab-2" role="tab" data-toggle="tab">
+                                Costos
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="tabs-4-tab-1">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h6>Convenio</h6>
+                                {% if plan.convenios is not null %}
+                                    <p>{{ plan.convenios.nombre }}</p>
+                                {% else %}
+                                    <p>Sin convenio</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6>Nombre de plan de prospección</h6>
+                                <p>{{ plan.nombre }}</p>
+                                <h6>Tipo de cliente</h6>
+                                {% if plan.tipoClientes is not null %}
+                                    <p>{{ plan.tipoClientes.nombre }}</p>
+                                {% else %}
+                                    <p>----</p>
+                                {% endif %}
+                                <h6>Zona</h6>
+                                {% if plan.zonas is not null %}
+                                    <p>{{ plan.zonas.nombre }}</p>
+                                {% else %}
+                                    <p>----</p>
+                                {% endif %}
+                                <h6>Estado</h6>
+                                {% if plan.estados is not null %}
+                                    <p>{{ plan.estados.nombre }}</p>
+                                {% else %}
+                                    <p>----</p>
+                                {% endif %}
+                                <h6>Municipio</h6>
+                                {% if plan.municipios is not null %}
+                                    <p>{{ plan.municipios.nombre }}</p>
+                                {% else %}
+                                    <p>----</p>
+                                {% endif %}
+                                <h6>Codigo Postal</h6>
+                                {% if plan.codigoPostal != 0 %}
+                                    <p>{{ plan.codigoPostal }}</p>
+                                {% else %}
+                                    <p>----</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-6">
+                                <h6>Campaña</h6>
+                                {% if plan.campana is not null %}
+                                    <p>{{ plan.campana.nombre }}</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                                <h6>Marca</h6>
+                                {% if plan.marcas is not null %}
+                                    <p>{{ plan.marcas.nombre }}</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                                {% for f in familia %}
+                                    <h6>Asociación</h6>
+                                    {% if f.grupos is not null and f.grupos.tipoGrupos.id==1 %}
+                                        <p>{{ f.grupos.nombre }}</p>
+                                    {% elseif f.grupos is not null and f.grupos.tipoGrupos.id==2 %}
+                                        {% for x in grupos %}
+                                            {% if f.grupos.idGrupoPadre == x.id %}
+                                                <p>{{ x.nombre }}</p>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% elseif f.grupos is not null and f.grupos.tipoGrupos.id==3 %}
+                                        {% for x in grupos %}
+                                            {% if f.grupos.idGrupoPadre == x.id %}
+                                                {% for y in grupos %}
+                                                    {% if x.idGrupoPadre == y.id %}
+                                                        <p>{{ y.nombre }}</p>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% elseif f.grupos is not null and f.grupos.tipoGrupos.id==4 %}
+                                        <p>-----</p>
+                                    {% else  %}
+                                        <p>-----</p>
+                                    {% endif %}
+
+                                    <h6>Unión</h6>
+                                    {% if f.grupos is not null and f.grupos.tipoGrupos.id==1 %}
+                                       <p> -----</p>
+                                    {% elseif f.grupos is not null and f.grupos.tipoGrupos.id==2 %}
+                                        <p>{{ f.grupos.nombre }}</p>
+                                    {% elseif f.grupos is not null and f.grupos.tipoGrupos.id==3 %}
+                                        {% for x in grupos %}
+                                            {% if f.grupos.idGrupoPadre == x.id %}
+                                                <p>{{ x.nombre }}</p>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% elseif f.grupos is not null and f.grupos.tipoGrupos.id==4 %}
+                                        <p>-----</p>
+                                    {% else %}
+                                        <p>-----</p>
+                                    {% endif %}
+
+                                    <h6>Grupo</h6>
+                                    {% if f.grupos is not null and f.grupos.tipoGrupos.id==1 %}
+                                        <p>-----</p>
+                                    {% elseif f.grupos is not null and f.grupos.tipoGrupos.id==2 %}
+                                        <p>-----</p>
+                                    {% elseif f.grupos is not null and f.grupos.tipoGrupos.id==3 %}
+                                        <p>{{ f.grupos.nombre }}</p>
+                                    {% elseif f.grupos is not null and f.grupos.tipoGrupos.id==4 %}
+                                        <p>-----</p>
+                                    {% else %}
+                                        <p>-----</p>
+                                    {% endif %}
+                                {% endfor %}
+                                <h6>Estatus Seguimiento</h6>
+                                {% if plan.estatusSeguimiento is not null %}
+                                    <p>{{ plan.estatusSeguimiento.nombre }}</p>
+                                {% endif %}
+
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm" style="width: 100%;">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th>Marca</th>
+                                        <th>Asociación</th>
+                                        <th>Unión</th>
+                                        <th>Grupo</th>
+                                        <th>Estado</th>
+                                        <th># Permiso</th>
+                                        <th>Razón Social</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    {% for c in cli %}
+                                        <tr class="text-center">
+                                            {% if c.planProspeccion.marcas is not null  %}
+                                                <th>{{ c.planProspeccion.marcas.nombre }}</th>
+                                            {% else %}
+                                                <th>----</th>
+                                            {% endif %}
+                                            <th>
+                                                {% if c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==1 %}
+                                                    {{ c.clientes.grupos.nombre }}
+                                                {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==2 %}
+                                                    {% for x in grupos %}
+                                                        {% if c.clientes.grupos.idGrupoPadre == x.id %}
+                                                            {{ x.nombre }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==3 %}
+                                                    {% if c.clientes.grupos.idGrupoPadre == 0 %}
+                                                        -----
+                                                    {% else %}
+                                                        {% for x in grupos %}
+                                                            {% if c.clientes.grupos.idGrupoPadre == x.id %}
+                                                                {% if x.idGrupoPadre==0 %}
+                                                                    -----
+                                                                {% else %}
+                                                                    {% for y in grupos %}
+                                                                        {% if x.idGrupoPadre == y.id %}
+                                                                            {{ y.nombre }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==4 %}
+                                                    -----
+                                                {% else %}
+                                                    -----
+                                                {% endif %}
+                                            </th>
+                                            <th>
+                                                {% if c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==1 %}
+                                                    -----
+                                                {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==2 %}
+                                                    {{ c.clientes.grupos.nombre }}
+                                                {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==3 %}
+                                                    {% for x in grupos %}
+                                                        {% if c.clientes.grupos.idGrupoPadre == x.id %}
+                                                            {{ x.nombre }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==4 %}
+                                                    -----
+                                                {% else %}
+                                                    -----
+                                                {% endif %}
+                                            </th>
+                                            <th>
+                                                {% if c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==1 %}
+                                                    -----
+                                                {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==2 %}
+                                                    -----
+                                                {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==3 %}
+                                                    {{ c.clientes.grupos.nombre }}
+                                                {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==4 %}
+                                                    -----
+                                                {% else %}
+                                                    -----
+                                                {% endif %}
+                                            </th>
+                                            {% if c.planProspeccion.estados is not null %}
+                                                <th>{{ c.planProspeccion.estados.nombre }}</th>
+                                            {% else %}
+                                                <th>----</th>
+                                            {% endif %}
+
+                                            <th>{{ c.clientes.numeroPermiso }}</th>
+                                            <th>{{ c.clientes.razonSocial }}</th>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div><!--Fin de Datos generales-->
+
+                    <div role="tabpanel" class="tab-pane fade" id="tabs-4-tab-2"><!--Inicio de Domicilio-->
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6>¿Cuenta con descuento de negociación?</h6>
+                                {% if plan.isNegociable == 1 %}
+                                    <p>Si</p>
+                                {% else %}
+                                    <p>No</p>
+                                {% endif %}
+                            </div>
+                            {% if plan.descuentoN is not null %}
+                            <div class="col-lg-6">
+                                <h6>Descuento aplicado</h6>
+                                <p> {{ plan.descuentoN }} %</p>
+                            </div>
+                            {% endif %}
+
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6>Tipo de servicio</h6>
+                                {% if planS|length == 1 %}
+                                    <p>Individual</p>
+                                {% else %}
+                                    <p>Integral</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-6">
+                                <h6>Costo de prospección</h6>
+                                <p>${{ plan.costodeProspeccion|number_format(2,'.',',') }}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        {% if planS|length == 1 %}
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <h6>Empresa</h6>
+                                    <p>{{ planS.subservicio.servicio.departamentoServicios.empresa.nombre }}</p>
+                                    <h6>Departamento</h6>
+                                    <p>{{ planS.subservicio.servicio.departamentoServicios.nombre }}</p>
+                                    <h6>Servicio</h6>
+                                    <p>{{ planS.subservicio.servicio.nombre }}</p>
+                                    <h6>Subservicio</h6>
+                                    <p>{{ planS.subservicio.nombre }}</p>
+                                </div>
+                                <div class="col-lg-4">
+                                    <h6>Costo total</h6>
+                                    <p>$ {{ plan.costoTotal|number_format(2,'.',',') }}</p>
+                                    <h6>Costo total propuesto</h6>
+                                    <p>${{ plan.costoTotalPropuesto|number_format(2,'.',',') }}</p>
+                                    <h6>Periodo de prospección</h6>
+                                    <p>{{ plan.fechaInicio|date('d/m/Y') }} - {{ plan.fechaFin|date('d/m/Y') }}</p>
+                                    <h6>Tiempo de prospección</h6>
+                                    <p id="periodo"></p>
+                                    <p id="fechai" class="hidden">{{ plan.fechaInicio|date('Y/m/d') }}</p>
+                                    <p id="fechaf" class="hidden">{{ plan.fechaFin|date('Y/m/d') }}</p>
+                                </div>
+                                <div class="col-lg-4 text-center">
+                                    <h6>Costo total con descuento</h6>
+                                    <p>${{ plan.costoTotalCN }}</p>
+
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" style="margin-top: 30px; margin-bottom: 10px;">Ver flyer</button>
+
+                                    <!-- Modal -->
+                                    {% if plan.rutaFlyer is not null %}
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Flyer propuesta</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <img src="{{ asset('uploads/plan/flyers/'~plan.rutaFlyer) }}" >
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Sin Imagen</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        -- Sin Flayer disponible --
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    <a class="btn btn-primary" href="{{ asset('uploads/plan/propuesta/generados/pdf/Propuesta-'~plan.id~'-'~prop.fechaAsignacion|date('Y-m-d')~'.pdf') }}" role="button" style="margin-top: 30px; margin-bottom: 10px;" target="_blank">Ver Propuesta</a>
+                                    <h6>Asesores designados</h6>
+                                    <p>{{ plan.numeroAsesores }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h6>Condiciones Comerciales</h6>
+                                    {% if plan.condicionesComerciales is not null %}
+                                        <p>{{ plan.condicionesComerciales }}</p>
+                                    {% else %}
+                                        <p>Sin Condiciones</p>
+                                    {% endif %}
+                                    <h6>Observaciones</h6>
+                                    {% if plan.observacionesDG is not null %}
+                                        <p>{{ plan.observacionesDG }}</p>
+                                    {% else %}
+                                        <p>-- Sin Observaciones --</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            {% for p in planS %}
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <h6>Empresa</h6>
+                                    <p>{{ p.subservicio.servicio.departamentoServicios.empresa.nombre }}</p>
+                                </div>
+                                <div class="col-lg-6">
+                                    <h6>Porcentaje de descuento</h6>
+                                    <p>{{ p.descuento }}%</p>
+                                </div>
+                            </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <h6>Departamento</h6>
+                                        <p>{{ p.subservicio.servicio.departamentoServicios.nombre }}</p>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <h6>Servicio</h6>
+                                        <p>{{ p.subservicio.servicio.nombre }}</p>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <h6>Subservicio</h6>
+                                        <p>{{ p.subservicio.nombre }}</p>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <h6>Costo</h6>
+                                        <p>${{ p.costo|number_format(2,'.',',') }}</p>
+                                    </div>
+                                </div>
+
+                            <hr>
+                            {% endfor %}
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h6>Costo total</h6>
+                                    <p>$ {{ plan.costoTotal|number_format(2,'.',',') }}</p>
+                                    <h6>Periodo de prospección</h6>
+                                    <p>{{ plan.fechaInicio|date('d/m/Y') }} - {{ plan.fechaFin|date('d/m/Y') }}</p>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <h6>Costo total con descuento General</h6>
+                                    <p>$ {{ plan.costoTotalCN|number_format(2,'.',',') }}</p>
+                                    <h6>Tiempo de prospección</h6>
+                                    <p id="periodo"></p>
+                                    <p id="fechai" class="hidden">{{ plan.fechaInicio|date('Y/m/d') }}</p>
+                                    <p id="fechaf" class="hidden">{{ plan.fechaFin|date('Y/m/d') }}</p>
+                                </div>
+                                <div class="col-lg-3">
+                                    <h6>Costo total propuesto</h6>
+                                    <p>$ {{ plan.costoTotalPropuesto |number_format(2,'.',',')}}</p>
+                                    <h6>Asesores designados</h6>
+                                    <p>{{ plan.numeroAsesores }}</p>
+                                </div>
+                                <div class="col-lg-2 text-center">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" style="margin-top: 30px; margin-bottom: 10px;">Ver flyer</button>
+
+                                    {% if plan.rutaFlyer is not null %}
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Flyer propuesta</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <img src="{{ asset('uploads/plan/flyers/'~plan.rutaFlyer) }}" >
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Sin Imagen</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        -- Sin Flayer disponible --
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    <a class="btn btn-primary" href="{{ asset('uploads/plan/propuesta/generados/pdf/Propuesta-'~plan.id~'-'~prop.fechaAsignacion|date('Y-m-d')~'.pdf') }}" role="button" style="margin-top: 30px; margin-bottom: 10px;" target="_blank">Ver Propuesta</a>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h6>Condiciones Comerciales</h6>
+                                    {% if plan.condicionesComerciales is not null %}
+                                        <p>{{ plan.condicionesComerciales }}</p>
+                                    {% else %}
+                                        <p>Sin Condiciones</p>
+                                    {% endif %}
+                                    <h6>Observaciones</h6>
+                                    {% if plan.observacionesDG is not null %}
+                                        <p>{{ plan.observacionesDG }}</p>
+                                    {% else %}
+                                        <p>-- Sin Observaciones --</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div><!--Fin de Costos-->
+                </div>
+
+            <div class="row">
+                <div class="col-lg-12 text-right">
+                    <a class="btn  btn-primary" href="{{ path('consultaPlan') }}" role="button">Regresar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

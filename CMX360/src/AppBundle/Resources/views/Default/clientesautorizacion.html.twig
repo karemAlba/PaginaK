@@ -1,0 +1,118 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/planconsulta.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding">
+            <h6>Clientes</h6>
+            <div class="row">
+                <div class="col-lg-12">
+                    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm" style="width: 100%;">
+                        <thead>
+                        <tr class="text-center">
+                            <th>Marca</th>
+                            <th>Asociación</th>
+                            <th>Unión</th>
+                            <th>Grupo</th>
+                            <th>Estado</th>
+                            <th># Permiso</th>
+                            <th>Razón Social</th>
+                        </tr>
+                        </thead>
+                        <tbody class="text-center">
+                        {% for c in cli %}
+                            <tr class="text-center">
+                                {% if c.planProspeccion.marcas is not null  %}
+                                    <th>{{ c.planProspeccion.marcas.nombre }}</th>
+                                {% else %}
+                                    <th>-----</th>
+                                {% endif %}
+                                <th>
+                                    {% if c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==1 %}
+                                        {{ c.clientes.grupos.nombre }}
+                                    {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==2 %}
+                                        {% for x in grupos %}
+                                            {% if c.clientes.grupos.idGrupoPadre == x.id %}
+                                                {{ x.nombre }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==3 %}
+                                        {% if c.clientes.grupos.idGrupoPadre == 0 %}
+                                            -----
+                                        {% else %}
+                                            {% for x in grupos %}
+                                                {% if c.clientes.grupos.idGrupoPadre == x.id %}
+                                                    {% if x.idGrupoPadre==0 %}
+                                                        -----
+                                                    {% else %}
+                                                        {% for y in grupos %}
+                                                            {% if x.idGrupoPadre == y.id %}
+                                                                {{ y.nombre }}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==4 %}
+                                        -----
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </th>
+                                <th>
+                                    {% if c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==1 %}
+                                        -----
+                                    {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==2 %}
+                                        {{ c.clientes.grupos.nombre }}
+                                    {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==3 %}
+                                        {% for x in grupos %}
+                                            {% if c.clientes.grupos.idGrupoPadre == x.id %}
+                                                {{ x.nombre }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==4 %}
+                                        -----
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </th>
+                                <th>
+                                    {% if c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==1 %}
+                                        -----
+                                    {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==2 %}
+                                        -----
+                                    {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==3 %}
+                                        {{ c.clientes.grupos.nombre }}
+                                    {% elseif c.clientes.grupos is not null and c.clientes.grupos.tipoGrupos.id==4 %}
+                                        -----
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </th>
+
+                                {% if c.planProspeccion.estados is not null %}
+                                    <th>{{ c.planProspeccion.estados.nombre }}</th>
+                                {% else %}
+                                    <th>-----</th>
+                                {% endif %}
+                                <th>{{ c.clientes.numeroPermiso }}</th>
+                                <th>{{ c.clientes.razonSocial }}</th>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

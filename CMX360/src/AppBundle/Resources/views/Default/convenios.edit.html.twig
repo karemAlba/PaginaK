@@ -1,0 +1,22 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    {{ form_start(form) }}
+        <div class="form-group col-lg-6">
+            <label for="nombre" class="form-label">Nombre</label>
+            {{ form_widget(form.nombre,{'attr':{'class':'form-control'}}) }}
+        </div>
+        <div class="form-group col-lg-4">
+            <label for="costoAutorizacion" class="form-label">Costo autorizacion</label>
+            {{ form_widget(form.costoAutorizacion,{'attr':{'class':'form-control'}}) }}
+        </div>
+        <div class="form-group col-lg-2">
+            <label for="descuento" class="form-label">% Descuento</label>
+            {{ form_widget(form.descuentos	,{'attr':{'class':'form-control'}}) }}
+        </div>
+        <div class="form-group col-lg-8">
+            <label for="activo" class="form-label">Condiciones Comerciales</label>
+            {{ form_widget(form.condicionesComerciales) }}
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

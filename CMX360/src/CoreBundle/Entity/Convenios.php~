@@ -1,0 +1,383 @@
+<?php
+
+namespace CoreBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+
+/**
+ * CoreBundle\Entity\Convenios
+ *
+ * @ORM\Entity()
+ * @ORM\Table(name="convenios")
+ */
+class Convenios
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $nombre;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    protected $costoAutorizacion;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $descuentos;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $condicionesComerciales;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $activo;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    protected $fechaAlta;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $isIntegral;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ConvenioGrupo", mappedBy="convenios")
+     * @ORM\JoinColumn(name="id", referencedColumnName="idConvenio", nullable=false)
+     */
+    protected $convenioGrupos;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ConvenioSubservicios", mappedBy="convenios")
+     * @ORM\JoinColumn(name="id", referencedColumnName="idConvenio", nullable=false)
+     */
+    protected $convenioSubservicios;
+
+    /**
+     * @ORM\OneToMany(targetEntity="PlanProspeccion", mappedBy="convenios")
+     * @ORM\JoinColumn(name="id", referencedColumnName="idConvenio", nullable=false)
+     */
+    protected $planProspeccions;
+
+    public function __construct()
+    {
+        $this->convenioGrupos = new ArrayCollection();
+        $this->convenioSubservicios = new ArrayCollection();
+        $this->planProspeccions = new ArrayCollection();
+    }
+    public function __toString()
+    {
+        return $this->nombre;
+    }
+
+    /**
+     * Set the value of id.
+     *
+     * @param integer $id
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id.
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of nombre.
+     *
+     * @param string $nombre
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function setNombre($nombre)
+    {
+        $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of nombre.
+     *
+     * @return string
+     */
+    public function getNombre()
+    {
+        return $this->nombre;
+    }
+
+    /**
+     * Set the value of costoAutorizacion.
+     *
+     * @param float $costoAutorizacion
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function setCostoAutorizacion($costoAutorizacion)
+    {
+        $this->costoAutorizacion = $costoAutorizacion;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of costoAutorizacion.
+     *
+     * @return float
+     */
+    public function getCostoAutorizacion()
+    {
+        return $this->costoAutorizacion;
+    }
+
+    /**
+     * Set the value of descuentos.
+     *
+     * @param string $descuentos
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function setDescuentos($descuentos)
+    {
+        $this->descuentos = $descuentos;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of descuentos.
+     *
+     * @return string
+     */
+    public function getDescuentos()
+    {
+        return $this->descuentos;
+    }
+
+    /**
+     * Set the value of condicionesComerciales.
+     *
+     * @param string $condicionesComerciales
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function setCondicionesComerciales($condicionesComerciales)
+    {
+        $this->condicionesComerciales = $condicionesComerciales;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of condicionesComerciales.
+     *
+     * @return string
+     */
+    public function getCondicionesComerciales()
+    {
+        return $this->condicionesComerciales;
+    }
+
+    /**
+     * Set the value of activo.
+     *
+     * @param boolean $activo
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function setActivo($activo)
+    {
+        $this->activo = $activo;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of activo.
+     *
+     * @return boolean
+     */
+    public function getActivo()
+    {
+        return $this->activo;
+    }
+
+    /**
+     * Set the value of fechaAlta.
+     *
+     * @param \DateTime $fechaAlta
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function setFechaAlta($fechaAlta)
+    {
+        $this->fechaAlta = $fechaAlta;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of fechaAlta.
+     *
+     * @return \DateTime
+     */
+    public function getFechaAlta()
+    {
+        return $this->fechaAlta;
+    }
+
+    /**
+     * Set the value of isIntegral.
+     *
+     * @param boolean $isIntegral
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function setIsIntegral($isIntegral)
+    {
+        $this->isIntegral = $isIntegral;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of isIntegral.
+     *
+     * @return boolean
+     */
+    public function getIsIntegral()
+    {
+        return $this->isIntegral;
+    }
+
+    /**
+     * Add ConvenioGrupo entity to collection (one to many).
+     *
+     * @param \CoreBundle\Entity\ConvenioGrupo $convenioGrupo
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function addConvenioGrupo(ConvenioGrupo $convenioGrupo)
+    {
+        $this->convenioGrupos[] = $convenioGrupo;
+
+        return $this;
+    }
+
+    /**
+     * Remove ConvenioGrupo entity from collection (one to many).
+     *
+     * @param \CoreBundle\Entity\ConvenioGrupo $convenioGrupo
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function removeConvenioGrupo(ConvenioGrupo $convenioGrupo)
+    {
+        $this->convenioGrupos->removeElement($convenioGrupo);
+
+        return $this;
+    }
+
+    /**
+     * Get ConvenioGrupo entity collection (one to many).
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getConvenioGrupos()
+    {
+        return $this->convenioGrupos;
+    }
+
+    /**
+     * Add ConvenioSubservicios entity to collection (one to many).
+     *
+     * @param \CoreBundle\Entity\ConvenioSubservicios $convenioSubservicios
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function addConvenioSubservicios(ConvenioSubservicios $convenioSubservicios)
+    {
+        $this->convenioSubservicios[] = $convenioSubservicios;
+
+        return $this;
+    }
+
+    /**
+     * Remove ConvenioSubservicios entity from collection (one to many).
+     *
+     * @param \CoreBundle\Entity\ConvenioSubservicios $convenioSubservicios
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function removeConvenioSubservicios(ConvenioSubservicios $convenioSubservicios)
+    {
+        $this->convenioSubservicios->removeElement($convenioSubservicios);
+
+        return $this;
+    }
+
+    /**
+     * Get ConvenioSubservicios entity collection (one to many).
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getConvenioSubservicios()
+    {
+        return $this->convenioSubservicios;
+    }
+
+    /**
+     * Add PlanProspeccion entity to collection (one to many).
+     *
+     * @param \CoreBundle\Entity\PlanProspeccion $planProspeccion
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function addPlanProspeccion(PlanProspeccion $planProspeccion)
+    {
+        $this->planProspeccions[] = $planProspeccion;
+
+        return $this;
+    }
+
+    /**
+     * Remove PlanProspeccion entity from collection (one to many).
+     *
+     * @param \CoreBundle\Entity\PlanProspeccion $planProspeccion
+     * @return \CoreBundle\Entity\Convenios
+     */
+    public function removePlanProspeccion(PlanProspeccion $planProspeccion)
+    {
+        $this->planProspeccions->removeElement($planProspeccion);
+
+        return $this;
+    }
+
+    /**
+     * Get PlanProspeccion entity collection (one to many).
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPlanProspeccions()
+    {
+        return $this->planProspeccions;
+    }
+
+    public function __sleep()
+    {
+        return array('id', 'nombre', 'costoAutorizacion', 'descuentos', 'condicionesComerciales', 'activo', 'fechaAlta', 'isIntegral');
+    }
+}

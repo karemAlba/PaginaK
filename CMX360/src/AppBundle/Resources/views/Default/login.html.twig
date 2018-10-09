@@ -1,0 +1,39 @@
+{% extends '@App/layout2.html.twig' %}
+
+{% block title %}Acceso | {{ parent() }}{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="card card-container">
+            <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
+            <img id="logo-img" class="img-fluid" src="{{ asset('assets/img/LOGO.png') }}" />
+            <p id="profile-name" class="profile-name-card"></p>
+            {#{% if error %}
+                <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}#}
+            <form class="form-signin" method="post" action="{{ path('login') }}">
+                <span id="reauth-email" class="reauth-email"></span>
+                <input id="inputEmail" name="_username" class="form-control" placeholder="Usuario" required autofocus>
+                <input type="password" id="inputPassword" name="_password" class="form-control" placeholder="Contraseña" required>
+                {#<div id="remember" class="checkbox hidden">
+                    <label>
+                        <input type="checkbox" value="remember-me"> Recordarme
+                    </label>
+                </div>#}
+                <button class="btn btn-lg btn-success btn-block btn-signin" type="submit">Iniciar Sesión</button>
+            </form><!-- /form
+            <a href="#" class="forgot-password">
+                Forgot the password?
+            </a>-->
+        </div><!-- /card-container -->
+    </div><!-- /container -->
+    <div id="particles-js"></div>
+{% endblock %}
+
+
+
+
+
+
+

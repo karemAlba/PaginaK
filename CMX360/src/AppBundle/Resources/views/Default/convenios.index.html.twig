@@ -1,0 +1,713 @@
+{% extends "@App/layout.html.twig" %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/separate/elements/steps.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/datatables.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/lib/bootstrap-sweetalert/sweetalert.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script >
+        $(function () {
+            $("#tabla-convenios").DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+                }
+            });
+        });
+    </script>
+    <script>
+        let combo_empresas = $("#empresa");
+        let combo_departamentos = $("#departamento");
+        let combo_servicios = $("#servicios");
+        let combo_subservicios = $("#subservicios");
+        let lista_subservicios = [];
+        let btnAdd = $('#btnAdd');
+        let subservicios_seleccionados = [];
+        let tbl = $('#table-body');
+        let form = $('#form');
+        let btnSubmit = $('#submit');
+        let costo_propuesto = $("#costo_propuesto");
+        let costo_autorizado = $('#costo_autorizado');
+        let costo_autorizado_formatted = $('#costo_autorizado_formatted');
+        let descuento = $("#descuento");
+        let nombre_valido = false;
+
+        btnSubmit.click((e) => {
+
+            if (validarForm() == false) {
+                e.preventDefault();
+            }
+
+        });
+
+        $("#nombre").on('keyup', () => {
+            let nombre = $("#nombre");
+            if (nombre.val().trim() != "") {
+                $
+                    .ajax({
+                        url: "{{ path('convenios.validar.nombre') }}",
+                        data: {
+                            'name': $('#nombre').val()
+                        },
+                        method: 'POST',
+                        dataType: 'json'
+                    })
+                    .done(response => {
+                        if (response == 'true') {
+                            nombre_valido = false;
+                            nombre.parent('div.form-group').addClass('form-group-error');
+                            nombre.siblings('span').text(`El nombre: "${nombre.val()}" ya esta en uso, escribe uno diferente`).show();
+                        } else {
+                            nombre_valido = true;
+                            nombre.parent('div.form-group').removeClass('form-group-error');
+                            nombre.siblings('span').text(`El nombre ${nombre.val()} ya esta en uso, escribe uno diferente`).hide();
+                        }
+                    })
+                    .fail(error => {
+                        //alert(error);
+                    })
+            } else {
+                nombre.siblings('span').text('El nombre es requerido').show();
+                nombre.parent('div.form-group').addClass('form-group-error');
+            }
+
+        });
+
+        validarForm = (e) => {
+            let isValid = true;
+            let nombre = $("#nombre");
+            let trimedName = nombre.val().trim();
+            nombre.val(trimedName);
+            if (nombre_valido == true) {
+                if (nombre.val().trim() == "") {
+                    isValid = false;
+                    nombre.siblings('span').text('El nombre es requerido').show();
+                    nombre.parent('div.form-group').addClass('form-group-error');
+
+                } else {
+                    nombre.parent('div.form-group').removeClass('form-group-error');
+                    nombre.siblings('span').text('').hide();
+                }
+
+                if (costo_propuesto.val().trim() == "") {
+                    isValid = false;
+                    costo_propuesto.siblings('span').text('El costo propuesto es requerido').show();
+                    costo_propuesto.parent('div.form-control-wrapper').addClass('error');
+                } else {
+                    costo_propuesto.parent('div.form-control-wrapper').removeClass('error');
+                    costo_propuesto.siblings('span').text('El costo propuesto es requerido').hide();
+                }
+
+                if (subservicios_seleccionados.length == 0) {
+                    isValid = false;
+                    tbl.html('');
+                    tbl.append(`<span class="help-block text-center">Debes agregar por lo menos un subservicio</span>`);
+                } else {
+                    tbl.children('span').hide();
+                }
+            } else {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        removeElement = (idelement) => {
+            subservicios_seleccionados.splice(idelement, 1);
+            renderTable();
+            validarForm();
+        }
+
+        cashFormat = (amount) => {
+            return amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        descuento.change(() => {
+            calcularCosto();
+        });
+
+        calcularCosto = () => {
+            let costo = 0;
+            if (descuento.val() > 10) {
+                descuento.val(10);
+            }
+            if (descuento.val() < 0) {
+                descuento.val(0);
+            }
+            subservicios_seleccionados.filter((item) => {
+                return costo += item.costo;
+            });
+            costo_final = costo - costo * descuento.val() / 100;
+            costo_final_formatted = "$" + cashFormat(costo_final);
+            costo_final = costo_final.toFixed(2);
+
+            costo_autorizado_formatted.val(costo_final_formatted);
+            costo_autorizado.val(costo_final);
+            costo_propuesto.val(costo_final);
+        }
+
+        editPorcentage = (index, porcentage) => {
+            //LOGGER('EDIT_PORCENTAGE',{index, porcentage});
+            if (porcentage > 10) {
+                porcentage = 10
+            }
+            if (porcentage < 0) {
+                porcentage = 0;
+            }
+            subservicios_seleccionados[index].descuento = porcentage;
+            renderTable();
+        }
+
+        renderTable = () => {
+            tbl.empty();
+            //verifico si hay subservicios en la lista
+            if (subservicios_seleccionados.length > 0) {
+                $('#bloque_cantidades').show();
+            } else {
+                $('#bloque_cantidades').hide();
+            }
+            subservicios_seleccionados.map((item, index) => {
+                row = `<tr>
+							<td>${item.empresa}</td>
+							<td>${item.departamento}</td>
+							<td>${item.servicio}</td>
+							<td>${item.subservicio}</td>
+							<td>$ ${cashFormat(item.costo)}</td>
+							<td><button class='btn btn-sm btn-danger' onclick="removeElement(${item.index})"><i class='fa fa-close'></i></button></td>
+							<input type="hidden" value="${item.id}" name="subservicios[]">
+						<tr>`;
+                tbl.append(row);
+            });
+            calcularCosto();
+        }
+
+        btnAdd.click((e) => {
+            e.preventDefault();
+            element = {
+                id: combo_subservicios.val(),
+                empresa: combo_empresas.find('option:selected').text(),
+                departamento: combo_departamentos.find('option:selected').text(),
+                servicio: combo_servicios.find('option:selected').text(),
+                subservicio: combo_subservicios.find('option:selected').text(),
+                costo: combo_subservicios.find('option:selected').data('costo'),
+                descuento: 10
+            };
+            var existe = false;
+            for (i = 0; i < subservicios_seleccionados.length; i++) {
+                if (subservicios_seleccionados[i].id == element.id) {
+                    existe = true;
+                }
+            }
+
+            if (existe == false) {
+                subservicios_seleccionados.push(element);
+                renderTable();
+            }
+            // console.log(costo_propuesto.val());
+            if (costo_propuesto.val() > 0) {
+                costo_propuesto.parent('div.form-control-wrapper').removeClass('error');
+                costo_propuesto.siblings('span').text('').hide();
+            }
+            resetAll();
+        });
+
+        $(document).ready(() => {
+            getEmpresas();
+            clearComboDepartamentos();
+            clearComboServicios();
+            clearComboSubServicios();
+            resetComboDepartamentos();
+            resetComboServicios();
+            resetComboSubServicios();
+        });
+
+        LOGGER = (FUNCTION_NAME, DATA = false) => {
+            console.log(`==========================EXECUTING | ${FUNCTION_NAME}==========================`);
+            if (DATA) {
+                console.log(DATA);
+            }
+            console.log(`==========================FINISH | ${FUNCTION_NAME}======================`);
+        }
+
+        combo_empresas.change(() => {
+            clearComboDepartamentos();
+            clearComboServicios();
+            clearComboSubServicios();
+            resetComboDepartamentos();
+            resetComboServicios();
+            resetComboSubServicios();
+            if (combo_empresas.val() > 0) {
+                getDepartamentos();
+            }
+            activarDesactivarAddButton();
+        });
+
+        combo_departamentos.change(() => {
+            clearComboServicios();
+            clearComboSubServicios();
+            resetComboServicios();
+            resetComboSubServicios();
+            if (combo_departamentos.val() > 0) {
+                getServicios();
+            }
+            activarDesactivarAddButton();
+        });
+
+        combo_servicios.change(() => {
+            clearComboSubServicios();
+            resetComboSubServicios();
+            if (combo_servicios.val() > 0) {
+                getSubServicios();
+            }
+            activarDesactivarAddButton();
+        });
+
+        combo_subservicios.change(() => {
+            activarDesactivarAddButton();
+        });
+
+        activarDesactivarAddButton = () => {
+            if (combo_empresas.val() > 0 && combo_departamentos.val() > 0 && combo_servicios.val() > 0 && combo_subservicios.val() > 0) {
+                btnAdd.removeAttr("disabled");
+            } else {
+                btnAdd.attr("disabled", true);
+            }
+        }
+
+        resetAll = () => {
+            combo_empresas.val(0);
+            clearComboDepartamentos();
+            clearComboServicios();
+            clearComboSubServicios();
+            resetComboDepartamentos();
+            resetComboServicios();
+            resetComboSubServicios();
+            activarDesactivarAddButton();
+        }
+
+        getEmpresas = () => {
+            $
+                .ajax({url: "{{ path('convenios.empresas') }}", method: 'POST'})
+                .done(empresas => {
+
+                    setEmpresas(empresas);
+                })
+                .fail(error => {
+
+                    console.warn();
+                })
+        }
+
+        getDepartamentos = () => {
+            $
+                .ajax({
+                    url: "{{ path('convenios.departamentos') }}",
+                    data: {
+                        'idempresa': combo_empresas.val()
+                    },
+                    method: 'POST'
+                })
+                .done(departamentos => {
+                    setDepartamentos(departamentos);
+                })
+                .fail(error => {
+                    //LOGGER('getDepartamentos::fail',error);
+                })
+        }
+
+        getServicios = () => {
+            $
+                .ajax({
+                    url: "{{ path('convenios.departamentos.servicios') }}",
+                    data: {
+                        'iddepartamento': combo_departamentos.val()
+                    },
+                    method: 'POST'
+                })
+                .done(servicios => {
+                    setServicios(servicios);
+                })
+                .fail(error => {
+                    //LOGGER('getServicions::fail',error);
+                })
+        }
+
+        getSubServicios = () => {
+            $
+                .ajax({
+                    url: "{{ path('convenios.departamentos.servicios.subservicios') }}",
+                    data: {
+                        'idservicio': combo_servicios.val()
+                    },
+                    method: 'POST'
+                })
+                .done(subservicios => {
+                    setSubServicios(subservicios);
+                })
+                .fail(error => {
+                    LOGGER('getServicions::fail', error);
+                })
+        }
+
+        setEmpresas = (empresas) => {
+            if (empresas.length > 0) {
+                empresas.unshift({id: 0, name: 'Selecciona un empresa'});
+                empresas.map(empresa => {
+                    let option = `<option value='${empresa.id}' data-name="${empresa.name}">${empresa.name}</option>`;
+                    combo_empresas.append(option);
+                });
+            } else {
+                let option = `<option value='0'>No hay empresas registradas</option>`;
+                combo_empresas.append(option);
+                addErrorClass(combo_empresas);
+            }
+        }
+
+        setDepartamentos = (departamentos) => {
+            clearComboDepartamentos();
+            if (departamentos.length > 0) {
+                departamentos.unshift({id: 0, name: 'Selecciona un departamento'});
+                departamentos.map(departamento => {
+                    let option = `<option value='${departamento.id}' data-name="${departamento.name}">${departamento.name}</option>`;
+                    combo_departamentos.append(option);
+                });
+            } else {
+                let option = `<option value='0' >No hay departamentos en esta empresa</option>`;
+                combo_departamentos.append(option);
+                addErrorClass(combo_departamentos);
+            }
+        }
+
+        setServicios = (servicios) => {
+            clearComboServicios();
+            if (servicios.length > 0) {
+                servicios.unshift({id: 0, name: 'Selecciona un Servicio'});
+                servicios.map(servicio => {
+                    let option = `<option value='${servicio.id}'>${servicio.name}</option>`;
+                    combo_servicios.append(option);
+                });
+            } else {
+                let option = `<option value=''>No hay servicios en el departamento</option>`;
+                combo_servicios.append(option);
+                addErrorClass(combo_servicios);
+            }
+        }
+
+        setSubServicios = (subservicios) => {
+            clearComboSubServicios();
+            if (subservicios.length > 0) {
+                subservicios.unshift({id: 0, name: 'Selecciona un Sub servicio'});
+                subservicios.map(subservicio => {
+                    let option = `<option value='${subservicio.id}' data-costo='${subservicio.costo}'>${subservicio.name}</option>`;
+                    combo_subservicios.append(option);
+                });
+            } else {
+                let option = `<option value=''>No hay sub servicios</option>`;
+                combo_subservicios.append(option);
+                addErrorClass(combo_subservicios);
+            }
+        }
+
+        clearComboDepartamentos = () => {
+            combo_departamentos.empty();
+            removeErrorClass(combo_departamentos);
+        }
+
+        resetComboDepartamentos = () => {
+            let option = `<option value=''>Departamentos</option>`;
+            combo_departamentos.append(option);
+            removeErrorClass(combo_departamentos);
+        }
+
+        clearComboServicios = () => {
+            combo_servicios.empty();
+            removeErrorClass(combo_servicios);
+        }
+
+        resetComboServicios = () => {
+            let option = `<option value=''>Servicios</option>`;
+            combo_servicios.append(option);
+            removeErrorClass(combo_servicios);
+        }
+
+        clearComboSubServicios = () => {
+            combo_subservicios.empty();
+            removeErrorClass(combo_subservicios);
+        }
+
+        resetComboSubServicios = () => {
+            let option = `<option value=''>Sub servicios</option>`;
+            combo_subservicios.append(option);
+            removeErrorClass(combo_subservicios);
+        }
+
+        addErrorClass = (element) => {
+            element.parent().addClass('error')
+        }
+
+        removeErrorClass = (element) => {
+            element.parent().removeClass('error')
+        }
+
+        validateName = (name) => {
+            console.log(name);
+            $
+                .ajax({
+                    url: "{{ path('convenios.validar.nombre') }}",
+                    data: {
+                        'name': name
+                    },
+                    method: 'POST',
+                    dataType: 'json'
+                })
+                .done(response => {
+                    //LOGGER('VALIDATE_NAME_RESPONSE', response);
+                    return response == 'true' ? true : false;
+                })
+                .fail(error => {
+                    //LOGGER('VALIDATE_NAME_ERROR', error);
+                })
+        }
+
+        //============================================EDN_DEPARTAMENTOS========================================
+    </script>
+{% endblock %}
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Registro y Actualización</h2>
+
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="#">Convenios</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb">Registro</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <section class="tabs-section">
+        <div class="tabs-section-nav">
+            <div class="tbl">
+                <ul class="nav" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#tabs-2-tab-1" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Registro
+                                <span class="label label-pill label-success">
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-2-tab-2" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Actualización
+                                <span class="label label-pill label-danger">
+                                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="tabs-2-tab-1">
+                <form action="{{ path('convenios.store')}}" method="POST" id="form">
+                    <div class="box-typical box-typical-padding">
+                        <div class="box-typical-header"></div>
+                        <div class="box-typical-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="" class="form-label">Nombre del convenio</label>
+                                        <input type="text" name="nombre" id="nombre" required="required" placeholder="Escribe el nombre del convenio" class="form-control">
+                                        <span class="help-block" style="display:none;"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <select id="empresa" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <select id="departamento" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <select id="servicios" class="form-control"></select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <select id="subservicios" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-succes" id="btnAdd" disabled="disabled">
+                                        <i class="fa fa-plus"></i>
+                                        Agregar</button>
+                                </div>
+                            </div>
+                            <p>Lista de subservicios</p>
+                            <table class="table table-xs table-bordered table-hover m-b-2">
+                                <thead>
+                                    <tr>
+                                        <th>Empresa</th>
+                                        <th>Departamento</th>
+                                        <th>Servicio</th>
+                                        <th>Subservicio</th>
+                                        <th>Costo</th>
+                                        <th>Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body">
+                                    <tr>
+                                        <td colspan="6">
+                                            No hay subservicios agregados aun
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="row">
+                                <div id="bloque_cantidades" style="display:none;">
+                                    <div class="col-md-2">
+                                        <fieldset class="form-group">
+                                            <label class="form-label" for="">%Descuento</label>
+                                            <input type="number" min="0" max="10" step="1" id="descuento" name="descuento" value="10" class="form-control" required="required">
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="form-label semibold">Costo Autorizado</label>
+                                            {# <div class="form-control-wrapper form-control-icon-left"> #}
+                                            <input type="hidden" id="costo_autorizado" min="0" step="0.1" name="costo_autorizado" class="form-control">
+                                            <input type="text" id="costo_autorizado_formatted" class="form-control" readonly="readonly">
+                                            {# <i class="fa fa-money"></i> #}
+                                            {# </div> #}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="form-label semibold">Costo Popruesto</label>
+                                            <div class="form-control-wrapper form-control-icon-left">
+                                                <input type="number" id="costo_propuesto" min="0" step="0.01" name="costo_propuesto" class="form-control" required="required">
+                                                <i class="fa fa-money"></i>
+                                                <span class="help-block" style="display:none;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label semibold">Condiciones comerciales</label>
+                                        <input type="text" id="" min="0" name="condiciones_comerciales" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <input type="submit" id="submit" value="Guardar" class="btn btn-succes"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <hr>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="tabs-2-tab-2">
+                <div class="box-typical box-typical-padding">
+                    <table class="table is-bordered is-striped is-narrow is-hoverable" id="tabla-convenios">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th class="text-right">Costo Autorización</th>
+                                <th class="text-center">Descuento</th>
+                                <th>Condiciones Comerciales</th>
+                                <th>Estatus</th>
+                                <th>Detalle</th>
+                            </tr>
+                        </thead>
+                        {% for convenio in convenios %}
+                            <tr>
+                                <td>{{ convenio.nombre }}</td>
+                                <td class="text-right">${{ convenio.costoAutorizacion|number_format(2,".",",") }}</td>
+                                <td class="text-center">{{ convenio.descuentos }}%</td>
+                                <td>{{ convenio.condicionesComerciales }}</td>
+                                <td>
+                                    {% if (convenio.activo == 1) %}
+                                        <span class="label label-custom label-pill label-success">Activo</span>
+                                    {% else %}
+                                        <span class="label label-custom label-pill label-danger">Inactivo</span>
+                                    {% endif %}
+                                </td>
+                                <td clas="text-center">
+                                    <a href="{{ path('convenios.edit',{'id':convenio.id}) }}">
+                                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    {# <div class="box-typical box-typical-padding">
+		<div class="box-typical-header">
+			<h2>Lista de convenios registrados</h2>
+		</div>
+		<div class="box-typical-body">
+			<table class="table table-sm table-bordered" id="tabla-convenios">
+				<thead>
+					<tr class="text-primary">
+						<th>ID</th>
+						<th>NOMBRE</th>
+						<th class="text-right">COSTO AUTORIZACION</th>
+						<th class="text-center">DESCUENTOS</th>
+						<th>CONDICIONES COMERCIALES</th>
+						<th>ESTATUS</th>
+						<th>ACCIONES</th>
+					</tr>
+				</thead>
+					{%  for convenio in  convenios %}
+						<tr>
+							<td>{{ convenio.id }}</td>
+							<td>{{ convenio.nombre }}</td>
+							<td class="text-right">${{ convenio.costoAutorizacion|number_format(2,".",",") }}</td>
+							<td class="text-center">{{ convenio.descuentos }}%</td>
+							<td>{{ convenio.condicionesComerciales }}</td>
+							<td>
+								{% if(convenio.activo == 1) %}
+									<span class="label label-custom label-pill label-success">Activo</span>
+								{% else %}
+									<span class="label label-custom label-pill label-danger">Inactivo</span>
+								{% endif %}
+							</td>
+							<td>
+								<a href="{{ path('convenios.edit',{'id':convenio.id}) }}" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i></a>
+							</td>
+						</tr>
+					{% endfor %}
+				<tbody>
+
+				</tbody>
+			</table>
+		</div>
+	</div> #}
+{% endblock %}

@@ -1,0 +1,1279 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script>
+    $(document).ready(function() {
+        $('#tabla').DataTable({
+            "sDom": '<l<t>ip>',
+            "paging": false,
+            "bLengthChange": true,
+            "language":{
+                "decimal":        ".",
+                "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrando _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Buscar:",
+                "searchPlaceholder": "Ingresa el nombre del Plan",
+                "zeroRecords":    "Sin Resultados",
+                "paginate": {
+                    "first":      "Primero",
+                    "last":       "Último",
+                    "next":       "Siguiente",
+                    "previous":   "Anterior"
+                }
+            }
+        });
+        $('#tabla2').DataTable({
+            "sDom": '<l<t>ip>',
+            "paging": false,
+            "bLengthChange": true,
+            "language":{
+                "decimal":        ".",
+                "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrando _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Buscar:",
+                "searchPlaceholder": "Ingresa el nombre del Plan",
+                "zeroRecords":    "Sin Resultados",
+                "paginate": {
+                    "first":      "Primero",
+                    "last":       "Último",
+                    "next":       "Siguiente",
+                    "previous":   "Anterior"
+                }
+            }
+        });
+        $('#tabla_info').addClass('ml-10');
+        /*llenado de datos*/
+        $('#tipoCliente').val({{ cliente.tipoClientes.id }});
+        {% if cProd|length>0 %}
+            $('#marca').val({{ cProd[0].productos.marcas.id }});
+        {% endif %}
+        $('#marca').on('change',function(){
+                var marcaID = $(this).val();
+                $('#productos').find('option').remove();
+                if(marcaID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('producto-json') }}',
+                        data:'marca='+marcaID,
+                        success:function(html){
+                            $('#productos').find('option').remove();
+                            $.each(html, function(i,item) {
+                                $('#productos').append('<option value="'+item.id+'">'+item.producto+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+        $('#nombreContacto').on('change',function() {
+            $.ajax({
+                type:'POST',
+                url:'{{ path('responsable-json') }}',
+                data:'id='+$(this).val(),
+                success:function(html){
+                    $('#telefonoContacto').val(html.telefono);
+                    $('#emailContacto').val(html.email);
+                    $('#tipoContacto').val(html.tipo);
+                }
+            });
+        });
+        $('#estadoCliente').val({{ cliente.id|estado }});
+        {% if cliente.id|estadoFiscal != 0 %}
+            $('#estadoFiscalCliente').val({{ cliente.id|estadoFiscal }});
+            {% for m in munFCli %}
+                $('#municipioFiscalCliente').append('<option value="{{ m.id }}" {% if m.id==cliente.id|municipioFiscal %}selected{% endif %}>{{ m.nombre }}</option>');
+            {% endfor %}
+            {% for c in colFCli %}
+                $('#coloniaFiscalCliente').append('<option value="{{ c.id }}" {% if c.id==cliente.id|coloniaFiscal %}selected{% endif %}>{{ c.nombre }}</option>');
+            {% endfor %}
+        {% endif %}
+        {% for m in munCli %}
+            $('#municipioCliente').append('<option value="{{ m.id }}" {% if m.id==cliente.id|municipio %}selected{% endif %}>{{ m.nombre }}</option>');
+        {% endfor %}
+        {% if cliente.id|colonia != 0 %}
+            {% for c in colCli %}
+                $('#coloniaCliente').append('<option value="{{ c.id }}" {% if c.id==cliente.id|colonia %}selected{% endif %}>{{ c.nombre }}</option>');
+            {% endfor %}
+        {% else %}
+            {% for c in colCli %}
+                $('#coloniaCliente').append('<option value="{{ c.id }}">{{ c.nombre }}</option>');
+            {% endfor %}
+        {% endif %}
+        $('#estadoCliente').on('change',function() {
+            var estadoID = $(this).val();
+                if(estadoID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('municipios-json') }}',
+                        data:'estado='+estadoID,
+                        success:function(html){
+                            $('#municipioCliente').find('option').remove();
+                            $('#municipioCliente').append('<option value="null" disabled="disabled" selected>Seleccione Municipio</option>');
+                            $('#coloniaCliente').find('option').remove();
+                            $('#coloniaCliente').append('<option value="null" disabled="disabled" selected>Seleccione Colonia</option>');
+                            $.each(html, function(i,item) {
+                                $('#municipioCliente').append('<option value="'+item.id+'">'+item.municipio+'</option>');
+                            });
+                        }
+                    });
+                }
+        });
+        $('#estadoFiscalCliente').on('change',function() {
+            var estadoID = $(this).val();
+                if(estadoID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('municipios-json') }}',
+                        data:'estado='+estadoID,
+                        success:function(html){
+                            $('#municipioFiscalCliente').find('option').remove();
+                            $('#municipioFiscalCliente').append('<option value="null" disabled="disabled" selected>Seleccione Municipio</option>');
+                            $('#coloniaFiscalCliente').find('option').remove();
+                            $('#coloniaFiscalCliente').append('<option value="null" disabled="disabled" selected>Seleccione Colonia</option>');
+                            $.each(html, function(i,item) {
+                                $('#municipioFiscalCliente').append('<option value="'+item.id+'">'+item.municipio+'</option>');
+                            });
+                        }
+                    });
+                }
+        });
+        $('#municipioCliente').on('change',function(){
+            var municipioID = $(this).val();
+            if(municipioID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('colonias-json') }}',
+                    data:'municipio='+municipioID,
+                    success:function(html){
+                        $('#coloniaCliente').find('option').remove();
+                        $('#coloniaCliente').append('<option disabled selected value="null">Seleccione Colonia</option>');
+                        $.each(html, function(i,item) {
+                            $('#coloniaCliente').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'">'+item.colonia+'</option>');
+                        })
+                    }
+                });
+            }
+        });
+        $('#municipioFiscalCliente').on('change',function(){
+            var municipioID = $(this).val();
+            if(municipioID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('colonias-json') }}',
+                    data:'municipio='+municipioID,
+                    success:function(html){
+                        $('#coloniaFiscalCliente').find('option').remove();
+                        $('#coloniaFiscalCliente').append('<option disabled selected value="null">Seleccione Colonia</option>');
+                        $.each(html, function(i,item) {
+                            $('#coloniaFiscalCliente').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'">'+item.colonia+'</option>');
+                        })
+                    }
+                });
+            }
+        });
+        $('#coloniaCliente').on('change',function(){
+            var codigo = $(this).find(':selected').attr('data-codigo');
+            $('#codigoPostalCliente').val(codigo);
+        });
+        $('#coloniaFiscalCliente').on('change',function(){
+            var codigo = $(this).find(':selected').attr('data-codigo');
+            $('#codigoPostalFiscalCliente').val(codigo);
+        });
+        {% if cliente.grupos.id==2 or cliente.grupos.tipoGrupos.id==4 %}
+            $('input[name="independiente"][value="1"]').attr('checked', 'checked');
+        {% else %}
+            $('input[name="independiente"][value="0"]').attr('checked', 'checked');
+        {% endif %}
+        {% if cliente.grupos.tipoGrupos.id == 3 or cliente.grupos.tipoGrupos.id == 4 %}
+            $('#grupo').val({{ cliente.grupos.id }});
+            {% if cliente.grupos.idGrupoPadre != 2 %}
+                $('#union').val({{ cliente.grupos.idGrupoPadre }});
+            {% endif %}
+        {% elseif cliente.grupos.tipoGrupos.id == 2 %}
+            $('#grupo').find('option').remove();
+            $('#union').val({{ cliente.grupos.id }});
+            $.ajax({
+                type:'POST',
+                url:'{{ path('union-json') }}',
+                data:'union={{ cliente.grupos.id }}',
+                success:function(html){
+                    $('#grupo').find('option').remove();
+                    $('#grupo').append('<option disabled selected value="null">Selecciona un Grupo</option>');
+                    $.each(html, function(i,item) {
+                        $('#grupo').append('<option value="'+item.id+'" data-padre="'+item.padre+'">'+item.grupo+'</option>');
+                    });
+                }
+            });
+        {% elseif cliente.grupos.tipoGrupos.id == 1 %}
+            $('#grupo').find('option').remove();
+            $('#unino').find('option').remove();
+            $('#asociacion').val({{ cliente.grupos.id }});
+            $.ajax({
+                type:'POST',
+                url:'{{ path('asociacion-json') }}',
+                data:'asociacion={{ cliente.grupos.id }}',
+                success:function(html){
+                    $('#union').find('option').remove();
+                    $('#union').append('<option disabled selected value="null">Selecciona una Unión</option>');
+                    $.each(html, function(i,item) {
+                        $('#union').append('<option value="'+item.id+'" data-padre="'+item.padre+'">'+item.union+'</option>');
+                    });
+                    $('#clientesType_grupo').find('option').remove();
+                    $('#clientesType_grupo').append('<option disabled selected value="null">Selecciona un Grupo</option>');
+                }
+            });
+        {% endif %}
+        $('#asociacion').on('change',function(){
+            var asoID = $(this).val();
+            if(asoID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('asociacion-json') }}',
+                    data:'asociacion='+asoID,
+                    success:function(html){
+                        $('#union').find('option').remove();
+                        $('#union').append('<option disabled selected value="null">Seleccione Unión</option>');
+                        $.each(html, function(i,item) {
+                            $('#union').append('<option value="'+item.id+'" data-padre="'+item.padre+'">'+item.union+'</option>');
+                        });
+                        $('#grupo').find('option').remove();
+                        $('#grupo').append('<option disabled selected value="null">Seleccione Grupo</option>');
+                    }
+                });
+            }
+        });
+        $('#union').on('change',function(){
+            if($(this).find(':selected').data('padre')!=0){
+                $('#asociacion').val($(this).find(':selected').data('padre'));
+            }
+            var grupoID = $(this).val();
+            if(grupoID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('union-json') }}',
+                    data:'union='+grupoID,
+                    success:function(html){
+                        $('#grupo').find('option').remove();
+                        $('#grupo').append('<option disabled selected value="null">Seleccione Grupo</option>');
+                        $.each(html, function(i,item) {
+                            $('#grupo').append('<option value="'+item.id+'" data-padre="'+item.padre+'">'+item.grupo+'</option>');
+                        });
+                    }
+                });
+            }
+        });
+        $('#grupo').on('change',function(){
+            if($(this).find(':selected').data('padre')!=0){
+                $('#union').val($(this).find(':selected').data('padre'));
+                if($('#union').find(':selected').data('padre')!=0){
+                    $('#asociacion').val($('#planType_union').find(':selected').data('padre'));
+                }
+            }
+        });
+        $('#empresa').on('change',function(){
+            var empresaID = $(this).val();
+            $('#departamento').find('option').remove();
+            $('#departamento').append('<option disabled selected value="null">Seleccione Departamento</option>');
+            $('#servicio').find('option').remove();
+            $('#servicio').append('<option disabled selected value="null">Seleccione Servicio</option>');
+            $('#subservicio').find('option').remove();
+            $('#subservicio').append('<option disabled selected value="null">Seleccione Subservicio</option>');
+            if(empresaID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('empresa-json') }}',
+                    data:'empresa='+empresaID,
+                    success:function(html){
+                        $('#departamento').find('option').remove();
+                        $('#departamento').append('<option disabled selected value="null">Seleccione Departamento</option>');
+                        $.each(html, function(i,item) {
+                            $('#departamento').append('<option value="'+item.id+'">'+item.departamento+'</option>');
+                        })
+                    }
+                });
+            }
+        });
+        $('#departamento').on('change',function(){
+            var departamentoID = $(this).val();
+            $('#servicio').find('option').remove();
+            $('#servicio').append('<option disabled selected value="null">Seleccione Servicio</option>');
+            $('#subservicio').find('option').remove();
+            $('#subservicio').append('<option disabled selected value="null">Seleccione Subservicio</option>');
+            if(departamentoID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('departamento-json') }}',
+                    data:'departamento='+departamentoID,
+                    success:function(html){
+                        $('#servicio').find('option').remove();
+                        $('#servicio').append('<option disabled selected value="null">Seleccione Servicio</option>');
+                        $.each(html, function(i,item) {
+                            $('#servicio').append('<option value="'+item.id+'">'+item.servicio+'</option>');
+                        })
+                    }
+                });
+            }
+        });
+        $('#servicio').on('change',function(){
+            var servicioID = $(this).val();
+            $('#subservicio').find('option').remove();
+            $('#subservicio').append('<option disabled selected value="null">Seleccione Subservicio</option>');
+            if(servicioID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('servicio-json') }}',
+                    data:'servicio='+servicioID,
+                    success:function(html){
+                        $('#subservicio').find('option').remove();
+                        $('#subservicio').append('<option disabled selected value="null">Seleccione Subservicio</option>');
+                        $.each(html, function(i,item) {
+                            $('#subservicio').append('<option value="'+item.id+'" data-costo="'+item.costo+'">'+item.subservicio+'</option>');
+                        })
+                    }
+                });
+            }
+        });
+        $('#subservicio').on('change',function(){
+            if($(this).val()!=null){
+                $('#error-agregarservicio').addClass('hidden');
+            }
+        });
+        $('#iniLlamada').click(function() {
+            var dt = new Date();
+            var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+            $('#horaInicio').val(time);
+            $('#finLlamada').removeAttr('disabled');
+            $('#iniLlamada').attr('disabled',true);
+        });
+        $('#finLlamada').click(function() {
+            var dt = new Date();
+            var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+            $('#horaFin').val(time);
+            $('#finLlamada').attr('disabled',true);
+        });
+        $('#repro').click(function() {
+            if ($('#repro').is(":checked")){
+                $('#re').removeClass('hidden');
+            }else{
+                $('#re').addClass('hidden');
+            }
+        });
+        $('#add-service').click(function() {
+            var empresa = $( "#empresa option:selected" );
+            var departamento = $( "#departamento option:selected" );
+            var servicio = $( "#servicio option:selected" );
+            var subservicio = $( "#subservicio option:selected" );
+            if($('#subservicio').val()==null){
+                $('#error-agregarservicio').removeClass('hidden');
+            }else{
+                $('#error-agregarservicio').addClass('hidden');
+                $('#tabla-lista').append('<tr>'+
+                    '<td><input type="checkbox" checked name="check-subservicionew[]" data-id="'+subservicio.val()+'"></td>'+
+                    '<td>'+empresa.text()+'</td>'+
+                    '<td>'+departamento.text()+'</td>'+
+                    '<td>'+servicio.text()+'</td>'+
+                    '<td>'+subservicio.text()+'</td>'+
+                    '<td>Necesidad Detectada'+
+                    '<input name="subservicio-listanew[]" class="hidden" value="'+subservicio.val()+'" data-id="'+subservicio.val()+'"></td>'+
+                '</tr>');
+            }
+        });
+        $('input[name="check-subservicio[]"]').on('click',function() {
+            if($(this).is(":checked")){
+                $('input[name="subservicio-lista[]"][data-id="'+$(this).attr('data-id')+'"]').val($(this).attr('data-id'));
+            }else{
+                $('input[name="subservicio-lista[]"][data-id="'+$(this).attr('data-id')+'"]').val(0);
+            }
+        });
+        $('input[name="check-subservicionew[]"]').on('click',function() {
+            if($(this).is(":checked")){
+                $('input[name="subservicio-listanew[]"][data-id="'+$(this).attr('data-id')+'"]').val($(this).attr('data-id'));
+            }else{
+                $('input[name="subservicio-listanew[]"][data-id="'+$(this).attr('data-id')+'"]').val(0);
+            }
+        });
+         $('#permisoCliente').bind('keyup', function() {
+            var permiso = $('#permisoCliente').val();
+            var folio = '{{ cliente.folioGenerico }}';
+            $.ajax({
+                type:'POST',
+                url:'{{ path('permiso-editar') }}',
+                data:'permiso='+permiso+'&folio='+folio,
+                success:function(html){
+                    if(html==1){
+                        $('#error-permiso').removeClass('hidden');
+                        $('#error-permiso').html('El Número de Permiso EXISTE');
+                    }else{
+                        $('#error-permiso').addClass('hidden');
+                        $('#error-permiso').html('');
+                    }
+                }
+            });
+         });
+         $( "#igualDom" ).click(function() {
+            if($(this).is(':checked')){
+                $("#calleFiscalCliente").val($('#calleCliente').val());
+                $("#codigoPostalFiscalCliente").val($('#codigoPostalCliente').val());
+                var codigo = $("#codigoPostalCliente").val();
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('estado-codigo') }}',
+                    data:'codigo='+codigo,
+                    success:function(html){
+                        $("#estadoFiscalCliente").val(html.estado);
+                        var estadoID = html.estado;
+                        if(estadoID){
+                            $.ajax({
+                                type:'POST',
+                                url:'{{ path('municipios-json') }}',
+                                data:'estado='+estadoID,
+                                success:function(mun){
+                                    $('#municipioFiscalCliente').find('option').remove();
+                                    $.each(mun, function(i,item) {
+                                        if(html.municipio==item.id){
+                                            $('#municipioFiscalCliente').append('<option value="'+item.id+'" selected>'+item.municipio+'</option>');
+                                        }else{
+                                            $('#municipioFiscalCliente').append('<option value="'+item.id+'">'+item.municipio+'</option>');
+                                        }
+                                    });
+                                    var municipioID = html.municipio;
+                                    if(municipioID){
+                                        $.ajax({
+                                            type:'POST',
+                                            url:'{{ path('colonias-json') }}',
+                                            data:'municipio='+municipioID,
+                                            success:function(html){
+                                                $('#coloniaFiscalCliente').find('option').remove();
+                                                $('#coloniaFiscalCliente').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                                                $.each(html, function(i,item) {
+                                                    if(item.codigo==codigo){
+                                                        if(item.id==$('#coloniaCliente').val()){
+                                                            $('#coloniaFiscalCliente').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'" selected>'+item.colonia+'</option>');
+                                                        }else{
+                                                            $('#coloniaFiscalCliente').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'">'+item.colonia+'</option>');
+                                                        }
+                                                    }
+                                                })
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }else{
+                $("#calleFiscalCliente").val('');
+                $("#codigoPostalFiscalCliente").val('');
+                $("#estadoFiscalCliente").val('null');
+                $('#municipioFiscalCliente').find('option').remove();
+                $('#municipioFiscalCliente').append('<option disabled selected value="null">Selecciona un Municipio</option>');
+                $('#coloniaFiscalCliente').find('option').remove();
+                $('#coloniaFiscalCliente').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+            }
+        });
+        /*validaciones*/
+        $('#clienteProspeccion').submit(function(e) {
+            var ban = 0;
+            /*nombre de contacto*/
+            if($('#nombreContacto').val()==null || $('#nombreContacto').val()==''){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-nombreContacto').removeClass('hidden');
+                if($('#nombreContacto').val()==null){
+                    $('#error-nombreContacto p').html('Seleccione Nombre del Contacto');
+                }else if($('#nombreContacto').val()==''){
+                    $('#error-nombreContacto p').html('Ingrese Nombre del Contacto');
+                }
+                ban = ban +1;
+            }else{
+                $('#error-nombreContacto').addClass('hidden');
+            }
+            /*telefono de contacto*/
+            if($('#telefonoContacto').val()==''){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-telefonoContacto').removeClass('hidden');
+                $('#error-telefonoContacto p').html('Ingrese Teléfono de Contacto');
+                ban = ban +1;
+            }else{
+                $('#error-telefonoContacto').addClass('hidden');
+            }
+            /*email de contacto*/
+            if($('#emailContacto').val()==''){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-emailContacto').removeClass('hidden');
+                $('#error-emailContacto p').html('Ingrese Email de Contacto');
+                ban = ban +1;
+            }else{
+                $('#error-emailContacto').addClass('hidden');
+            }
+            /*tipo de contacto*/
+            if($('#tipoContacto').val()==null){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-tipoContacto').removeClass('hidden');
+                $('#error-tipoContacto p').html('Seleccione Tipo de Contacto');
+                ban = ban +1;
+            }else{
+                $('#error-tipoContacto').addClass('hidden');
+            }
+            /*productos*/
+            var x = "";
+            $.each($('#productos').select2('data'), function (i, val) {
+                x = x + val.id + ".";
+            });
+            $("#productos-lista").attr('value', x);
+            if ($("#productos").val() == '' && $('#marca').val()!=null) {
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-productos').removeClass('hidden');
+                $('#error-productos p').html('Selecciona al menos un Producto');
+                ban = ban +1;
+            }else {
+                $('#error-productos').addClass('hidden');
+            }
+            /*llamadas*/
+            if($('#horaInicio').val()==''){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-inicioLlamada').removeClass('hidden');
+                $('#error-inicioLlamada p').html('Inicie Llamada');
+                ban = ban +1;
+            }else {
+                $('#error-inicioLlamada').addClass('hidden');
+            }
+            if($('#horaFin').val()==''){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-finLlamada').removeClass('hidden');
+                $('#error-finLlamada p').html('Finalice Llamada');
+                ban = ban +1;
+            }else {
+                $('#error-finLlamada').addClass('hidden');
+            }
+            if($('#estatusLlamada').val()==null){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-estatusLlamada').removeClass('hidden');
+                $('#error-estatusLlamada p').html('Seleccione Estatus de Llamada');
+                ban = ban +1;
+            }else{
+                $('#error-estatusLlamada').addClass('hidden');
+            }
+            $( "#repro" ).click(function() {
+                if($(this).is(':checked')){
+
+                }
+            });
+            if($('#calleFiscalCliente').val()!='' && $('#coloniaFiscalCliente').val()==null){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-coloniaFiscal').removeClass('hidden');
+                $('#error-coloniaFiscal p').html('Seleccione Colonia del Domicilio Fiscal');
+                ban = ban +1;
+            }else{
+                $('#error-coloniaFiscal').addClass('hidden');
+            }
+            if($('#calleFiscalCliente').val()=='' && $('#coloniaFiscalCliente').val()!=null){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-coloniaFiscal').removeClass('hidden');
+                $('#error-coloniaFiscal p').html('Ingrese Calle del Domicilio Fiscal');
+                ban = ban +1;
+            }else{
+                $('#error-coloniaFiscal').addClass('hidden');
+            }
+            var check = 0;
+            $('input[name="check-subservicionew[]"]').each(function() {
+                if($(this).val()!=0){
+                    check = check + 1;
+                }
+            });
+            $('input[name="check-subservicio[]"]').each(function() {
+                if($(this).val()!=0){
+                    check = check + 1;
+                }
+            });
+            if(check==0){
+                e.preventDefault();
+                $('#errores').removeClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $("#error-top").offset().top
+                }, 1000);
+                $('#error-subservicios').removeClass('hidden');
+                $('#error-subservicios p').html('Seleccione al menos un Subservicio');
+                ban = ban +1;
+            }else{
+                $('#error-subservicios').addClass('hidden');
+            }
+            if(ban >0){
+                $('#errores').removeClass('hidden');
+            }else{
+                $('#errores').addClass('hidden');
+            }
+        });
+        $("#generar-pdf").on("click", function(e){
+            e.preventDefault();
+            $('#clienteProspeccion').attr('target','_blank');
+            $('#clienteProspeccion').attr('action', "{{ path('generarpdf-prospeccion') }}").submit();
+        });
+        //select muestra u oculta el boton dependiendo la opcion seleccionada
+        $('#estatusLlamada').on('change',function() {
+            var l = $(this).val();
+            if(l==1 || l==16 || l==17){
+                $('#enviar-propuesta').removeClass('hidden');
+                $('#guardar-propuesta').addClass('hidden');
+            }else{
+                $('#enviar-propuesta').addClass('hidden');
+                $('#guardar-propuesta').removeClass('hidden');
+            }
+        });
+        $("#enviar-propuesta").on("click", function(e){
+            e.preventDefault();
+            $('#clienteProspeccion').attr('target','_self');
+            $('#clienteProspeccion').attr('action', "{{ path('guardar-cliente-prospeccion',{'enviar':1}) }}").submit();
+        });
+        $("#guardar-propuesta").on("click", function(e){
+            e.preventDefault();
+            $('#clienteProspeccion').attr('target','_self');
+            $('#clienteProspeccion').attr('action', "{{ path('guardar-cliente-prospeccion',{'enviar':0}) }}").submit();
+        });
+        {% if pro.estatusSeguimientoProspeccion.id==12 %}
+            $('#permisoCliente').attr('disabled',true);
+            $('#razonSocial').attr('disabled',true);
+            $('#estacionServicio').attr('disabled',true);
+            $('#rfc').attr('disabled',true);
+            $('#telefonoEmpresa').attr('disabled',true);
+            $('#emailEmpresa').attr('disabled',true);
+            $('#tipoCliente').attr('disabled',true);
+            $('#calleCliente').attr('disabled',true);
+            $('#estadoCliente').attr('disabled',true);
+            $('#municipioCliente').attr('disabled',true);
+            $('#coloniaCliente').attr('disabled',true);
+            $('#codigoPostalCliente').attr('disabled',true);
+            $('#iniLlamada').addClass('hidden');
+            $('#finLlamada').addClass('hidden');
+            $('#estatusLlamada').attr('disabled',true);
+            $('#repro').attr('disabled',true);
+            $('#observaciones').attr('disabled',true);
+            $('#checked').attr('disabled',true);
+            $('#checked1').attr('disabled',true);
+            $('#nombreContacto').attr('disabled',true);
+            $('#telefonoContacto').attr('disabled',true);
+            $('#emailContacto').attr('disabled',true);
+            $('#tipoContacto').attr('disabled',true);
+            $('#igualDom').attr('disabled',true);
+            $('#calleFiscalCliente').attr('disabled',true);
+            $('#estadoFiscalCliente').attr('disabled',true);
+            $('#municipioFiscalCliente').attr('disabled',true);
+            $('#coloniaFiscalCliente').attr('disabled',true);
+            $('#checked1').attr('disabled',true);
+            $('#marca').attr('disabled',true);
+            $('#inds').attr('disabled',true);
+            $('#indn').attr('disabled',true);
+            $('#asociacion').attr('disabled',true);
+            $('#union').attr('disabled',true);
+            $('#grupo').attr('disabled',true);
+            $('#productos').attr('disabled',true);
+            $('#empresa').attr('disabled',true);
+            $('#departamento').attr('disabled',true);
+            $('#servicio').attr('disabled',true);
+            $('#subservicio').attr('disabled',true);
+            $('#add-service').addClass('hidden');
+
+        {% endif %}
+    });
+</script>
+{% endblock %}
+
+{% block body %}
+<header class="section-header" id="error-top">
+    <div class="tbl">
+        <div class="tbl-row">
+            <div class="tbl-cell">
+                <h2 class="inline-block">Prospección</h2>
+            </div>
+            <div class="tbl-cell text-right">
+                <nav class="inline-block" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ path('prospeccion') }}">Prospección</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Prospectar</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+<hr>
+    <style>
+        .box-typical{
+            background: #fb6067;
+        }
+        .box-typical p{
+            color: white;
+            margin-bottom: 0px;
+        }
+        .box-typical i{
+            color: white;
+            font-size: 12px;
+        }
+        .table td{
+            font-size: 0.8rem;
+        }
+    </style>
+<div class="col-md-12 mt-20">
+    <div class="box-typical box-typical-padding hidden" id="errores">
+        <div id="error-nombreContacto" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-telefonoContacto" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-emailContacto" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-tipoContacto" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-productos" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-inicioLlamada" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-finLlamada" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-estatusLlamada" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-reproLlamada" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-coloniaFiscal" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+        <div id="error-subservicios" class="hidden bang"><i class="font-icon font-icon-del"></i><p class="inline-block ml-10"></p></div>
+    </div>
+</div>
+<form action="#" method="post" id="clienteProspeccion" target="_self">
+    <input type="text" name="noCliente" id="noCliente" class="hidden" value="{{ cliente.id }}">
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <section class="tabs-section">
+                <div class="tabs-section-nav">
+                    <div class="tbl">
+                        <ul class="nav" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#tabs-2-tab-1" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Cliente
+                                </span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tabs-2-tab-2" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Datos del Contacto
+                                </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!--.tabs-section-nav-->
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="tabs-2-tab-1">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label">Permiso</label>
+                                <input class="form-control" name="permisoCliente" id="permisoCliente" value="{{ cliente.numeroPermiso }}">
+                                <p class="hidden help-block" id="error-permiso"></p>
+                                <label class="form-label mt-10">Razón Social</label>
+                                <input class="form-control" name="razonSocial" id="razonSocial" value="{{ cliente.razonSocial }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mt-10">Estación de Servicio</label>
+                                <input class="form-control" name="estacionServicio" id="estacionServicio" value="{{ cliente.estacionServicio }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mt-10">RFC</label>
+                                <input class="form-control" name="rfc" id="rfc" value="{{ cliente.rfc }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mt-10">Teléfono de la Empresa</label>
+                                <input type="tel" class="form-control" name="telefonoEmpresa" id="telefonoEmpresa" value="{{ cliente.telefonoEmpresa }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mt-10">Email de la Empresa</label>
+                                <input class="form-control" name="emailEmpresa" id="emailEmpresa" value="{{ cliente.correoEmpresa }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label mt-10">Tipo de Cliente</label>
+                                <select name="tipoCliente" id="tipoCliente" class="form-control">
+                                    {% for t in tipoCliente %}
+                                        <option value="{{ t.id }}">{{ t.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="tabs-2-tab-2">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label mt-10">Nombre del Contacto</label>
+                                {% if cRes|length >0 %}
+                                    <select name="nombreContacto" id="nombreContacto" class="form-control">
+                                        <option value="null" disabled="disabled" selected>Seleccione Nombre</option>
+                                        {% for r in cRes %}
+                                            <option value="{{ r.id }}">{{ r.responsableContactos.nombre|title }} {{ r.responsableContactos.apellidos|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% else %}
+                                    <input class="form-control" name="nombreContacto" id="nombreContacto" >
+                                    <label class="form-label mt-10">Apellido del Contacto</label>
+                                    <input class="form-control" name="apellidoContacto" id="apellidoContacto" >
+                                {% endif %}
+                                {#Agregar nuevo Contacto TODO#}
+                                <label class="form-label mt-10">Teléfono de Contacto</label>
+                                <input class="form-control" name="telefonoContacto" id="telefonoContacto" >
+                                <label class="form-label mt-10">Email de Contacto</label>
+                                <input type="email" class="form-control" name="emailContacto" id="emailContacto" >
+                                <label class="form-label mt-10">Cargo del Contacto</label>
+                                <select name="tipoContacto" id="tipoContacto" class="form-control">
+                                    <option value="null" disabled="disabled" selected>Seleccione Tipo</option>
+                                    {% for tr in tipoResponsable %}
+                                        <option value="{{ tr.id }}">{{ tr.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="col-md-6">
+            <section class="tabs-section">
+                <div class="tabs-section-nav">
+                    <div class="tbl">
+                        <ul class="nav" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#tabs-1-tab-1" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Domicilio Físico
+                                </span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tabs-1-tab-2" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Domicilio Fiscal
+                                </span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tabs-1-tab-3" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Sector
+                                </span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tabs-1-tab-4" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Datos Específicos
+                                </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!--.tabs-section-nav-->
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="tabs-1-tab-1">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label mt-10">Calle</label>
+                                <input class="form-control" name="calleCliente" id="calleCliente" value="{{ cliente.id|calle }}">
+                                <label class="form-label mt-10">Estado</label>
+                                <select name="estadoCliente" id="estadoCliente" class="form-control">
+                                    {% for e in estados %}
+                                        <option value="{{ e.id }}">{{ e.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="form-label mt-10">Municipio</label>
+                                <select name="municipioCliente" id="municipioCliente" class="form-control">
+                                </select>
+                                <label class="form-label mt-10">Colonia</label>
+                                <select name="coloniaCliente" id="coloniaCliente" class="form-control">
+                                    <option value="null" disabled="disabled" selected>Seleccione Colonia</option>
+                                </select>
+                                <label class="form-label mt-10">Código Postal</label>
+                                <input class="form-control" readonly name="codigoPostalCliente" id="codigoPostalCliente" value="{% if cliente.id|codigoPostal != 0 %}{{ cliente.id|codigoPostal }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="tabs-1-tab-2">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="checkbox" name="igualDom" id="igualDom"><label for="igualDom" class="inline-block ml-10">Utilizar datos de Domicilio Físico</label>
+                                <label class="form-label mt-10">Calle</label>
+                                <input class="form-control" name="calleFiscalCliente" id="calleFiscalCliente" value="{{ cliente.id|calleFiscal }}">
+                                <label class="form-label mt-10">Estado</label>
+                                <select name="estadoFiscalCliente" id="estadoFiscalCliente" class="form-control">
+                                    <option value="null" disabled="disabled" selected>Seleccione Estado</option>
+                                    {% for e in estados %}
+                                        <option value="{{ e.id }}">{{ e.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="form-label mt-10">Municipio</label>
+                                <select name="municipioFiscalCliente" id="municipioFiscalCliente" class="form-control">
+                                    <option value="null" disabled="disabled" selected>Seleccione Municipio</option>
+                                </select>
+                                <label class="form-label mt-10">Colonia</label>
+                                <select name="coloniaFiscalCliente" id="coloniaFiscalCliente" class="form-control">
+                                    <option value="null" disabled="disabled" selected>Seleccione Colonia</option>
+                                </select>
+                                <label class="form-label mt-10">Código Postal</label>
+                                <input class="form-control" readonly name="codigoPostalFiscalCliente" id="codigoPostalFiscalCliente" value="{{ cliente.id|codigoPostalFiscal }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="tabs-1-tab-3">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label mt-10">Sector</label>
+                                <select class="form-control" disabled>
+                                    {% for s in sectores %}
+                                        <option value="{{ s.id }}" {% if cliente.categorias.segmentos.sectores.id == s.id %}selected{% endif %}>{{ s.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="form-label mt-10">Segmento</label>
+                                <select class="form-control" disabled>
+                                    {% for s in segmentos %}
+                                        <option value="{{ s.id }}" {% if cliente.categorias.segmentos.id == s.id %}selected{% endif %}>{{ s.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="form-label mt-10">Categoría</label>
+                                <select class="form-control" disabled>
+                                    {% for c in categorias %}
+                                        <option value="{{ c.id }}" {% if cliente.categorias.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="form-label mt-10">Marca</label>
+                                <select class="form-control" name="marca" id="marca">
+                                    <option value="null" disabled="disabled" selected>Seleccione Marca</option>
+                                    {% for m in marcas %}
+                                        <option value="{{ m.id }}">{{ m.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="form-label mt-10">Producto</label>
+                                <select class="form-control select2" multiple="multiple" name="productos" id="productos">
+                                    {% for p in productos %}
+                                        <option value="{{ p.id }}" {% if p.id in cp %}selected{% endif %}>{{ p.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="text" name="productos-lista" id="productos-lista" class="hidden">
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="tabs-1-tab-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label mt-10">¿Es Independiente?</label>
+                                <input type="radio" name="independiente" value="1" id="inds"> Si
+                                <input class="ml-10" type="radio" name="independiente" value="0" id="indn"> No
+                                <label class="form-label mt-10">Asociación</label>
+                                <select class="form-control" name="asociacion" id="asociacion">
+                                    <option value="null" disabled="disabled" selected>Seleccione Asociación</option>
+                                    {% for a in asociaciones %}
+                                        <option value="{{ a.id }}">{{ a.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="form-label mt-10">Unión</label>
+                                <select class="form-control" name="union" id="union">
+                                    <option value="null" disabled="disabled" selected>Seleccione Unión</option>
+                                    {% for u in uniones %}
+                                        <option value="{{ u.id }}" data-padre="{{ u.idGrupoPadre }}">{{ u.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="form-label mt-10">Grupo</label>
+                                <select class="form-control" name="grupo" id="grupo">
+                                    <option value="null" disabled="disabled" selected>Seleccione Grupo</option>
+                                    {% for g in grupos %}
+                                        <option value="{{ g.id }}" data-padre="{{ g.idGrupoPadre }}">{{ g.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <section class="tabs-section">
+                <div class="tabs-section-nav">
+                    <div class="tbl">
+                        <ul class="nav" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#tabs-3-tab-1" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Datos de Llamada Telefónica
+                                </span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tabs-3-tab-2" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Historial de Llamadas
+                                </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!--.tabs-section-nav-->
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="tabs-3-tab-1">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Hora de Inicio</label>
+                                <button type="button" class="btn btn-success" id="iniLlamada">Iniciar Llamada</button>
+                                <input type="text" readonly class="form-control mt-10" name="horaInicio" id="horaInicio">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Hora de Finalización</label>
+                                <button type="button" class="btn btn-danger" id="finLlamada" disabled>Finalizar Llamada</button>
+                                <input type="text" readonly class="form-control mt-10" name="horaFin" id="horaFin">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label mt-10">Estatus de la Llamada</label>
+                                <select class="form-control" name="estatusLlamada" id="estatusLlamada">
+                                    <option value="null" disabled="disabled" selected>Seleccione Estatus</option>
+                                    {% for l in llamadas %}
+                                        <option value="{{ l.id }}">{{ l.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="checkbox" name="repro" id="repro" class="mt-20"><label for="repro" class="inline-block ml-10">Reprogramar Llamada</label>
+                            </div>
+                            <div id="re" class="hidden t">
+                                <div class="col-md-6">
+                                    <label class="form-label mt-10">Fecha</label>
+                                    <input type="date" class="form-control" name="fechaRepro" id="fechaRepro">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mt-10">Hora</label>
+                                    <input type="time" class="form-control" name="horaRepro" id="horaRepro">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label mt-10">Observaciones</label>
+                                <textarea class="form-control" rows="3" name="observaciones" id="observaciones"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="tabs-3-tab-2">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="tabla2" style="width: 100%;">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Fecha</th>
+                                        <th class="text-center">Estatus</th>
+                                        <th class="text-center">Observaciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                    {% for h in historial %}
+                                        <tr>
+                                            <td>{{ h.fechaRegistro|date('d/m/Y') }}</td>
+                                            <td>{{ h.estatusSeguimientoProspeccion.nombre }}</td>
+                                            <td>{{ h.observaciones }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="col-md-6">
+            <section class="tabs-section">
+                <div class="tabs-section-nav">
+                    <div class="tbl">
+                        <ul class="nav" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#tabs-4-tab-1" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Servicios a Prospectar
+                                </span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tabs-4-tab-2" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Servicios Adicionales
+                                </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!--.tabs-section-nav-->
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="tabs-4-tab-1">
+                        <div class="row">
+                            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="tabla" style="width: 100%;">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">Servicio</th>
+                                    <th class="text-center">Subservicio</th>
+                                </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                {% for s in planS %}
+                                    <tr>
+                                        <td>{{ s.subservicio.servicio.nombre }}</td>
+                                        <td>{{ s.subservicio.nombre }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade in" id="tabs-4-tab-2">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label mt-10">Empresa</label>
+                                <select class="form-control" name="empresa" id="empresa">
+                                    <option value="null" disabled="disabled" selected>Seleccione Empresa</option>
+                                    {% for e in empresas %}
+                                        <option value="{{ e.id }}">{{ e.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="form-label mt-10">Departamento</label>
+                                <select class="form-control" name="departamento" id="departamento">
+                                    <option value="null" disabled="disabled" selected>Seleccione Departamento</option>
+                                </select>
+                                <label class="form-label mt-10">Servicio</label>
+                                <select class="form-control" name="servicio" id="servicio">
+                                    <option value="null" disabled="disabled" selected>Seleccione Servicio</option>
+                                </select>
+                                <label class="form-label mt-10">Subservicio</label>
+                                <select class="form-control" name="subservicio" id="subservicio">
+                                    <option value="null" disabled="disabled" selected>Seleccione Subservicio</option>
+                                </select>
+                                <p class="help-block hidden" id="error-agregarservicio">Seleccione Subservicio para agregar</p>
+                                <div class="col-md-12 mt-20 mb-20">
+                                    <a id="add-service" class="add"><span class="label label-pill label-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span> Agregar Servicio</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <section class="tabs-section">
+            <div class="tabs-section-nav">
+                <div class="tbl">
+                    <ul class="nav" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#tabs-5-tab-1" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Servicios a Contratar por el Cliente
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div><!--.tabs-section-nav-->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="tabs-5-tab-1">
+                    <div class="row">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Seleccionar</th>
+                                <th class="text-center">Empresa</th>
+                                <th class="text-center">Departamento</th>
+                                <th class="text-center">Servicio</th>
+                                <th class="text-center">Subservicio</th>
+                                <th class="text-center">Origen del Servicio</th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-center" id="tabla-lista">
+                                {% for p in planS %}
+                                    <tr>
+                                        <td><input id="checked" type="checkbox" checked name="check-subservicio[]" data-id="{{ p.subservicio.id }}"></td>
+                                        <td>{{ p.subservicio.servicio.departamentoServicios.empresa.nombre }}</td>
+                                        <td>{{ p.subservicio.servicio.departamentoServicios.nombre }}</td>
+                                        <td>{{ p.subservicio.servicio.nombre }}</td>
+                                        <td>{{ p.subservicio.nombre }}</td>
+                                        <td>Plan de Prospección<input name="subservicio-lista[]" class="hidden" value="{{ p.subservicio.id }}" data-id="{{ p.subservicio.id }}"></td>
+                                    </tr>
+                                {% endfor %}
+                                {% if ps2|length>0 %}
+                                    {% for t in ps2 %}
+                                        <tr>
+                                            <td><input id="checked1" type="checkbox" checked name="check-subservicionew[]" data-id="{{ t.subservicio.id }}"></td>
+                                            <td>{{ t.subservicio.servicio.departamentoServicios.empresa.nombre }}</td>
+                                            <td>{{ t.subservicio.servicio.departamentoServicios.nombre }}</td>
+                                            <td>{{ t.subservicio.servicio.nombre }}</td>
+                                            <td>{{ t.subservicio.nombre }}</td>
+                                            <td>Necesidad Detectada<input name="subservicio-listanew[]" class="hidden" value="{{ t.subservicio.id }}" data-id="{{ t.subservicio.id }}"></td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</form>
+<div class="col-md-12 mb-20">
+    {#<div class="col-md-6 text-center"><button class="btn btn-success" type="button">Guardar</button></div>#}
+    <div class="col-md-6 text-center"><button class="btn btn-warning" type="button" id="generar-pdf">Generar PDF</button></div>
+    <div class="col-md-6 text-center">
+        <button class="btn btn-warning hidden" type="submit" form="clienteProspeccion" id="enviar-propuesta">Enviar Propuesta</button>
+        <button class="btn btn-warning hidden" type="submit" form="clienteProspeccion" id="guardar-propuesta">Guardar Propuesta</button>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+canvas {
+    display: block;
+    vertical-align: bottom;
+}
+
+#particles-js {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom:0;
+    height: 100%;
+    background-size: cover;
+    background-image: url('../img/fondo.jpg');/*
+
+  background: -moz-linear-gradient(#34495E, #CCC);
+  background: -webkit-gradient(linear, 0% 100%, 0% 0%, from(#CCC), to(white));
+  background: -webkit-linear-gradient(#34495E, #CCC);*/
+}
+.content {
+    font-size:36px;
+    line-height:40px;
+    font-family:'Muli';
+    color:#ecf0f1;
+    height:100px;
+    position:absolute;
+    left:32%;
+    margin-top:20%;
+}

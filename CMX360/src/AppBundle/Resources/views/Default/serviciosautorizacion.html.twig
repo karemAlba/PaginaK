@@ -1,0 +1,89 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script>
+        oTable = $('#table-services').DataTable({
+            "paging": true,
+            "bLengthChange": true,
+            "language":{
+                "decimal":        ".",
+                "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrando _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Buscar:",
+                "searchPlaceholder": "",
+                "zeroRecords":    "Sin Resultados",
+                "paginate": {
+                    "first":      "Primero",
+                    "last":       "Último",
+                    "next":       "Siguiente",
+                    "previous":   "Anterior"
+                }
+            }
+        });
+    </script>
+
+
+{% endblock %}
+
+{% block body %}
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h6>Servicios</h6>
+                    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-services" style="width: 100%;">
+                        <thead>
+                        <tr class="text-center">
+                            <th class="text-center">Empresa</th>
+                            <th class="text-center">Departamento</th>
+                            <th class="text-center">Servicio</th>
+                            <th class="text-center">Subservicio</th>
+                            <th class="text-center">Costo</th>
+                            {% if plan.isConvenio == 1 %}
+                                <th>Costo con convenio</th>
+                            {% else %}
+                                <th class="text-center">Costo con descuento</th>
+                            {% endif %}
+                            <th class="text-center">% de Descuento</th>
+                        </tr>
+                        </thead>
+                        <tbody class="text-center">
+                        {% for p in planS %}
+                            <tr class="text-center">
+                                <th>{{ p.Subservicio.Servicio.DepartamentoServicios.Empresa }}</th>
+                                <th class="text-center">{{ p.Subservicio.Servicio.DepartamentoServicios }}</th>
+                                <th class="text-center">{{ p.Subservicio.Servicio.nombre }}</th>
+                                <th class="text-center">{{ p.Subservicio.nombre }}</th>
+                                {% for pre in precios %}
+                                    {% if pre.id == p.Subservicio.id %}
+                                        <th>${{ pre.costo|number_format(2,'.',',') }}</th>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if p.planProspeccion.isConvenio == 1 %}
+                                    <th>$ {{ p.planProspeccion.convenios.costoAutorizacion|number_format(2,'.',',') }}</th>
+                                {% else %}
+                                    <th class="text-center">${% set costo = (p.Costo * p.descuento)/100 %}{{ costo|number_format(2,'.',',') }}</th>
+                                {% endif %}
+                                <th class="text-center">{{ p.descuento }} %</th>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

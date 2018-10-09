@@ -1,0 +1,66 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    {#<link rel="stylesheet" href="{{ asset('assets/css/separate/vendor/fancybox.css') }}">#}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/lib/bootstrap-sweetalert/sweetalert.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/lib/bootstrap-sweetalert/sweetalert.js') }}"></script>
+    <script src="{{ asset('assets/js/planpreview.js') }}"></script>
+    {#<script src="{{ asset('assets/js/lib/fancybox/jquery.fancybox.js') }}"></script>#}
+    <script>
+        $(document).ready(function() {
+            $('#guardar').click(function() {
+                var lista = $('#lista-sel').val();
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('guardar-propuesta') }}',
+                    data:'lista='+lista,
+                    success:function(html){
+                        if(html==1){
+                            swal({
+                                title: "¡Listo!",
+                                text: "Se guardó la Propuesta.",
+                                type: "success",
+                                html:true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "OK!",
+                                closeOnConfirm: true,
+                                allowOutsideClick: false
+                            },function () {
+                                localStorage['condiciones']=1;
+                                window.close();
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding cliente">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 style="font-weight: bolder;">Selecciona las condiciones comerciales a agregar a la propuesta previa.</h3>
+                    <div id="lista" style="column-count: 2;">
+                        {% for c in condiciones %}
+                            <label class="mb-20"><input type="checkbox" value="{{ c.id }}"> {{ c.condiciones }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <form action="{{ path('generar-propuesta') }}" id="formulario" method="post">
+                        <input class="hidden" id="lista-sel" name="lista-sel" value="">
+                    </form>
+                    <a class="fancy hidden" href="#" id="documento"></a>
+                    <a class="btn btn-primary mt-20" href="#" id="enviar"><i class="font-icon font-icon-eye"></i> Generar Propuesta</a>
+                    <a class="btn btn-success mt-20" href="#" id="guardar"><i class="glyphicon glyphicon-floppy-save"></i> Guardar Propuesta</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

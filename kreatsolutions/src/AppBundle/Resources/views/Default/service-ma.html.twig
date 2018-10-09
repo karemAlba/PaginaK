@@ -1,0 +1,267 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block title %}Medio Ambiente | {{ parent() }}{% endblock %}
+
+{% block services %}
+    current
+{% endblock %}
+
+{% block body %}
+    <div class="about">
+        <section class="contact section_sapce2">
+            <div class="row ">
+                <div class="container">
+                    <div class="section-title margin-b30">
+                        <h2 class="wow pulse animated" data-wow-delay="300ms" data-wow-iteration="infinite" data-wow-duration="2s" style="visibility: visible; animation-duration: 2s; animation-delay: 300ms; animation-iteration-count: infinite; animation-name: pulse;">Medio Ambiente</h2>
+                    </div>
+                    <div class="text-content">
+                        <blockquote class="text-center">
+                            Alineados con lo requerido por la autoridad brindamos asesoría, tramitología y actividades diversas que cumplen con los requerimientos medio ambientales para estaciones de servicio y todo tipo de Industria.
+                        </blockquote>
+                    </div>
+
+                    <div class="col-md-3 col-sm-12 col-xs-12 mb-30">
+                        <div class="single-contact">
+                            <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios." style="color: white">
+                                <h4 style="color: white">Contáctanos</h4>
+                                <p>Estas interesado en este servicio o tienes dudas, envíanos un mensaje.</p>
+                                <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios."><h5 style="color: white"> <i class="fa fa-whatsapp"></i> WhatsApp</h5></a>
+                                <a href="{{ path('contact') }}"><h5 style="color: white"><i class="fa fa-envelope"></i> Correo Electrónico</h5></a>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Left Side End -->
+                    <div class="col-md-9 col-sm-12 col-xs-12 margin-bottom-30 wow slideInDown">
+                        <img src="{{ asset('assets/img/imagen12.png') }}" class="img-rounded margin-top-20 img-responsive" alt="service-consulting" style="border: solid 1px #007B8A; margin-top: -.5px; height: 405px; display: block; margin: auto ;">
+                    </div>
+                    <!--Accordions -->
+                    <div class="col-md-12 col-sm-12 col-xs-12 margin-bottom-30">
+                            <div class="accordion-example">
+                                <div class="panel-group" id="accordion">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseEigth">AUTORIZACION EN MATERIA DE IMPACTO AMBIENTAL (MIA)</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseEigth" class="panel-collapse collapse in">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Es un instrumento de la política ambiental, cuyo objetivo es prevenir, mitigar y restaurar los daños al medio ambiente; así como la regulación de obras o actividades para evitar o reducir su efecto negativo en el medio ambiente y la salud humana.
+                                                            <br>
+                                                            Existen diferentes modalidades:
+                                                        </p>
+                                                        <br>
+                                                        <ul class="list1">
+                                                            <li><strong>• Informe Preventivo</strong></li>
+                                                            <li><strong>• Modificación a Proyectos Autorizados (de tiempo o forma)</strong></li>
+                                                            <li><strong>• Reconocimiento de derechos adquiridos</strong></li>
+                                                            <li><strong>• Exención a la Presentación del Manifiesto de Impacto Ambiental</strong></li>
+                                                            <li><strong>• Manifiesto de Impacto Ambiental </strong></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">ANÁLISIS DE RIESGO</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseOne" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Documento que analiza las posibles
+                                                            consecuencias ambientales, sociales, de trabajo y materiales que pueden
+                                                            derivarse de las actividades realizadas o no realizadas dentro de un
+                                                            Expendio al público. Se consideran diferentes escenarios de probabilidad de
+                                                            eventos catastróficos. Con ello se generan acciones y buenas prácticas con
+                                                            la intención de minimizar los riesgos</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseNine">LICENCIA AMBIENTAL ÚNICA (LAU)</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseNine" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Es el proceso o autorización en materia de prevención y control de la contaminación atmosférica que emite la agencia (ASEA) para fuentes fijas de jurisdicción federal del sector hidrocarburos.
+                                                            Una vez obtenida LAU deberá ser actualizada cuando la Estación de Servicio cambie sus procesos, incremente su capacidad de producción o bien, cambie su razón social. Cada Estación de Servicio que se encuentre operando, debe contar con LAU, ya que emiten olores,
+                                                            gases o partículas sólidas o líquidas a la atmósfera.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">CÉDULA DE OPERACIÓN ANUAL (COA)</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseTwo" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p class="text-justify">Este trámite sirve para reportar las emisiones y transferencias de los establecimientos sujetos a reporte de competencia federal (fuentes fijas de jurisdicción federal) grandes generadores de residuos peligrosos, prestadores de servicios de manejo de residuos, con la información reportada se conforman reportes como:</p>
+                                                        <br>
+                                                        <ul class="list4">
+                                                            <li><strong>• Registro de emisiones y transferencia de contaminantes</strong></li>
+                                                            <li><strong>• Registro de emisiones de gases y compuestos de efecto invernadero</strong></li>
+                                                            <li><strong>• Parámetros contaminantes al agua</strong></li>
+                                                            <li><strong>• Residuos peligrosos generados</strong></li>
+                                                            <li><strong>• Cumplimiento de Autorizaciones municipales, estatales y federales</strong></li>
+                                                        </ul>
+                                                        <br>
+                                                        <p style="text-align: justify">Trámite a realizar por única vez y de carácter obligatorio para las Estaciones de Servicio que ya se encuentran operando y tendrán que realizar con base en la fecha del resolutivo de LAU       cumplimiento normativo y de seguimiento a dicha licencia.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTen">REGISTRO COMO GENERADOR DE RESIDUOS PELIGROSOS (RGRP)</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseTen" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Es una obligación prevista en la LGPGIR que las actividades reguladas del Sector de Hidrocarburos deben cumplir. Lo anterior, permite conocer quiénes son generadores, el tipo y cantidad de residuos generados y la categoría a la que pertenecen: grande, pequeño o micro generador.
+                                                            <br>
+                                                            Los residuos peligrosos generados en las estacione de servicio son:
+
+                                                        </p>
+                                                        <ul class="list1">
+                                                            <li><strong>• Lodos derivados de la trampa de aceites</strong></li>
+                                                            <li><strong>• Agua aceitosa del lavado de pisos y registros</strong></li>
+                                                            <li><strong>• Material impregnado de aceite (cartón, papel, trapos, etc.)</strong></li>
+                                                            <li><strong>• Botes utilizados- vacios de lubricantes y aditivos</strong></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseEleven">REGISTRO COMO GENERADOR DE RESIDUOS DE MANEJO ESPECIAL (RGME)</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseEleven" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Es una obligación prevista en la LGPGIR que las actividades reguladas del Sector de Hidrocarburos deben cumplir. Lo anterior, permite conocer quiénes son generadores, el tipo y cantidad de residuos generados y la categoría a la que pertenecen: grande, pequeño o micro generador.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!--Fin de columna -->
+
+                                        <div class="col-lg-6">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwuelve">ESTUDIO DE IMPACTO SOCIAL</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseTwuelve" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Es la identificación de las comunidades y pueblos ubicados en el área de influencia de un proyecto en materia de hidrocarburos, así como la identificación, caracterización, predicción y valoración de las consecuencias a la población que podrían derivarse del mismo y las medidas de mitigación y los planes de gestión social correspondiente.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">ANÁLISIS DE AGUAS RESIDUALES</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseFour" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <br>
+                                                        <ul class="list-unorder">
+                                                            <li style="text-align: justify"><strong>NOM-001-SEMARNAT-1996.</strong>- Este Análisis de agua aplica a las Estaciones de servicio que cuenten con pozo de absorción (donde su descarga se infiltra al subsuelo), descarga a cuerpos de agua (arroyos, ríos, lagos) y que utilizan agua para riego. Estos análisis, son enviados para validación a CONAGUA a través del SIRALAB.</li>
+                                                            <li style="text-align: justify"><strong>NOM-002-SEMARNAT-1996.</strong>- Análisis de agua que se solicita para tramites de permiso de descarga municipales.</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">REGISTRO DE DESCARGA DE AGUAS RESIDUALES</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseThree" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Tramite a realizar en dos modalidades:
+                                                            <br>
+                                                        <ol class="list6">
+                                                            <li style="text-align: justify">Estaciones de servicio rurales (carretera, caminos, rancherías). - En este caso son aquellas que cuentan con fosa séptica y pozo de absorción. Este trámite se realiza con la Comisión Nacional del Agua (CONAGUA), se lleva acabo de manera trimestral.</li>
+                                                            <li style="text-align: justify">Estaciones de servicio urbanas. - Son aquellas que se encuentran dentro de las ciudades o centros de población masivos. Cuentan con conexión al drenaje o colector municipal. Este trámite se realiza de manera anual.</li>
+                                                        </ol>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">DESAZOLVE DE FOSA SÉPTICA</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseFive" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Actividad de saneamiento de fosa séptica, se realiza por medio de un vehículo vactor que extrae los residuos semisólidos y líquidos generalmente de sanitarios. Al termino, se emite un Certificado con el que se comprueba la limpieza parcial o total de la fosa. Esta actividad se lleva acabo dependiendo de las necesidades de la Estación de servicio.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">LIMPIEZA DE TANQUE DE ALMACENAMIENTO</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseSix" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">La limpieza de los tanques de almacenamiento, consiste en el retiro de los lodos depositados en el fondo del tanque, por personal debidamente capacitado y con el equipo de seguridad completo para este tipo de actividades. Al finalizar, se deberá de entregar un certificado y manifiesto del manejo de residuos peligrosos.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven">LIMPIEZAS ECOLÓGICAS</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseSeven" class="panel-collapse collapse">
+                                                    <div class="panel-body">
+                                                        <p style="text-align: justify">Consiste en la extracción y recolección de
+                                                            sedimentos generados por las actividades de la estación de servicio. Esto
+                                                            implica:</p>
+                                                        <br>
+                                                        <ul class="list1">
+                                                            <li><strong>• Lavado y limpieza de islas y áreas de circulación</strong></li>
+                                                            <li><strong>• Limpieza de trampa de grasas</strong></li>
+                                                            <li><strong>• Recolección de residuos (botes de aceites, envases varios, trapos impregnados, etc)</strong></li>
+                                                        </ul>
+                                                        <br>
+                                                        <p style="text-align: justify">Al concluir las actividades, deberá de entregarse Certificado de Limpieza ecológica y Manifiesto de recolección y disposición final de residuos peligoros.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                            <!--End of Accordions -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+
+{% endblock %}

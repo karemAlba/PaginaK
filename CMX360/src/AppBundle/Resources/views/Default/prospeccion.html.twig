@@ -1,0 +1,53 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block body %}
+<header class="section-header">
+    <div class="tbl">
+        <div class="tbl-row">
+            <div class="tbl-cell">
+                <h2 class="inline-block">Prospección</h2>
+            </div>
+            <div class="tbl-cell text-right">
+                <nav class="inline-block" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ path('prospeccion') }}">Prospección</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Prospectar</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+<hr>
+<div class="tabs-section">
+    <div class="box-typical box-typical-padding">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="tabla" style="width: 100%;">
+            <thead>
+            <tr>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Tipo de servicio</th>
+                <th class="text-center"># de clientes</th>
+                <th class="text-center">Avance</th>
+                <th class="text-center">Detalles</th>
+            </tr>
+            </thead>
+            <tbody class="text-center">
+            {% for x in lista %}
+                <tr>
+                    <td>{{ x.nombre }}</td>
+                    <td>{{ x.tipo|integral }}</td>
+                    <td>{{ x.noClientes }}</td>
+                    {% set avance = (x.contactado/x.noClientes)*100 %}
+                    <td>
+                        <div class="progress progress-lg mb-4">
+                            <div class="progress-bar" role="progressbar" style="width: {{ avance|number_format(2, '.', ',') }}%;{% if avance==0 %}color:black;{% endif %}" aria-valuenow="{{ avance|number_format(2, '.', ',') }}" aria-valuemin="0" aria-valuemax="100">{{ avance|number_format(2, '.', ',') }}%</div>
+                        </div>
+                    </td>
+                    <td><a href="{{ path('lista-clientes-prospectar',{'id':x.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

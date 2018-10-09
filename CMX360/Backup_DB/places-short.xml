@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<places>
+  <place place_id="2039">
+    <name>ESTACION DE SERVICIO CALAFIA, S.A. DE C.V.</name>
+    <brand>PEMEX</brand>
+    <cre_id>PL/658/EXP/ES/2015</cre_id>
+    <category>GAS_STATION</category>
+    <location>
+      <address_street>Boulevard Insurgentes No. 1910</address_street>
+      <x>-116.9214</x>
+      <y>32.47641</y>
+    </location>
+  </place>
+  <place place_id="2040">
+    <name>DIGEPE, S.A. DE C.V. (07356)</name>
+    <brand>PEMEX</brand>
+    <cre_id>PL/902/EXP/ES/2015</cre_id>
+    <category>GAS_STATION</category>
+    <location>
+      <address_street>Carretera Ixmiquilpan - Palmillas Km 58.5 Huichapan</address_street>
+      <x>-99.74484</x>
+      <y>20.3037</y>
+    </location>
+  </place>
+  <place place_id="2041">
+    <name>Diaz Gas, S.A. de C.V.</name>
+    <brand>PEMEX</brand>
+    <cre_id>PL/760/EXP/ES/2015</cre_id>
+    <category>GAS_STATION</category>
+    <location>
+      <address_street>Avenida Adolfo López Mateos No. 1604</address_street>
+      <x>-106.4514</x>
+      <y>31.71947</y>
+    </location>
+  </place>
+  <place place_id="5216">
+    <name>Servicio Isaura SA de CV</name>
+    <brand>PEMEX</brand>
+    <cre_id>PL/5964/EXP/ES/2015</cre_id>
+    <category>GAS_STATION</category>
+    <location>
+      <address_street>Avenida Almoloya de Juárez S/N</address_street>
+      <x>-99.73118</x>
+      <y>19.31113</y>
+    </location>
+  </place>
+  <place place_id="3247">
+    <name>SERVICIO RIO SANTA CRUZ S.A. DE C.V.</name>
+    <brand>PEMEX</brand>
+    <cre_id>PL/1912/EXP/ES/2015</cre_id>
+    <category>GAS_STATION</category>
+    <location>
+      <address_street>Calle Río Papaloapan S/N Carretera Toluca - Almoloya de Juárez</address_street>
+      <x>-99.66897</x>
+      <y>19.3205</y>
+    </location>
+  </place>
+</places>

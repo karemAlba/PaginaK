@@ -1,0 +1,41 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block body %}
+    <div class="box-typical box-typical-padding">
+        <div class="box-typical-header">
+            <h2>Lista de empresas registradas</h2>
+        </div>
+        <div class="box-typical-body">
+            <table class="table tab">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Estatus</th>
+                        <th>Fecha de registro</th>
+                        <th class="pull-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for empresa in empresas %}
+                        <tr>
+                            <td>{{ empresa.id }}</td>
+                            <td>{{ empresa.nombre }}</td>
+                            <td>
+								{% if empresa.activo == 1 %}
+									<span class="label label-custom label-pill label-success">Activa</span>
+								{% else %}
+									<span class="label label-custom label-pill label-danger">Inactiva</span>
+								{% endif %}
+							</td>
+							<td>{{ empresa.fechaAlta|date('d-M-Y') }}</td>
+                            <td class="pull-right">
+								<a href="{{ path('empresas.edit',{'id':empresa.id}) }}" class="btn btn-primary btn-sm">editar</a>
+							</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

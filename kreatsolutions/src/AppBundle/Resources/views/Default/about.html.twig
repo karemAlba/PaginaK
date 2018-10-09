@@ -1,0 +1,181 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block javascripts %}
+    <script>
+        // ______________ TABS
+        $('#example-tabs').responsiveTabs({
+            startCollapsed: 'accordion'
+        });
+
+        function cambiar_img1(){
+            document.getElementById("cambio").src = '{{ asset('assets/img/kreat.png') }}';
+        }
+
+        function cambiar_img2() {
+            document.getElementById("cambio").src = '{{ asset('assets/img/Diagrama Kreat.png') }}'
+        }
+
+    </script>
+{% endblock %}
+
+{% block about %}
+    current
+{% endblock %}
+
+{% block body %}
+    <div class="about">
+        <div class="section_sapce section_primary cover-image2" data-image-src="{{ asset('assets/img/about.png') }}">
+            <div class="section-title ">
+                <h2>Conózcanos</h2>
+            </div>
+        </div>
+        <section class="testimonials section_gray wow slideInDown">
+            <div class="row">
+                <div class="container">
+                    <div class="section-title  margin-b50 margin-top-45">
+                        <h2>¿Quiénes Somos?</h2>
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <blockquote class="text-justify">Kreatsolutions es una empresa mexicana de consultoria especializada en el sector de hidrocarburos. A la
+                            vanguardia en la prestación de servicios de calidad dentro del sector energetico.
+                            <br>Somos una empresa sólida, dinamica e innovadora; comprometida en percibir las necesidades del cliente y altamente
+                            profesional en determinar las herramientas adecuadas para realizar sus proyectos.
+                        </blockquote>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <img class="img-responsive" src="{{ asset('assets/img/kreat-text.png') }}">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="row">
+            <div class="container wow slideInRight margin-b30">
+                <div class="section-title margin-b30 margin-t80">
+                    <h2>Nos caracterizamos por</h2>
+                </div>
+                <div class="col-lg-4">
+                    <img src="{{ asset('assets/img/kreat.png') }}" id="cambio" alt="KreatSolutions" class="img-responsive">
+                </div>
+
+                <div class="col-lg-8">
+                    <div id="example-tabs">
+                        <ul>
+                            <li onclick="cambiar_img1()"><a href="#tab1">Misión </a></li>
+                            <li onclick="cambiar_img1()"><a href="#tab2">Visión</a></li>
+                            <li onclick="cambiar_img2()"><a href="#tab3">Valores</a></li>
+                            <li onclick="cambiar_img1()"><a href="#tab4">Política de calidad</a></li>
+                        </ul>
+                        <!-- 1st tab  -->
+                        <div id="tab1">
+                            <p class="text-center">Brindar herramientas logísticas, administrativas, técnicas y de asesoría actualizada dentro del marco legal vigente,
+                                que satisfagan las necesidades de nuestros clientes de manera competitiva y cualitativa.
+                            </p>
+                        </div>
+                        <!-- 2nd tab  -->
+                        <div id="tab2">
+                            <p class="text-center">Consolidarnos como la empresa número uno que brinde servicios de asesoría y tramitología que responde efectivamente a las necesidades de nuestros clientes.
+                            </p>
+                        </div>
+                        <!-- 3rd tab  -->
+                        <div id="tab3">
+                            <div class ="row margin-top-10">
+                                <div class="col-md-3 col-md-push-3 margin-top-30">
+                                    <ul class="list4">
+                                        <li><i class="fa fa-check"></i> Compromiso</li>
+                                        <li><i class="fa fa-check"></i> Lealtad</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6 col-md-push-3 margin-top-30">
+                                    <ul class="list4">
+                                        <li><i class="fa fa-check"></i> Innovación</li>
+                                        <li><i class="fa fa-check"></i> Responsabilidad</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab4">
+                            <p class="text-center">Ésta se manifiesta mediante nuestro firme compromiso con los clientes de satisfacer plenamente sus requerimientos y expectativas; para ello, garantizamos impulsar una cultura de calidad basada en los valores de ética, confianza y desarrollo del recurso humano solidario, con el compromiso de mejora y seguridad en nuestro servicio.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="testimonials section_gray">
+            <div class="row">
+                <div class="container wow slideInLeft">
+                    <div class="section-title margin-b30 margin-top-45">
+                        <h2>Nuevos servicios</h2>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="service-block">
+                            <div id="ribbon">
+                                <span id="content"><span class="bold">
+                                        <strong>Sistema de Gestión de Medición</strong>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="inner-padd clearfix">
+                                <div class="service-block-content">
+                                    <p><strong>RES/811/2015 </strong></p>
+                                    <img src="{{ asset('assets/img/Sistema de Gestión de Medición.jpg') }}" alt="Sistema de Medición" class="margin-bottom-20 img-responsive img-rounded">
+
+                                    <ol class="list6">
+                                        <li><strong>Desarrollo</strong></li>
+                                        <li><strong>Implementación</strong></li>
+                                        <li><strong>Capacitación</strong></li>
+                                        <li><strong>Certificado</strong></li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="service-block">
+                            <div id="ribbon1">
+                                <span id="content"><span class="bold">
+                                        <strong>Terminales de Almacenamiento </strong>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="inner-padd clearfix">
+                                <div class="service-block-content">
+                                    <p><strong>NOM-006-ASEA-2017</strong></p>
+                                    <img src="{{ asset('assets/img/Terminal de almacenamiento.jpg') }}" alt="Sistema de Medición" class="margin-bottom-20 img-responsive img-rounded">
+                                    <ol class="list6">
+                                        <li><strong>Diseño</strong></li>
+                                        <li><strong>Construcción</strong></li>
+                                        <li><strong>Pre-arranque</strong></li>
+                                        <li><strong>Operación y mantenimiento</strong></li>
+                                        <li><strong>Cumplimiento a dictámenes</strong></li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {#<div class="col-lg-4">#}
+                        {#<div class="service-block">#}
+                            {#<div id="ribbon2">#}
+                                {#<span id="content"><span class="bold">#}
+                                        {#<strong>Diseño y Construcción</strong>#}
+                                    {#</span>#}
+                                {#</span>#}
+                            {#</div>#}
+                            {#<div class="inner-padd clearfix">#}
+                                {#<div class="service-block-content">#}
+                                    {#<h4></h4>#}
+                                    {#<ol class="list6">#}
+                                        {#<li><strong>Diseño, construcción y remodelación</strong></li>#}
+                                        {#<li><strong>Cambio de imagen (por cambio de identidad o marca)</strong></li>#}
+                                        {#<li><strong>DUE diligence (compa, venta, renta o abanderamiento)</strong></li>#}
+                                        {#<li><strong>NOM-005-ASEA-2016 cumplimeinto a dictamenes en operación y mantenimiento</strong></li>#}
+                                    {#</ol>#}
+                                {#</div>#}
+                            {#</div>#}
+                        {#</div>#}
+                    {#</div>#}
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

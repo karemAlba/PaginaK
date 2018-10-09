@@ -1,0 +1,492 @@
+{% extends ('@App/layout.html.twig') %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/lib/bootstrap-sweetalert/sweetalert.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/lib/bootstrap-sweetalert/sweetalert.js') }}"></script>
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script type="text/javascript">
+        function clearFields() {
+            $('#empresa-error').addClass('hidden');
+            $("#empresa option[value='null']").prop('selected', true);
+            $("#core_bundle_personales_type_generos option[value='null']").prop('selected',true);
+            $('#core_bundle_personales_type_estatusLaborales option[value="null"]').prop('selected',true);
+            $("#departamento option[value='null']").prop('selected', true);
+            $('#fcargo').addClass('hidden');
+            $('#departamento-error').addClass('hidden');
+            $('#cargo-error').addClass('hidden');
+            $('#genero-error').addClass('hidden');
+            $('#estatus-error').addClass('hidden');
+            $('#core_bundle_personales_type_nombre').val('');
+            $('#core_bundle_personales_type_apPaterno').val('');
+            $('#core_bundle_personales_type_apMaterno').val('');
+            $('#core_bundle_personales_type_telefono').val('');
+            $('#core_bundle_personales_type_noi').val('');
+            $('#core_bundle_personales_type_rfc').val('');
+            $('#core_bundle_personales_type_curp').val('');
+            $('#core_bundle_personales_type_correo').val('');
+            $('#core_bundle_personales_type_edad').val('');
+            $('#core_bundle_personales_type_fechaIngreso').val('');
+        }
+        $('a[href="#tabs-2-tab-2"]').click(function () {
+            clearFields();
+            $('#error-principal').html('');
+            $('#error-noi').html('');
+            $('#error-rfc').html('');
+            $('#error-curp').html('');
+            $('#error-nombre').html('');
+            $('#error-apaterno').html('');
+            $('#error-amaterno').html('');
+            $('#error-email').html('');
+            $('#error-telefono').html('');
+            $('#error-fecha').html('');
+            $('#error-edad').html('');
+            $('#departamento').append('<option disabled selected value="null">Selecciona un Departamento</option>');
+            $('#core_bundle_personales_type_generos').append('<option disabled selected value="null">Selecciona Genero</option>');
+            $('#core_bundle_personales_type_estatusLaborales').append('<option disabled selected value="null">Selecciona Estatus</option>');
+            $('#breadcrumb').html('Actualización');
+        });
+        $('a[href="#tabs-2-tab-1"]').click(function () {
+            $('#breadcrumb').html('Registro');
+        });
+        function validate(evt) {
+            var theEvent = evt || window.event;
+            var key = theEvent.keyCode || theEvent.which;
+            key = String.fromCharCode( key );
+            var regex = /[0-9]/;
+            if( !regex.test(key) ) {
+                theEvent.returnValue = false;
+                if(theEvent.preventDefault) theEvent.preventDefault();
+            }
+        }
+        $(document).ready(function(){
+            $('#tabla').DataTable( {
+                /*initComplete: function () {
+                    this.api().columns().every( function () {
+                        var column = this;
+                        var select = $('<select class="form-control"><option value="">Selecciona una opción</option></select>')
+                            .appendTo( $(column.footer()).empty() )
+                            .on( 'change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search( val ? '^'+val+'$' : '', true, false )
+                                    .draw();
+                            } );
+
+                        column.data().unique().sort().each( function ( d, j ) {
+                            select.append( '<option value="'+d+'">'+d+'</option>' )
+                        } );
+                    } );
+                },*/
+                "language":{
+                    "decimal":        ".",
+                    "emptyTable":     "No hay Registros",
+                    "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                    "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Mostrando _MENU_ registros",
+                    "loadingRecords": "Cargando...",
+                    "processing":     "Procesando...",
+                    "search":         "Buscar:",
+                    "searchPlaceholder": "Buscar Persona",
+                    "zeroRecords":    "Sin coincidencias",
+                    "paginate": {
+                        "first":      "Primero",
+                        "last":       "Último",
+                        "next":       "Siguiente",
+                        "previous":   "Anterior"
+                    }
+                }
+            } );
+            $(':submit').click(function (e) {
+                if($('#departamento option:selected').prop('disabled') == true){
+                    e.preventDefault();
+                    $('#departamento-error').removeClass('hidden');
+                }else{
+                    $('#departamento-error').addClass('hidden');
+                }
+                if($('#cargo option:selected').prop('disabled') == true){
+                    e.preventDefault();
+                    $('#cargo-error').removeClass('hidden');
+                }else{
+                    $('#cargo-error').addClass('hidden');
+                }
+                if($('#core_bundle_personales_type_generos option:selected').prop('disabled') == true){
+                    e.preventDefault();
+                    $('#genero-error').removeClass('hidden');
+                }else{
+                    $('#genero-error').addClass('hidden');
+                }
+                if($('#core_bundle_personales_type_estatusLaborales option:selected').prop('disabled') == true){
+                    e.preventDefault();
+                    $('#estatus-error').removeClass('hidden');
+                }else{
+                    $('#estatus-error').addClass('hidden');
+                }
+            });
+            {% if not form.vars.valid %}
+                $('#fdepartamento').removeClass('hidden');
+                $('#fcargo').removeClass('hidden');
+            {% endif %}
+            $('#core_bundle_personales_type_generos').on('change',function () {
+                $('#genero-error').addClass('hidden');
+            });
+            $('#core_bundle_personales_type_estatusLaborales').on('change',function () {
+                $('#estatus-error').addClass('hidden');
+            });
+            $('#departamento').on('change',function(){
+                $('#departamento-error').addClass('hidden');
+                var departamentoID = $(this).val();
+                if(departamentoID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('departamentos-json') }}',
+                        data:'departamento='+departamentoID,
+                        success:function(html){
+                            $('#fcargo').removeClass('hidden');
+                            $('#cargo').find('option').remove();
+                            $('#cargo').append('<option disabled selected value="null">Selecciona Cargo</option>');
+                            $.each(html, function(i,item) {
+                                $('#cargo').append('<option value="'+item.id+'">'+item.cargo+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+            {% if not form.vars.valid %}
+
+            {% else %}
+                $('#core_bundle_personales_type_generos').append('<option disabled selected value="null">Selecciona Genero</option>');
+                $('#core_bundle_personales_type_estatusLaborales').append('<option disabled selected value="null">Selecciona Estatus</option>');
+            {% endif %}
+        });
+    </script>
+    {% if save == 1 %}
+        <script type="text/javascript">
+            $(document).ready(function () {
+                swal({
+                    title: "Registro Exitoso!",
+                    text: "Se ha guardado la información del Personal.",
+                    type: "success",
+                    html:true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK!",
+                    closeOnConfirm: true,
+                    allowOutsideClick: false
+                });
+                clearFields();
+            });
+        </script>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Registro y Actualización</h2>
+
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regPersonal') }}">Personal</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb">Registro</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+
+
+    <section class="tabs-section">
+        <div class="tabs-section-nav">
+            <div class="tbl">
+                <ul class="nav" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#tabs-2-tab-1" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Registro
+                                <span class="label label-pill label-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-2-tab-2" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Actualización
+                                <span class="label label-pill label-danger"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div><!--.tabs-section-nav-->
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="tabs-2-tab-1">
+                {% if not form.vars.valid %}
+                    <p style="font-size: 16px;" class="help-block" id="error-principal">* Algunos campos presentan errores.</p>
+                {% endif %}
+                {{ form_start(form,  {'action':path('regPersonal')}) }}
+                <div class="row">
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">Nombre</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.nombre, {'attr': {'class': 'form-control', 'placeholder': 'Nombre' } }) }}
+                                {% if form.nombre.vars.errors|length > 0 %}
+                                    <p class="help-block" id="error-nombre">
+                                        {% for error in form.nombre.vars.errors %}
+                                            {{ error.message }} <br/>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">Apellido Paterno</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.apPaterno, {'attr': {'class': 'form-control', 'placeholder': 'Apellido paterno' } }) }}
+                                {% if form.apPaterno.vars.errors|length > 0 %}
+                                    <p class="help-block" id="error-apaterno">
+                                        {% for error in form.apPaterno.vars.errors %}
+                                            {{ error.message }} <br/>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">Apellido Materno</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.apMaterno, {'attr': {'class': 'form-control', 'placeholder': 'Apellido materno' } }) }}
+                                {% if form.apMaterno.vars.errors|length > 0 %}
+                                    <p class="help-block" id="error-amaterno">
+                                        {% for error in form.apMaterno.vars.errors %}
+                                            {{ error.message }} <br/>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">Teléfono</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.telefono, {'attr': {'class': 'form-control', 'placeholder': 'Teléfono','onkeypress':'validate(event)' } }) }}
+                                {% if form.telefono.vars.errors|length > 0 %}
+                                    <p class="help-block" id="error-telefono">
+                                        {% for error in form.telefono.vars.errors %}
+                                            {{ error.message }} <br/>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group" id="fdepartamento">
+                            <label class="form-label semibold" for="departamento">Departamento</label>
+                            <div class="col-sm-10">
+                                <select id="departamento" name="departamento" class="form-control" required>
+                                    {% if not form.vars.valid %}
+                                        {% for d in listaD %}
+                                            <option {% if d.id == departamento %}selected{% endif %} value="{{ d.id }}">{{ d.nombre }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option disabled selected value="null">Selecciona un Departamento</option>
+                                        {% for d in listaD %}
+                                            <option value="{{ d.id }}">{{ d.nombre }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                                <p class="help-block hidden" id="departamento-error">Selecciona Departamento</p>
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group hidden" id="fcargo">
+                            <label class="form-label semibold" for="cargo">Cargo</label>
+                            <div class="col-sm-10">
+                                <select id="cargo" name="cargo" class="form-control" required>
+                                    <option>Selecciona Cargo</option>
+                                    {% if not form.vars.valid %}
+                                        {% for c in listaC %}
+                                            <option {% if c.id == cargo %}selected{% endif %} value="{{ c.id }}">{{ c.nombre }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                                <p class="help-block hidden" id="cargo-error">Selecciona Cargo</p>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <fieldset class="form-group">
+                                    <label class="form-label semibold" for="exampleInput">Número NOI</label>
+                                    <div class="col-sm-12">
+                                        {{ form_widget(form.noi, {'attr': {'class': 'form-control', 'placeholder': 'Número NOI' } }) }}
+                                        {% if form.noi.vars.errors|length > 0 %}
+                                            <p class="help-block" id="error-noi">
+                                                {% for error in form.noi.vars.errors %}
+                                                    {{ error.message }} <br/>
+                                                {% endfor %}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-5">
+                                <fieldset class="form-group">
+                                    <label class="form-label semibold" for="exampleInput">RFC</label>
+                                    <div class="col-sm-12">
+                                        {{ form_widget(form.rfc, {'attr': {'class': 'form-control', 'placeholder': 'RFC' } }) }}
+                                        {% if form.rfc.vars.errors|length > 0 %}
+                                            <p class="help-block" id="error-rfc">
+                                                {% for error in form.rfc.vars.errors %}
+                                                    {{ error.message }} <br/>
+                                                {% endfor %}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">CURP</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.curp, {'attr': {'class': 'form-control', 'placeholder': 'CURP' } }) }}
+                                {% if form.curp.vars.errors|length > 0 %}
+                                    <p class="help-block" id="error-curp">
+                                        {% for error in form.curp.vars.errors %}
+                                            {{ error.message }} <br/>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">Email</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.correo, {'attr': {'class': 'form-control', 'placeholder': 'E-mail' } }) }}
+                                {% if form.correo.vars.errors|length > 0 %}
+                                    <p class="help-block" id="error-email">
+                                        {% for error in form.correo.vars.errors %}
+                                            {{ error.message }} <br/>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">Edad</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.edad, {'attr': {'class': 'form-control', 'placeholder': 'Edad' } }) }}
+                                {% if form.edad.vars.errors|length > 0 %}
+                                    <p class="help-block" id="error-edad">
+                                        {% for error in form.edad.vars.errors %}
+                                            {{ error.message }} <br/>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">Género</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.generos, {'attr': {'class': 'form-control', 'placeholder': 'Genero' } }) }}
+                                <p class="help-block hidden" id="genero-error">Selecciona Género</p>
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">Estatus</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.estatusLaborales, {'attr': {'class': 'form-control', 'placeholder': 'Estatus' } }) }}
+                                <p class="help-block hidden" id="estatus-error">Selecciona Estatus</p>
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label class="form-label semibold" for="exampleInput">Fecha de Ingreso</label>
+                            <div class="col-sm-10">
+                                {{ form_widget(form.fechaIngreso, {'attr': {'class': 'form-control','type':'date', 'placeholder': 'Fecha de Ingreso' } }) }}
+                                {% if form.fechaIngreso.vars.errors|length > 0 %}
+                                    <p class="help-block" id="error-fecha">
+                                        {% for error in form.fechaIngreso.vars.errors %}
+                                            {{ error.message }} <br/>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        {{ form_widget(form.registrar,{'attr': {'class': 'btn btn-primary default'}}) }}
+                        <input type="reset" value="Cancelar" class="btn btn-danger" />
+                    </div>
+                </div>
+
+                {{ form_end(form) }}
+            </div><!--.tab-pane-->
+            <div role="tabpanel" class="tab-pane fade" id="tabs-2-tab-2">
+                <style>
+                    #tabla td{
+                        text-align: center;
+                    }
+                </style>
+                <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="tabla" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <td>Nombre</td>
+                            <td>RFC</td>
+                            <td>CURP</td>
+                            <td>NOI</td>
+                            <td>Departamento</td>
+                            <td>Cargo</td>
+                            <td>Detalle</td>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for p in lista %}
+                        <tr class="has-text-centered">
+                            <td>{{ p.nombre }} {{ p.apPaterno }} {{ p.apMaterno }}</td>
+                            <td>{{ p.rfc }}</td>
+                            <td>{{ p.curp }}</td>
+                            <td>{{ p.noi }}</td>
+                            {% for e in match %}
+                                {% if e.personales == p %}
+                                    <td>{{ e.cargos.departamentos.nombre }}</td>
+                                    <td>{{ e.cargos.nombre }}</td>
+                                {%  endif %}
+                            {% endfor %}
+                            <td>
+                                <a href="{{ path('editPersonal',{'id':p.id}) }}" class="button is-success">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    {#<tfoot>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Empresa</th>
+                            <th>Detalle</th>
+                        </tr>
+                    </tfoot>#}
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}

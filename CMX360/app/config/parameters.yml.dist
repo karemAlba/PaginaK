@@ -1,0 +1,12 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_host: 127.0.0.1
+    database_port: 3306
+    database_name: cmx360_online
+    database_user: root
+    database_password: root
+    mailer_transport: smtp
+    mailer_host: cmx360.com.mx
+    mailer_user: no-reply@cmx360.com.mx
+    mailer_password: Cmx2018*
+    secret: ThisTokenIsNotSoSecretChangeIt

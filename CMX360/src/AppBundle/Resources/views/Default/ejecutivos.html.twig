@@ -1,0 +1,181 @@
+{% extends ('@App/layout.html.twig') %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/lib/bootstrap-sweetalert/sweetalert.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/lib/bootstrap-sweetalert/sweetalert.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/ejecutivos.js') }}" type="text/javascript"></script>
+    <script type="text/javascript">
+        $("#generar").click(function () {
+            $.ajax({
+                type:'POST',
+                url:'{{ path('genPassword') }}',
+                success:function(html){
+                    $("#core_bundle_ejecutivos_type_contrasena").attr('value',html);
+                }
+            });
+        });
+    </script>
+    {% if save == 1 %}
+        <script type="text/javascript">
+            $(document).ready(function () {
+                swal({
+                    title: "Registro Exitoso!",
+                    text: "Se ha guardado la información del Asesor.",
+                    type: "success",
+                    html:true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK!",
+                    closeOnConfirm: true,
+                    allowOutsideClick: false,
+
+                },function () {
+                    window.location = "{{ path('regEjecutivos') }}";
+                });
+                clearFields();
+            });
+        </script>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Registro y Actualización </h2>
+
+                </div>
+                <div class="tbl-cell text-right" >
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regEjecutivos') }}">Asesores</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb1">Registro</li>
+                        </ol>
+                    </nav>
+                </div>
+                {#<div class="tbl-cell text-right" id="breadcrumb2">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regEjecutivos') }}">Asesores</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Actualización</li>
+                        </ol>
+                    </nav>
+                </div>#}
+            </div>
+        </div>
+    </header>
+    <hr>
+
+
+    <section class="tabs-section">
+        <div class="tabs-section-nav">
+            <div class="tbl">
+                <ul class="nav" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#tabs-2-tab-1" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Registro
+                                <span class="label label-pill label-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-2-tab-2" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Actualización
+                                <span class="label label-pill label-danger"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div><!--.tabs-section-nav-->
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="tabs-2-tab-1">
+
+                {{ form_start(form,  {'action':path('regEjecutivos')}) }}
+
+                <fieldset class="form-group">
+                    <label class="form-label semibold" for="exampleInput">Asesores</label>
+                    <div class="col-sm-10">
+                        <select id="ejecutivo" name="ejecutivo" class="form-control select2">
+                            <option disabled selected value="null">Seleccionar Asesor</option>
+                            {% for e in ejecutivos %}
+                                <option value="{{ e.id }}" data-nombre="{{ e.nombre }}" data-apellido="{{ e.apellido }}" {% if id is defined and e.id == id %} selected {% endif %}>{{ e.nombrec }}</option>
+                            {% endfor %}
+                        </select>
+                        <p class="help-block hidden" id="ejecutivo-error">Selecciona Asesor</p>
+                    </div>
+                </fieldset>
+                <fieldset class="form-group">
+                    <label class="form-label semibold" for="exampleInput">Usuario</label>
+                    <div class="col-sm-10">
+                        {{ form_widget(form.nombre, {'attr': {'class': 'form-control', 'placeholder': 'Usuario','readonly':'readonly'} }) }}
+                    </div>
+                </fieldset>
+                <fieldset class="form-group">
+                    <label class="form-label semibold" for="exampleInput">Contraseña</label>
+                    <div class="col-sm-5">
+                        {{ form_widget(form.contrasena, {'attr': {'class': 'form-control', 'placeholder': 'Contraseña','readonly':'readonly'} }) }}
+                        <p class="help-block hidden" id="password">Genera una Contraseña</p>
+                    </div>
+                    <div class="col-sm-3">
+                        <a id="generar" class="btn btn-primary">Generar Contraseña</a>
+                    </div>
+                </fieldset>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-12">
+                        {{ form_widget(form.ingresar,{'attr': {'class': 'btn btn-primary default'}}) }}
+                    </div>
+                </div>
+
+                {{ form_end(form) }}
+            </div><!--.tab-pane-->
+            <div role="tabpanel" class="tab-pane fade" id="tabs-2-tab-2">
+                <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="tabla" style="width: 100%;">
+                    <thead>
+
+                    <tr class="text-center">
+                        <td>Nombre</td>
+                        <td>Apellidos</td>
+                        <td>Usuario</td>
+                        <td>Detalle</td>
+
+                    </tr>
+                    </thead>
+
+                    <tbody class="text-center">
+
+                    {% for u in usu %}
+                        {% if u.id in white %}
+                            <tr class="has-text-center">
+                                <td>{{ u.personales.nombre }}</td>
+                                <td>{{ u.personales.apPaterno }} {{ u.personales.apMaterno }}</td>
+                                <td>{{ u.nombre }}</td>
+                                <td>
+                                    <a href="{{ path('editEjecutivo',{'id':u.id}) }}" class="button is-success">
+                                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                        {% endif %}
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div><!--.tab-pane-->
+        </div><!--.tab-content-->
+    </section><!--.tabs-section-->
+
+
+
+{% endblock %}

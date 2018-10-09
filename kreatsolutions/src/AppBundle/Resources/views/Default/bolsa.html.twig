@@ -1,0 +1,116 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block javascripts %}
+    <script>
+        // $(document).on("ready", function(e) {
+        //     // ______________ IMAGE VIEW
+        //     $(".js-img-viwer").smartPhoto();
+        //
+        // });
+        //
+        // $("#asesor").click(function () {
+        //     $('#contacto').show();
+        //     $('html,body').animate({
+        //         scrollTop: $("#dezplace").offset().top
+        //     }, 2000);
+        //     $("#puesto").val("Asesor ejecutivo");
+        // });
+        //
+        // $("#quimico").click(function () {
+        //     $('html,body').animate({
+        //         scrollTop: $("#dezplace").offset().top
+        //     }, 2000);
+        //     $("#puesto").val("Ingeniero Químico");
+        // });
+
+    </script>
+{% endblock %}
+
+
+{% block body %}
+    <div class="about">
+        <div class="row margin-top-60">
+            <div class="container wow slideInRight">
+                <!--Title Styles -->
+                <div class="section-title margin-b30 margin-top-5 ">
+                    <h2>Bolsa de trabajo<span>¿Quieres unirte a nuestro equipo de trabajo?</span></h2>
+                </div>
+                {#<div class="row">#}
+                    {#<!-- Service -->#}
+                    {#<div class="col-sm-3 col-md-3 margin-b30">#}
+                        {#<div class="text-center boxes1 border-dashed padding15">#}
+                            {#<!-- Image -->#}
+                            {#<a href="{{ asset('assets/img/bolsa1-1.png') }}" class="js-img-viwer" data-caption="Solicitamos asesores" data-id="raion">#}
+                                {#<img src="{{ asset('assets/img/bolsa1.png') }}" alt="Solicitamos asesores"/>#}
+                            {#</a>#}
+                            {#<!-- Title -->#}
+                            {#<h4>Solicitamos asesores</h4>#}
+                            {#<!-- Contacto -->#}
+
+                            {#<a href="#" class="btn btn-primary btn-lg btn-block" id="asesor" name="asesor">Contáctanos</a>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<!-- Service -->#}
+                    {#<div class="col-sm-3 col-md-3 margin-b30">#}
+                        {#<div class="text-center boxes1 border-dashed padding15">#}
+                            {#<!-- Image -->#}
+                            {#<a href="{{ asset('assets/img/bolsa2-2.png') }}" class="js-img-viwer" data-caption="Solicitamos Ing. Químicos" data-id="raion">#}
+                                {#<img src="{{ asset('assets/img/bolsa2.png') }}" alt="Solicitamos Ing. Químicos"/>#}
+                            {#</a>#}
+                            {#<!-- Title -->#}
+                            {#<h4>Solicitamos Ing. químicos</h4>#}
+                            {#<!-- Contacto -->#}
+                            {#<a href="#" class="btn btn-primary btn-lg btn-block" id="quimico" name="quimico">Contáctanos</a>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</div>#}
+                <!--Title Styles -->
+
+                <!--Contact-->
+                <div class="row" id="contacto" >
+                    {#<div class="section-title margin-b30 margin-top-5" >#}
+                        {#<h2>Contáctanos<span>Deja tus datos y un asesor se pondra en contácto contigo a la brevedad.</span></h2>#}
+                    {#</div>#}
+                    <div class="row">
+                        <!-- Service -->
+                        <div class="col-sm-12 col-md-12 margin-b30" id="dezplace">
+                            <div class="text-center boxes1 border-dashed padding15" >
+                                <form  action="form/send.php" method="post" class="contact_form contactForm validateIt" data-email-subject="Formulario de Contacto" data-show-errors="true">
+                                    <div class="row" >
+                                        {#<div class="form-group text-left">#}
+                                            {#<label class="">Puesto participante</label>#}
+                                            {#<input disabled="disabled" required type="text"  id="puesto" name="puesto" class="name form-control" placeholder="Puesto participante">#}
+                                        {#</div>#}
+                                        <div class="form-group text-left">
+                                            <label class="">Nombre</label>
+                                            <input required type="text" name="field[]" class="name form-control" placeholder="Ingresa tu nombre">
+                                        </div>
+                                        <div class="form-group text-left">
+                                            <label class="">Correo Electrónico</label>
+                                            <input required type="email" name="field[]" class="email form-control" placeholder="Ingresa tu correo electrónico">
+                                        </div>
+                                        <div class="form-group text-left">
+                                            <label class="">Télefono</label>
+                                            <input required type="tel" name="field[]" class="phonenumber form-control" placeholder="Ingresa tu teléfono">
+                                        </div>
+                                        <div class="form-group text-left">
+                                            <label for="">Mensaje</label>
+                                            <textarea class="form-control" rows="4" name="field[]" required placeholder="Ingresa tu mensaje"></textarea>
+                                        </div>
+                                        <div class="form-group text-left">
+                                            <label for="adjuntar archivo">Adjuntar Curriculum:</label>
+                                            <input type='file' name='archivo1' id='archivo1' placeholder="Ingresa tu C.V." required>
+                                        </div>
+                                        <button type="submit" class="submit btn btn-block btn-primary">Enviar Datos</button>
+                                    </div>
+                                </form>
+                                <!--End Contact-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

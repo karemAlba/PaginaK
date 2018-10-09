@@ -1,0 +1,54 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Consulta de Usuario</h2>
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regUsuarios') }}">Usuarios</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Consulta de Usuario</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding cliente">
+            <h4>Usuario</h4>
+            <hr>
+            <div class="row">
+                <div class="col-lg-10">
+                    <h6>Nombre</h6>
+                    <p>{{ usuario.personales.nombre|capitalize }} {{ usuario.personales.apPaterno|capitalize }} {{ usuario.personales.apMaterno|capitalize }}</p>
+                </div>
+                <div class="col-lg-5">
+                    <h6>Usuario</h6>
+                    <p>{{ usuario.nombre }}</p>
+                </div>
+                <div class="col-lg-5">
+                    <h6>Contraseña</h6>
+                    <p>{{ usuario.contrasena }}</p>
+                </div>
+                <div class="col-lg-5">
+                    <h6>Perfil</h6>
+                    <p>{{ persona[0].perfiles.nombre }}</p>
+                </div>
+                <div class="col-lg-5">
+                    <h6>Privilegio(s)</h6>
+                    <p>
+                        {% for p in persona %}
+                            {{ p.privilegios.nombre }}<br>
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

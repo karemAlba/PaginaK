@@ -1,0 +1,1662 @@
+{% extends ('@App/layout.html.twig') %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/separate/elements/steps.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/datatables.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/lib/bootstrap-sweetalert/sweetalert.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plannew.js') }}"></script>
+    <script src="{{ asset('assets/js/lib/bootstrap-sweetalert/sweetalert.js') }}"></script>
+    <script src="{{ asset('assets/js/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/moment/moment-precise-range.js') }}"></script>
+    <script src="{{ asset('assets/js/planconsulta.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.boton-enviar').attr('disabled',true);
+            window.setInterval(function(){
+                var yetVisited = localStorage['condiciones'];
+                if (yetVisited==1) {
+                    $('#save-plan').removeClass('disabled');
+                    $('.boton-enviar').attr('disabled',false);
+                }
+            }, 500);
+            $('.boton-enviar').click(function() {
+                localStorage['condiciones']=0;
+            });
+            {% if datos['condicionesPropuesta'] is not defined %}
+            localStorage['condiciones']=0;
+            {% endif %}
+            {% if datos is not null %}
+            var lista = '{{ datos['lista-clientes'] }}';
+            var total = 0;
+            lista = lista.split('+');
+            var noC = 0;
+            $.each(lista, function(index, val) {
+                if(val!=''){
+                    noC = noC+1;
+                }
+            });
+            $('#noClientes').val(noC);
+            $('#planType_numeroAsesores').val(noC);
+            {% endif %}
+            $('#save-plan').click(function() {
+                {#window.location = "{{ path('guardar-plan') }}";#}
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('guardar-plan') }}',
+                    data:'id=1',
+                    success:function(html){
+                        if(html==1){
+                            swal({
+                                title: "¡Listo!",
+                                text: "Se guardó el Plan de Prospección.",
+                                type: "success",
+                                html:true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "OK!",
+                                closeOnConfirm: true,
+                                allowOutsideClick: false
+                            },function () {
+                                window.location = "{{ path('regPlan') }}";
+                            });
+                        }
+                    }
+                });
+            });
+            $('#planType_zonas').on('change',function(){
+                var zonaID = $(this).val();
+                $('#planType_municipios').find('option').remove();
+                $('#planType_municipios').append('<option disabled selected value="null">Seleccione Municipio</option>');
+                $('#error-cp').addClass('hidden');
+                $('#planType_codigoPostal').val('');
+                if(zonaID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('estados-json') }}',
+                        data:'zona='+zonaID,
+                        success:function(html){
+                            $('#planType_estados').find('option').remove();
+                            $('#planType_estados').append('<option disabled selected value="null">Seleccione Estado</option>');
+                            $.each(html, function(i,item) {
+                                $('#planType_estados').append('<option value="'+item.id+'">'+item.estado+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+            $('#planType_estados').on('change',function(){
+                var estadoID = $(this).val();
+                $('#planType_municipios').find('option').remove();
+                $('#planType_municipios').append('<option disabled selected value="null">Seleccione Municipio</option>');
+                $('#error-cp').addClass('hidden');
+                $('#planType_codigoPostal').val('');
+                if(estadoID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('municipios-json') }}',
+                        data:'estado='+estadoID,
+                        success:function(html){
+                            $('#planType_municipios').find('option').remove();
+                            $('#planType_municipios').append('<option disabled selected value="null">Seleccione Municipio</option>');
+                            $.each(html, function(i,item) {
+                                $('#planType_municipios').append('<option value="'+item.id+'">'+item.municipio+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+
+            $('#planType_zonas').append('<option disabled selected value="null">Seleccione Zona</option>');
+            {% for z in zonas %}
+                $('#planType_zonas').append('<option value="{{ z.id }}">{{ z.nombre }}</option>');
+            {% endfor %}
+            {% for e in estados %}
+                $('#planType_estados').append('<option value="{{ e.id }}">{{ e.nombre }}</option>');
+            {% endfor %}
+            $('#planType_asociacion').find('option').remove();
+            $('#planType_asociacion').append('<option disabled selected value="null">Seleccione Asociación</option>');
+            {% for a in asociaciones %}
+                $('#planType_asociacion').append('<option value="{{ a.id }}">{{ a.nombre }}</option>');
+            {% endfor %}
+            $('#planType_asociacion').on('change',function(){
+                var asoID = $(this).val();
+                if(asoID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('asociacion-json') }}',
+                        data:'asociacion='+asoID,
+                        success:function(html){
+                            $('#planType_union').find('option').remove();
+                            $('#planType_union').append('<option disabled selected value="null">Seleccione Unión</option>');
+                            $.each(html, function(i,item) {
+                                $('#planType_union').append('<option value="'+item.id+'" data-padre="'+item.padre+'">'+item.union+'</option>');
+                            });
+                            $('#planType_grupo').find('option').remove();
+                            $('#planType_grupo').append('<option disabled selected value="null">Seleccione Grupo</option>');
+                        }
+                    });
+                }
+            });
+
+            $('#planType_union').find('option').remove();
+            $('#planType_union').append('<option disabled selected value="null">Seleccione Unión</option>');
+            {% for u in uniones %}
+                $('#planType_union').append('<option value="{{ u.id }}" data-padre="{{ u.idGrupoPadre }}">{{ u.nombre }}</option>');
+            {% endfor %}
+            $('#planType_union').on('change',function(){
+                if($(this).find(':selected').data('padre')!=0){
+                    $('#planType_asociacion').val($(this).find(':selected').data('padre'));
+                }
+                var grupoID = $(this).val();
+                if(grupoID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('union-json') }}',
+                        data:'union='+grupoID,
+                        success:function(html){
+                            $('#planType_grupo').find('option').remove();
+                            $('#planType_grupo').append('<option disabled selected value="null">Seleccione Grupo</option>');
+                            $.each(html, function(i,item) {
+                                $('#planType_grupo').append('<option value="'+item.id+'" data-padre="'+item.padre+'">'+item.grupo+'</option>');
+                            });
+                        }
+                    });
+                }
+            });
+            $('#planType_grupo').find('option').remove();
+            $('#planType_grupo').append('<option disabled selected value="null">Seleccione Grupo</option>');
+            {% for g in grupos %}
+                $('#planType_grupo').append('<option value="{{ g.id }}" data-padre="{{ g.idGrupoPadre }}">{{ g.nombre }}</option>');
+            {% endfor %}
+            $('#planType_grupo').on('change',function(){
+                if($(this).find(':selected').data('padre')!=0){
+                    $('#planType_union').val($(this).find(':selected').data('padre'));
+                    if($('#planType_union').find(':selected').data('padre')!=0){
+                        $('#planType_asociacion').val($('#planType_union').find(':selected').data('padre'));
+                    }
+                }
+            });
+            $('#planType_codigoPostal').bind('keyup', function() {
+                if($("#planType_codigoPostal").val().length==5){
+                    var codigo = $("#planType_codigoPostal").val();
+                    var mun, est, zon;
+                    if ($('#planType_municipios option:selected').prop('disabled') == false && $('#planType_estados option:selected').prop('disabled') == false && $('#planType_zonas option:selected').prop('disabled') == false){
+                        mun = $("#planType_municipios").val();
+                        if(codigo){
+                            $.ajax({
+                                type:'POST',
+                                url:'{{ path('checkcodigo-json') }}',
+                                data:'codigo='+codigo+'&municipio='+mun,
+                                success:function(html){
+                                    if(html==0){
+                                        $('#error-cp').html('El código postal no existe en la selección');
+                                        console.log('line 166');
+                                        $('#error-cp').removeClass('hidden');
+                                    }else{
+                                        $('#error-cp').addClass('hidden');
+                                    }
+                                }
+                            });
+                        }
+                    }else if($('#planType_estados option:selected').prop('disabled') == false && $('#planType_zonas option:selected').prop('disabled') == false){
+                        est = $("#planType_estados").val();
+                        if(codigo){
+                            $.ajax({
+                                type:'POST',
+                                url:'{{ path('checkcodigo-json') }}',
+                                data:'codigo='+codigo+'&estado='+est,
+                                success:function(html){
+                                    if(html==0){
+                                        $('#error-cp').html('El código postal no existe en la selección');
+                                        $('#error-cp').removeClass('hidden');
+                                        console.log('line 185');
+                                    }else{
+                                        $('#error-cp').addClass('hidden');
+                                    }
+                                }
+                            });
+                        }
+                    }else if($('#planType_zonas option:selected').prop('disabled') == false){
+                        zon = $("#planType_zonas").val();
+                        if(codigo){
+                            $.ajax({
+                                type:'POST',
+                                url:'{{ path('checkcodigo-json') }}',
+                                data:'codigo='+codigo+'&zona='+zon,
+                                success:function(html){
+                                    if(html==0){
+                                        $('#error-cp').html('El código postal no existe en la selección');
+                                        $('#error-cp').removeClass('hidden');
+                                        console.log('line 203');
+                                    }else{
+                                        $('#error-cp').addClass('hidden');
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+            $('a[href="#tabs-2-tab-1"]').click(function () {
+                window.location = "{{ path('regPlan') }}";
+            });
+            $('#search').click(function() {
+                $('#lista-sel').attr('value','');
+                var tipoC = $('#planType_tipoClientes').val();
+                if(tipoC==null){
+                    tipoC='';
+                }
+                var zona = $('#planType_zonas').val();
+                if(zona==null){
+                    zona='';
+                }
+                var estado = $('#planType_estados').val();
+                if(estado==null){
+                    estado='';
+                }
+                var municipio = $('#planType_municipios').val();
+                if(municipio==null){
+                    municipio='';
+                }
+                var codigo = $('#planType_codigoPostal').val();
+                if(codigo==null){
+                    codigo='';
+                }
+                var marca = $('#planType_marcas').val();
+                if(marca==null){
+                    marca='';
+                }
+                var aso = $('#planType_asociacion').val();
+                if(aso==null){
+                    aso='';
+                }
+                var uni = $('#planType_union').val();
+                if(uni==null){
+                    uni='';
+                }
+                var gru = $('#planType_grupo').val();
+                if(gru==null){
+                    gru='';
+                }
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('buscar-json') }}',
+                    data:'tipo='+tipoC+'&zona='+zona+'&estado='+estado+'&municipio='+municipio+'&codigoPostal='+codigo+'&marca='+marca+'&asociacion='+aso+'&union='+uni+'&grupo='+gru,
+                    success:function(html){
+                        $('#table-content').html('');
+                        $('#tabla').DataTable().destroy();
+                        $.each(html, function(i,item) {
+                            $('#table-content').append('<tr><td>'+item.marca+'</td><td>'+item.asociacion+'</td><td>'+item.union+'</td><td>'+item.grupo+'</td><td>'+item.estado+'</td><td>'+item.permiso+'</td><td>'+item.razon+'</td><td><input type="checkbox" class="check-sel" value="'+item.id+'"></td></tr>');
+                        });
+                        datatabla = $('#tabla').DataTable({
+                            "searching": false,
+                            "bLengthChange":false,
+                            "language":{
+                                "decimal":        ".",
+                                "emptyTable":     "No hay Registros",
+                                "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                                "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                                "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                                "infoPostFix":    "",
+                                "thousands":      ",",
+                                "lengthMenu":     "Mostrando _MENU_ registros",
+                                "loadingRecords": "Cargando...",
+                                "processing":     "Procesando...",
+                                "search":         "Buscar:",
+                                "searchPlaceholder": "Buscar Plan de Prospección",
+                                "zeroRecords":    "Sin coincidencias",
+                                "paginate": {
+                                    "first":      "Primero",
+                                    "last":       "Último",
+                                    "next":       "Siguiente",
+                                    "previous":   "Anterior"
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            /*first step*/
+            {% if flow.currentStepNumber==1 %}
+                $('.btn.btn-primary.boton-siguiente').click(function (e) {
+                    if (!$("input[name='planType[checkConvenio]']").is(":checked")) {
+                       e.preventDefault();
+                       $('#error-check').html('Seleccione una opción');
+                       $('#error-check').removeClass('hidden');
+                       console.log('line 299');
+                    }else{
+                        $('#error-check').addClass('hidden');
+                    }
+                    if($('#planType_checkConvenio_0:checked').val() == 1){
+                        if($('#planType_convenios option:selected').prop('disabled') == true){
+                            e.preventDefault();
+                            $('#error-convenio').html('Seleccione Convenio');
+                            $('#error-convenio').removeClass('hidden');
+                            console.log('line 308');
+                        }else{
+                            $('#error-convenio').addClass('hidden');
+                        }
+                    }
+                    if($("#planType_nombre").val()==''){
+                        e.preventDefault();
+                        $('#error-nombre').html('Ingrese nombre de Plan de Prospección');
+                        $('#error-nombre').removeClass('hidden');
+                        console.log('line 317');
+                    }else{
+                        $('#error-nombre').addClass('hidden');
+                    }
+                    /*if($('#planType_campana option:selected').prop('disabled') == true){
+                        e.preventDefault();
+                        $('#error-campana').html('Seleccione Campaña');
+                        $('#error-campana').removeClass('hidden');
+                        console.log('line 325');
+                    }else{
+                        $('#error-campana').addClass('hidden');
+                    }*/
+                    var x = $('#lista-sel').attr('value');
+                    var check = x.split('+');
+                    var ban = false;
+                    $.each(check, function(index, val) {
+                        if(val!=''){
+                            ban=true;
+                        }
+                    });
+                    if(ban==false){
+                        e.preventDefault();
+                        $('#error-clientes').html('Seleccione al menos un Cliente');
+                        $('#error-clientes').removeClass('hidden');
+                        console.log('line 349');
+                    }else{
+                        $('#error-clientes').addClass('hidden');
+                    }
+                });
+            {% elseif flow.currentStepNumber==2 %}
+                $('.btn.btn-primary.boton-siguiente').click(function (e) {
+                    /*Second Step*/
+                    var i = 0;
+                    {% if datos['hasConvenio']==0 %}
+                        if (!$("input[name='planType[checkDescuento]']").is(":checked")) {
+                           e.preventDefault();
+                           $('#error-checkdescuento').html('Seleccione una opción');
+                           $('#error-checkdescuento').removeClass('hidden');
+                           console.log('line 362');
+                           i++;
+                        }else{
+                            $('#error-checkdescuento').addClass('hidden');
+                        }
+                    {% endif %}
+                    if($('#planType_tipoServicio option:selected').prop('disabled') == true){
+                        e.preventDefault();
+                        $('#error-tiposervicio').html('Seleccione Tipo de Servicio');
+                        $('#error-tiposervicio').removeClass('hidden');
+                        console.log('line 370');
+                        i++;
+                    }else{
+                        $('#error-tiposervicio').addClass('hidden');
+                    }
+                    if($('#isIndividual').hasClass('hidden')){
+
+                    }else{
+                        if($('#planType_empresa option:selected').prop('disabled') == true){
+                            e.preventDefault();
+                            $('#error-empresa').html('Seleccione Empresa');
+                            $('#error-empresa').removeClass('hidden');
+                            console.log('line 382');
+                            i++;
+                        }else{
+                            $('#error-empresa').addClass('hidden');
+                        }
+                        if($('#planType_departamento option:selected').prop('disabled') == true){
+                            e.preventDefault();
+                            $('#error-departamento').html('Seleccione Departamento');
+                            $('#error-departamento').removeClass('hidden');
+                            console.log('line 391');
+                            i++;
+                        }else{
+                            $('#error-departamento').addClass('hidden');
+                        }
+                        if($('#planType_servicio option:selected').prop('disabled') == true){
+                            e.preventDefault();
+                            $('#error-servicio').html('Seleccione Servicio');
+                            $('#error-servicio').removeClass('hidden');
+                            console.log('line 400');
+                            i++;
+                        }else{
+                            $('#error-servicio').addClass('hidden');
+                        }
+                        if($('#planType_subservicio option:selected').prop('disabled') == true){
+                            e.preventDefault();
+                            $('#error-subservicio').html('Seleccione Subservicio');
+                            $('#error-subservicio').removeClass('hidden');
+                            console.log('line 409');
+                            i++;
+                        }else{
+                            $('#error-subservicio').addClass('hidden');
+                        }
+                    }
+                    if($("#planType_condicionesComerciales").val()==''){
+                        e.preventDefault();
+                        $('#error-condiciones').html('Ingrese Condiciones Comerciales');
+                        $('#error-condiciones').removeClass('hidden');
+                        console.log('line 419');
+                        i++;
+                    }else{
+                        $('#error-condiciones').addClass('hidden');
+                    }
+                    if($("#planType_fechaInicio").val()==''){
+                        e.preventDefault();
+                        $('#error-fechainicio').html('Ingrese Fecha Inicio');
+                        $('#error-fechainicio').removeClass('hidden');
+                        console.log('line 427');
+                        i++;
+                    }else{
+                        $('#error-fechainicio').addClass('hidden');
+                    }
+                    if($("#planType_fechaFin").val()==''){
+                        e.preventDefault();
+                        $('#error-fechafin').html('Ingrese Fecha Fin');
+                        $('#error-fechafin').removeClass('hidden');
+                        console.log('line 437');
+                        i++;
+                    }else{
+                        $('#error-fechafin').addClass('hidden');
+                    }
+                    if($("#planType_costoTotalPropuesto").val()==''){
+                        e.preventDefault();
+                        $('#error-costotP').html('Ingrese Costo Total Propuesto');
+                        $('#error-costotP').removeClass('hidden');
+                        console.log('line 446');
+                        i++;
+                    }else{
+                        $('#error-costotP').addClass('hidden');
+                    }
+                    if($("#planType_numeroAsesores").val()==0){
+                        e.preventDefault();
+                        $('#error-asesores').html('Ingrese Número de Asesores');
+                        $('#error-asesores').removeClass('hidden');
+                        console.log('line 455');
+                        i++;
+                    }else{
+                        noC = $("#noClientes").val();
+                        if(noC<$('#planType_numeroAsesores').val()){
+                            e.preventDefault();
+                            $('#error-asesores').removeClass('hidden');
+                            $('#error-asesores').html('El número de Asesores es mayor al número de Clientes');
+                            i++;
+                        }else{
+                            $('#error-asesores').addClass('hidden');
+                        }
+                    }
+                    if($('#planType_checkDescuento_0:checked').val()==1){
+                        if($('#planType_descuentoN').val()==0){
+                            e.preventDefault();
+                            $('#error-descuentoN').html('Ingrese Porcentaje de Negociación');
+                            $('#error-descuentoN').removeClass('hidden');
+                            console.log('line 465');
+                        }else{
+                            $('#error-descuentoN').addClass('hidden');
+                        }
+                    }else{
+                        $('#error-descuentoN').addClass('hidden');
+                    }
+                    if($('#planType_tipoServicio').val()==1){
+                        console.log('line 475');
+                        $('[name="add-empresa"]').each(function() {
+                            if($('option:selected',this).prop('disabled')==true){
+                                if($(this).val()==null){
+                                    $('[name="error-addEmpresa"][data-id="'+$(this).data('id')+'"]').html('Seleccione Empresa');
+                                    $('[name="error-addEmpresa"][data-id="'+$(this).data('id')+'"]').removeClass('hidden');
+                                    console.log('line 474');
+                                }
+                            }else{
+                                $('[name="error-addEmpresa"][data-id="'+$(this).data('id')+'"]').addClass('hidden');
+                                console.log('line 480');
+                            }
+                        });
+                        $('[name="add-departamento"]').each(function() {
+                            if($('option:selected',this).prop('disabled')==true){
+                                if($(this).val()==null){
+                                    $('[name="error-addDepartamento"][data-id="'+$(this).data('id')+'"]').html('Seleccione Departamento');
+                                    $('[name="error-addDepartamento"][data-id="'+$(this).data('id')+'"]').removeClass('hidden');
+                                    console.log('line 485');
+                                }
+                            }else{
+                                $('[name="error-addDepartamento"][data-id="'+$(this).data('id')+'"]').addClass('hidden');
+                            }
+                        });
+                        $('[name="add-servicio"]').each(function() {
+                            if($('option:selected',this).prop('disabled')==true){
+                                if($(this).val()==null){
+                                    $('[name="error-addServicio"][data-id="'+$(this).data('id')+'"]').html('Seleccione Servicio');
+                                    $('[name="error-addServicio"][data-id="'+$(this).data('id')+'"]').removeClass('hidden');
+                                    console.log('line 496');
+                                }
+                            }else{
+                                $('[name="error-addServicio"][data-id="'+$(this).data('id')+'"]').addClass('hidden');
+                            }
+                        });
+                        $('[name="add-subservicio[]"]').each(function() {
+                            if($('option:selected',this).prop('disabled')==true){
+                                if($(this).val()==null){
+                                    $('[name="error-addSubservicio"][data-id="'+$(this).data('id')+'"]').html('Seleccione Subservicio');
+                                    $('[name="error-addSubservicio"][data-id="'+$(this).data('id')+'"]').removeClass('hidden');
+                                    console.log('line 507');
+                                }
+                            }else{
+                                $('[name="error-addSubservicio"][data-id="'+$(this).data('id')+'"]').addClass('hidden');
+                            }
+                        });
+                    }else{
+                        console.log('line 521');
+                    }
+                    if(i==0){
+                        $('#planType_tipoServicio').removeAttr('disabled');
+                        $('#planType_empresa').removeAttr('disabled');
+                        $('#planType_departamento').removeAttr('disabled');
+                        $('#planType_servicio').removeAttr('disabled');
+                        $('#planType_subservicio').removeAttr('disabled');
+                    }else{
+                        $("#planType_fechaFin").change();
+                        $("#planType_fechaInicio").change();
+                    }
+                });
+            {% endif %}
+        });
+
+        $('#integral-fields').on('change','[name="add-empresa"]',function() {
+            var data = $(this).data('id');
+            $.ajax({
+                type:'POST',
+                url:'{{ path('empresa-json') }}',
+                data:'empresa='+$(this).val(),
+                success:function(html){
+                    $('[name="add-departamento"][data-id="'+data+'"]').find('option').remove();
+                    $('[name="add-departamento"][data-id="'+data+'"]').append('<option disabled selected value="null">Seleccione Departamento</option>');
+                    $.each(html, function(i,item) {
+                        $('[name="add-departamento"][data-id="'+data+'"]').append('<option value="'+item.id+'">'+item.departamento+'</option>');
+                    });
+                }
+            });
+        });
+        $('#integral-fields').on('change','[name="add-departamento"]',function() {
+            var data = $(this).data('id');
+            $.ajax({
+                type:'POST',
+                url:'{{ path('departamento-json') }}',
+                data:'departamento='+$(this).val(),
+                success:function(html){
+                    $('[name="add-servicio"][data-id="'+data+'"]').find('option').remove();
+                    $('[name="add-servicio"][data-id="'+data+'"]').append('<option disabled selected value="null">Seleccione Servicio</option>');
+                    $.each(html, function(i,item) {
+                        $('[name="add-servicio"][data-id="'+data+'"]').append('<option value="'+item.id+'">'+item.servicio+'</option>');
+                    });
+                }
+            });
+        });
+        $('#integral-fields').on('change','[name="add-servicio"]',function() {
+            var data = $(this).data('id');
+            $.ajax({
+                type:'POST',
+                url:'{{ path('servicio-json') }}',
+                data:'servicio='+$(this).val(),
+                success:function(html){
+                    $('[name="add-subservicio[]"][data-id="'+data+'"]').find('option').remove();
+                    $('[name="add-subservicio[]"][data-id="'+data+'"]').append('<option disabled selected value="null">Seleccione Subservicio</option>');
+                    $.each(html, function(i,item) {
+                        $('[name="add-subservicio[]"][data-id="'+data+'"]').append('<option value="'+item.id+'" data-costo="'+item.costo+'">'+item.subservicio+'</option>');
+                    });
+                }
+            });
+        });
+
+        $('#planType_empresa').on('change',function(){
+            var empresaID = $(this).val();
+            $('#planType_departamento').find('option').remove();
+            $('#planType_departamento').append('<option disabled selected value="null">Seleccione Departamento</option>');
+            $('#planType_servicio').find('option').remove();
+            $('#planType_servicio').append('<option disabled selected value="null">Seleccione Servicio</option>');
+            $('#planType_subservicio').find('option').remove();
+            $('#planType_subservicio').append('<option disabled selected value="null">Seleccione Subservicio</option>');
+            $('#planType_costoTotal').val(parseFloat(0).toFixed(2));
+            $('#error-empresa').addClass('hidden');
+            $('#error-departamento').addClass('hidden');
+            $('#error-servicio').addClass('hidden');
+            $('#error-subservicio').addClass('hidden');
+            if(empresaID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('empresa-json') }}',
+                    data:'empresa='+empresaID,
+                    success:function(html){
+                        $('#planType_departamento').find('option').remove();
+                        $('#planType_departamento').append('<option disabled selected value="null">Seleccione Departamento</option>');
+                        $.each(html, function(i,item) {
+                            $('#planType_departamento').append('<option value="'+item.id+'">'+item.departamento+'</option>');
+                        })
+                    }
+                });
+            }
+        });
+        $('#planType_departamento').on('change',function(){
+            var departamentoID = $(this).val();
+            $('#planType_servicio').find('option').remove();
+            $('#planType_servicio').append('<option disabled selected value="null">Seleccione Servicio</option>');
+            $('#planType_subservicio').find('option').remove();
+            $('#planType_subservicio').append('<option disabled selected value="null">Seleccione Subservicio</option>');
+            $('#planType_costoTotal').val(parseFloat(0).toFixed(2));
+            $('#error-servicio').addClass('hidden');
+            if(departamentoID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('departamento-json') }}',
+                    data:'departamento='+departamentoID,
+                    success:function(html){
+                        $('#planType_servicio').find('option').remove();
+                        $('#planType_servicio').append('<option disabled selected value="null">Seleccione Servicio</option>');
+                        $.each(html, function(i,item) {
+                            $('#planType_servicio').append('<option value="'+item.id+'">'+item.servicio+'</option>');
+                        })
+                    }
+                });
+            }
+        });
+        $('#planType_servicio').on('change',function(){
+            var servicioID = $(this).val();
+            $('#planType_subservicio').find('option').remove();
+            $('#planType_subservicio').append('<option disabled selected value="null">Seleccione Subservicio</option>');
+            $('#planType_costoTotal').val(parseFloat(0).toFixed(2));
+            $('#error-subservicio').addClass('hidden');
+            if(servicioID){
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('servicio-json') }}',
+                    data:'servicio='+servicioID,
+                    success:function(html){
+                        $('#planType_subservicio').find('option').remove();
+                        $('#planType_subservicio').append('<option disabled selected value="null">Seleccione Subservicio</option>');
+                        $.each(html, function(i,item) {
+                            $('#planType_subservicio').append('<option value="'+item.id+'" data-costo="'+item.costo+'">'+item.subservicio+'</option>');
+                        })
+                    }
+                });
+            }
+        });
+        $('#planType_subservicio').on('change',function(){
+            $('#planType_costoTotal').val(parseFloat($(this).find(':selected').attr('data-costo')).toFixed(2));
+            console.log('625');
+            {% if datos['hasConvenio'] is defined and datos['hasConvenio']==0 %}
+                var desc = 0;
+                desc = $('#planType_descuentoN').val();
+                var x = $('#planType_costoTotal').val();
+                var t = x*(1-(desc/100));
+                $('#planType_costoTotalDesc').val(t.toFixed(2));
+                $('#planType_costoTotalPropuesto').val(t.toFixed(2));
+                total = $('#noClientes').val() * t;
+                $('#planType_costodeProspeccion').val(total.toFixed(2));
+                //$('#planType_costodeProspeccion').val(t.toFixed(2));
+            {% endif %}
+        });
+        {% if datos['hasConvenio'] is defined and datos['hasConvenio']==0 %}
+            $('#checkneg').removeClass('hidden');
+            $('#planType_descuentoN').bind('keyup', function() {
+                var check = $('#planType_tipoServicio').val();
+                if(check==0){
+                    if($('#planType_subservicio option:selected').prop('disabled') == false){
+                        var desc = 0;
+                        if($(this).val()>0 && $(this).val()<=10){
+                            desc = $('#planType_descuentoN').val();
+                        }else if($(this).val()>10){
+                            $('#planType_descuentoN').val(10);
+                            desc = $('#planType_descuentoN').val();
+                        }else if($(this).val()<0){
+                            $('#planType_descuentoN').val(0);
+                            desc = $('#planType_descuentoN').val();
+                        }
+                        var x = $('#planType_costoTotal').val();
+                        var t = x*(1-(desc/100));
+                        $('#planType_costoTotalDesc').val(t.toFixed(2));
+                        $('#planType_costoTotalPropuesto').val(t.toFixed(2));
+                        console.log('655');
+                        //$('#planType_costodeProspeccion').val(t.toFixed(2));
+                        total = $('#noClientes').val() * t;
+                        $('#planType_costodeProspeccion').val(total.toFixed(2));
+                    }else{
+                        if($(this).val()>0 && $(this).val()<=10){
+                        }else if($(this).val()>10){
+                            $('#planType_descuentoN').val(10);
+                        }else if($(this).val()<0){
+                            $('#planType_descuentoN').val(0);
+                        }
+                    }
+                }else{
+                    var desc = 0;
+                    if($(this).val()>0 && $(this).val()<=10){
+                        desc = $('#planType_descuentoN').val();
+                    }else if($(this).val()>10){
+                        $('#planType_descuentoN').val(10);
+                        desc = $('#planType_descuentoN').val();
+                    }else if($(this).val()<0){
+                        $('#planType_descuentoN').val(0);
+                        desc = $('#planType_descuentoN').val();
+                    }
+                    $('[name="add-descuento[]"]').val(desc);
+                    var x = $('#planType_costoTotal').val();
+                    var t = x*(1-(desc/100));
+                    $('#planType_costoTotalDesc').val(t.toFixed(2));
+                    $('#planType_costoTotalPropuesto').val(t.toFixed(2));
+                    total = $('#noClientes').val() * t;
+                    $('#planType_costodeProspeccion').val(total.toFixed(2));
+                    //$('#planType_costodeProspeccion').val(t.toFixed(2));
+                }
+            });
+            $('#integral-fields').on('keyup','[name="add-descuento[]"]',function() {
+                var total = 0;
+                var tg = 0;
+                $('[name="add-costo"]').each(function() {
+                    var x = 0;
+                    var d = 0;
+                    var t = 0;
+                    x = $(this).val();
+                    d = $("[name='add-descuento[]'][data-id='"+$(this).data('id')+"']").val();
+                    t = x * (1-(d/100));
+                    tg = tg + parseFloat(x);
+                    total = total + t;
+                });
+                $('#planType_costoTotal').val(parseFloat(total).toFixed(2));
+                var dg = $("#planType_descuentoN").val();
+                var f = tg*(1-(dg/100));
+                $('#planType_costoTotalDesc').val(parseFloat(f).toFixed(2));
+            });
+            $("#planType_descuentoN").on("click", function () {
+                $(this).select();
+            });
+            $('#integral-fields').on('click','[name="add-descuento[]"]',function() {
+                $(this).select();
+            });
+            $( "input[name='planType[checkDescuento]']" ).click(function() {
+                if($(this).val()==1){
+                    $('#descuentoN').removeClass('hidden');
+                    $('#costototalD').removeClass('hidden');
+                    var desc = $('#planType_descuentoN').val();
+                    var x = $('#planType_costoTotal').val();
+                    var t = x*(1-(desc/100));
+                    $('#planType_costoTotalDesc').val(t.toFixed(2));
+                    $('[name="add-fdescuento"]').each(function() {
+                        $(this).removeClass('hidden');
+                    });
+                }else{
+                    $('#descuentoN').addClass('hidden');
+                    $('#planType_costoTotalDesc').val(0);
+                    $('#costototalD').addClass('hidden');
+                    $('[name="add-fdescuento"]').each(function() {
+                        $(this).addClass('hidden');
+                    });
+                }
+            });
+        {% endif %}
+        {% if datos['hasConvenio'] is defined and datos['hasConvenio']==1 %}
+            $('#costototalCN').removeClass('hidden');
+            $.ajax({
+                type:'POST',
+                url:'{{ path('costoCN-json') }}',
+                data:'id='+{{ datos['convenio'] }},
+                success:function(html){
+                    $('#planType_condicionesComerciales').val(html.condiciones);
+                    $('#planType_tipoServicio').val(html.integral);
+                    var costo = (parseFloat(html.costo)).toFixed(2);
+                    $('#planType_costoTotalCN').val(costo);
+                    $('#planType_costoTotalPropuesto').val(costo);
+                    //$('#planType_costodeProspeccion').val(costo);
+                    total = $('#noClientes').val() * costo;
+                    $('#planType_costodeProspeccion').val(total.toFixed(2));
+                    $('#planType_tipoServicio').prop("disabled",true);
+                    if(html.integral==1){
+                        //con convenio integral
+                        $('#isIndividual').addClass('hidden');
+                        $.ajax({
+                            type:'POST',
+                            url:'{{ path('subservicios-json') }}',
+                            data:'id='+{{ datos['convenio'] }},
+                            success:function(html){
+                                var total = 0;
+                                $.each(html, function(i,item) {
+                                    total = total + item.precio;
+                                    $('#integral-fields').append('<div class="col-md-12">' +
+                                     '<div class="col-md-5">'+
+                                        '<fieldset class="form-group">'+
+                                            '<label class="form-label semibold" for="exampleInput">Empresa</label>'+
+                                            '<div class="col-sm-12">' +
+                                                '<select disabled class="form-control"><option>'+item.nombreempresa+'</option></select>' +
+                                            '</div>'+
+                                        '</fieldset>' +
+                                        '<fieldset class="form-group">'+
+                                            '<label class="form-label semibold" for="exampleInput">Servicio</label>'+
+                                            '<div class="col-sm-12">'+
+                                                '<select disabled class="form-control"><option>'+item.nombreservicio+'</option></select>' +
+                                            '</div>'+
+                                        '</fieldset>'+
+                                     '</div>' +
+                                      '<div class="col-md-4">'+
+                                        '<fieldset class="form-group">'+
+                                            '<label class="form-label semibold" for="exampleInput">Departamento</label>'+
+                                            '<div class="col-sm-12">'+
+                                            '<select disabled class="form-control"><option>'+item.nombredepartamento+'</option></select>' +
+                                            '</div>'+
+                                        '</fieldset>'+
+                                        '<fieldset class="form-group">'+
+                                            '<label class="form-label semibold" for="exampleInput">Subservicio</label>'+
+                                            '<div class="col-sm-12">'+
+                                                '<select disabled class="form-control"><option>'+item.nombresubservicio+'</option></select>' +
+                                            '</div>'+
+                                        '</fieldset>'+
+                                    '</div>'+
+                                    '<div class="col-md-3">'+
+                                        '<fieldset class="form-group">'+
+                                            '<label class="form-label semibold" for="exampleInput">Costo</label>'+
+                                            '<div class="col-sm-12">' +
+                                                '<div class="input-icon">'+
+                                                    '<input value="'+parseFloat(item.precio).toFixed(2)+'" class="form-control" readonly="readonly">'+
+                                                        '<i>$</i>'+
+                                                '</div>'+
+                                            '</div>'+
+                                        '</fieldset>'+
+                                    '</div>' +
+                                     '</div>' +
+                                       '<div class="col-md-12"><hr><input class="hidden" name="subservicios-lista[]" value="'+item.id+'"></div>');
+                                });
+                                $('#planType_costoTotal').val(parseFloat(total).toFixed(2));
+                            }
+                        });
+                    }else{
+                        $('#planType_empresa').val(html.empresa);
+                        $('#isIndividual').removeClass('hidden');
+                        var empresaID = html.empresa;
+                        var departamentoID = html.departamento;
+                        var servicioID = html.servicio;
+                        var subservicioID = html.subservicio;
+                        if(empresaID){
+                            $.ajax({
+                                type:'POST',
+                                url:'{{ path('empresa-json') }}',
+                                data:'empresa='+empresaID,
+                                success:function(html){
+                                    $('#planType_departamento').find('option').remove();
+                                    $.each(html, function(i,item) {
+                                        if(item.id==departamentoID){
+                                            $('#planType_departamento').append('<option value="'+item.id+'" selected>'+item.departamento+'</option>');
+                                        }else{
+                                            $('#planType_departamento').append('<option value="'+item.id+'">'+item.departamento+'</option>');
+                                        }
+                                    });
+                                    if(departamentoID){
+                                        $.ajax({
+                                            type:'POST',
+                                            url:'{{ path('departamento-json') }}',
+                                            data:'departamento='+departamentoID,
+                                            success:function(html){
+                                                $('#planType_servicio').find('option').remove();
+                                                $.each(html, function(i,item) {
+                                                    if(item.id==servicioID){
+                                                        $('#planType_servicio').append('<option value="'+item.id+'" selected>'+item.servicio+'</option>');
+                                                    }else{
+                                                        $('#planType_servicio').append('<option value="'+item.id+'">'+item.servicio+'</option>');
+                                                    }
+                                                });
+                                                $('#planType_subservicio').find('option').remove();
+                                                if(servicioID){
+                                                    $.ajax({
+                                                        type:'POST',
+                                                        url:'{{ path('servicio-json') }}',
+                                                        data:'servicio='+servicioID,
+                                                        success:function(html){
+                                                            $('#planType_subservicio').find('option').remove();
+                                                            $.each(html, function(i,item) {
+                                                                if(item.id==subservicioID){
+                                                                    $('#planType_subservicio').append('<option value="'+item.id+'" data-costo="'+item.costo+'" selected>'+item.subservicio+'</option>');
+                                                                    $('#planType_costoServicio').val(parseFloat(item.costo).toFixed(2));
+                                                                }else{
+                                                                    $('#planType_subservicio').append('<option value="'+item.id+'" data-costo="'+item.costo+'">'+item.subservicio+'</option>');
+                                                                }
+                                                            });
+                                                            $('#planType_empresa').prop("disabled",true);
+                                                            $('#planType_subservicio').change();
+                                                            $('#planType_departamento').prop("disabled",true);
+                                                            $('#planType_servicio').prop("disabled",true);
+                                                            $('#planType_subservicio').prop("disabled",true);
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        {% endif %}
+        $( "input[name='planType[checkConvenio]']" ).click(function() {
+            if($(this).val()==1){
+            }else{
+                $.ajax({
+                    type:'POST',
+                    url:'{{ path('listaconvenios-json') }}',
+                    success:function(html){
+                        $('#planType_convenios').find('option').remove();
+                        $('#planType_convenios').append('<option disabled selected value="null">Seleccione Convenio</option>');
+                        $.each(html, function(i,item) {
+                            $('#planType_convenios').append('<option value="'+item.id+'">'+item.nombre+'</option>');
+                        })
+                    }
+                });
+            }
+        });
+        $('#planType_convenios').on('change',function(){
+            $.ajax({
+                type:'POST',
+                url:'{{ path('convenios-json') }}',
+                data:'id='+$(this).val(),
+                success:function(html){
+                    if(html.asociacion!=0){
+                        $('#planType_asociacion').val(html.asociacion);
+                    }else{
+                        html.asociacion='';
+                    }
+                    if(html.union!=0){
+                        if(html.union==2 || html.union==1){
+
+                        }else{
+                            $('#planType_union').val(html.union);
+                        }
+                    }else{
+                        html.union='';
+                    }
+                    if(html.grupo!=0){
+                        $('#planType_grupo').val(html.grupo);
+                    }else{
+                        html.grupo='';
+                    }
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('buscar-json') }}',
+                        data:'asociacion='+html.asociacion+'&union='+html.union+'&grupo='+html.grupo,
+                        success:function(html){
+                            $('#table-content').html('');
+                            x='';
+                            $('#tabla').DataTable().destroy();
+                            $.each(html, function(i,item) {
+                                $('#table-content').append('<tr><td>'+item.marca+'</td><td>'+item.asociacion+'</td><td>'+item.union+'</td><td>'+item.grupo+'</td><td>'+item.estado+'</td><td>'+item.permiso+'</td><td>'+item.razon+'</td><td><input type="checkbox" class="check-sel" checked value="'+item.id+'"></td></tr>');
+                                x += item.id+'+';
+                            });
+                            datatabla = $('#tabla').DataTable({
+                            "searching": false,
+                            "bLengthChange":false,
+                            "language":{
+                                "decimal":        ".",
+                                "emptyTable":     "No hay Registros",
+                                "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                                "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                                "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                                "infoPostFix":    "",
+                                "thousands":      ",",
+                                "lengthMenu":     "Mostrando _MENU_ registros",
+                                "loadingRecords": "Cargando...",
+                                "processing":     "Procesando...",
+                                "search":         "Buscar:",
+                                "searchPlaceholder": "Buscar Plan de Prospección",
+                                "zeroRecords":    "Sin coincidencias",
+                                "paginate": {
+                                    "first":      "Primero",
+                                    "last":       "Último",
+                                    "next":       "Siguiente",
+                                    "previous":   "Anterior"
+                                }
+                            }
+                        });
+                            var check = x.split('+');
+                            var ban = false;
+                            $.each(check, function(index, val) {
+                                if(val!=''){
+                                    ban=true;
+                                }
+                            });
+                            if(ban==true){
+                                $('#lista-sel').attr('value',x);
+                            }else{
+                                $('#lista-sel').attr('value','');
+                            }
+                            $('#search').addClass('disabled');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <style>
+        .table{
+            font-size: 0.8rem;
+        }
+        #response{
+            border: 1px solid black;
+            margin-bottom: 15px;
+        }
+        #selected{
+            border: 1px solid green;
+            margin-bottom: 15px;
+        }
+        label{
+            display: inline;
+            margin-right: 20px;
+        }
+        input[type="radio"]{
+            margin-right: 10px;
+        }
+        .input-icon {
+            position: relative;
+        }
+        .input-icon > i {
+            position: absolute;
+            display: block;
+            transform: translate(0, -50%);
+            top: 50%;
+            pointer-events: none;
+            width: 25px;
+            text-align: center;
+            font-style: normal;
+        }
+        .input-icon > input {
+            padding-left: 25px;
+            padding-right: 0;
+        }
+        #planType_rutaFlyer{
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+        #add-service{
+            color: black;
+        }
+    </style>
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Registro y Actualización</h2>
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regPlan') }}">Plan de Prospección</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Registro</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <section class="tabs-section">
+        <div class="tabs-section-nav">
+            <div class="tbl">
+                <ul class="nav" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#tabs-2-tab-1" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Registro
+                                <span class="label label-pill label-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-2-tab-2" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Actualización
+                                <span class="label label-pill label-danger"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div><!--.tabs-section-nav-->
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="tabs-2-tab-1">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="steps-icon-progress">
+                            {% include '@CraueFormFlow/FormFlow/stepList.html.twig' %}
+                        </div>
+                        {{ form_start(form) }}
+                            {{ form_errors(form) }}
+                            {% if flow.getCurrentStepNumber() == 1 %}
+                                <div class="col-md-12">
+                                    <div class="col-md-6">
+                                        <fieldset class="form-group">
+                                            <label class="form-label semibold" for="exampleInput">Aplicar Convenio</label>
+                                            <div class="col-sm-11">
+                                                {% for key, item in form.checkConvenio %}
+                                                    {{ form_widget(item) }}<label for="{{item.vars.id}}">{{item.vars.label}}</label>
+                                                {% endfor %}
+                                                <p class="help-block hidden" id="error-check"></p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <fieldset class="form-group hidden" id="convenio">
+                                            <label class="form-label semibold" for="exampleInput">Convenio</label>
+                                            <div class="col-sm-10">
+                                                {{ form_widget(form.convenios, {'attr': {'class': 'form-control', 'placeholder': 'Convenio' } }) }}
+                                                <p class="help-block hidden" id="error-convenio"></p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="col-md-6">
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Nombre de Plan de Prospección</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.nombre, {'attr': {'class': 'form-control', 'placeholder': 'Ingrese Nombre del Plan de Prospección' } }) }}
+                                            <p class="help-block hidden" id="error-nombre"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Tipo de Cliente</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.tipoClientes, {'attr': {'class': 'form-control', 'placeholder': 'Tipo de Cliente' } }) }}
+                                            <p class="help-block hidden" id="error-tipocliente"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Zona</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.zonas, {'attr': {'class': 'form-control', 'placeholder': 'Zona' } }) }}
+                                            <p class="help-block hidden" id="error-zona"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Estado</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.estados, {'attr': {'class': 'form-control', 'placeholder': 'Estado' } }) }}
+                                            <p class="help-block hidden" id="error-estado"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Municipio</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.municipios, {'attr': {'class': 'form-control', 'placeholder': 'Municipio' } }) }}
+                                            <p class="help-block hidden" id="error-municipio"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Código Postal</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.codigoPostal, {'attr': {'class': 'form-control', 'placeholder': 'Código Postal' } }) }}
+                                            <p class="help-block hidden" id="error-cp"></p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-6">
+                                    {#<fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Campaña</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.campana, {'attr': {'class': 'form-control', 'placeholder': 'Campaña' } }) }}
+                                            <p class="help-block hidden" id="error-campana"></p>
+                                        </div>
+                                    </fieldset>#}
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Marca</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.marcas, {'attr': {'class': 'form-control', 'placeholder': 'Marca' } }) }}
+                                            <p class="help-block hidden" id="error-marca"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Asociación</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.asociacion, {'attr': {'class': 'form-control', 'placeholder': 'Asociación' } }) }}
+                                            <p class="help-block hidden" id="error-asociacion"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Unión</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.union, {'attr': {'class': 'form-control', 'placeholder': 'Unión' } }) }}
+                                            <p class="help-block hidden" id="error-union"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Grupo</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.grupo, {'attr': {'class': 'form-control', 'placeholder': 'Grupo' } }) }}
+                                            <p class="help-block hidden" id="error-grupo"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Estatus Seguimiento</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.estatusSeguimiento, {'attr': {'class': 'form-control', 'placeholder': 'Estatus Seguimiento' } }) }}
+                                            <p class="help-block hidden" id="error-estatusseguimiento"></p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                {#<a class="btn btn-rounded btn-inline btn-info float-right" href="{{ path('regPlan') }}" >Limpiar</a>#}
+                                <a class="btn btn-primary float-right" style="margin-bottom: 5px;" href="#response" id="search">Buscar</a>
+                                <p class="help-block hidden" id="error-clientes"></p>
+                                <div class="col-md-12" id="response">
+                                    <input name="lista-sel" id="lista-sel" value="" class="hidden"></input>
+                                    <h4 style="margin-top: 10px;">Resultados de Búsqueda</h4>
+                                    <p class="float-right">Seleccionar Todos <input type="checkbox" class="sel-todos"></p>
+                                    <table id="tabla" class="table is-bordered is-striped is-narrow is-hoverable" style="width: 100%;">
+                                        <thead>
+                                        <tr>
+                                            <td>Marca</td>
+                                            <td>Asociación</td>
+                                            <td>Macrogrupo</td>
+                                            <td>Grupo</td>
+                                            <td>Estado</td>
+                                            <td># Permiso</td>
+                                            <td>Razón Social</td>
+                                            <td>Seleccione</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="table-content">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% elseif flow.getCurrentStepNumber() == 2 %}
+                                <div class="col-md-12">
+                                    <div class="col-md-6">
+                                        <fieldset class="form-group hidden" id="checkneg">
+                                            <label class="form-label semibold" for="exampleInput">Descuento para Negociación</label>
+                                            <div class="col-sm-10">
+                                                {{ form_widget(form.checkDescuento, {'attr': {'class': 'form-control', 'placeholder': 'Descuento para Negociación' } }) }}
+                                                <p class="help-block hidden" id="error-checkdescuento"></p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <fieldset class="form-group hidden" id="descuentoN">
+                                            <label class="form-label semibold" for="exampleInput">Ingrese el % de Descuento</label>
+                                            <div class="col-sm-10">
+                                                {{ form_widget(form.descuentoN, {'attr': {'class': 'form-control', 'placeholder': '% de Descuento' } }) }}
+                                                <p class="help-block hidden" id="error-descuentoN"></p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="col-md-6">
+                                        <fieldset class="form-group">
+                                            <label class="form-label semibold" for="exampleInput">Tipo de Servicio</label>
+                                            <div class="col-sm-10">
+                                                {{ form_widget(form.tipoServicio, {'attr': {'class': 'form-control', 'placeholder': 'Tipo de Servicio' } }) }}
+                                                <p class="help-block hidden" id="error-tiposervicio"></p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <fieldset class="form-group">
+                                            <label class="form-label semibold" for="exampleInput">Costo de Prospección</label>
+                                            <div class="col-sm-12">
+                                                <div class="input-icon">
+                                                    {{ form_widget(form.costodeProspeccion, {'attr': {'class': 'form-control', 'placeholder': 'Costos' } }) }}
+                                                    <i>$</i>
+                                                </div>
+                                                <p class="help-block hidden" id="error-costop"></p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <hr>
+                                </div>
+                                <div id="isIndividual" class="individual hidden">
+                                    <div class="col-md-5">
+                                        <fieldset class="form-group">
+                                            <label class="form-label semibold" for="exampleInput">Empresa</label>
+                                            <div class="col-sm-12">
+                                                {{ form_widget(form.empresa, {'attr': {'class': 'form-control', 'placeholder': 'Empresa' } }) }}
+                                                <p class="help-block hidden" id="error-empresa"></p>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset class="form-group">
+                                            <label class="form-label semibold" for="exampleInput">Servicio</label>
+                                            <div class="col-sm-12">
+                                                {{ form_widget(form.servicio, {'attr': {'class': 'form-control', 'placeholder': 'Servicio' } }) }}
+                                                <p class="help-block hidden" id="error-servicio"></p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <fieldset class="form-group">
+                                            <label class="form-label semibold" for="exampleInput">Departamento</label>
+                                            <div class="col-sm-12">
+                                                {{ form_widget(form.departamento, {'attr': {'class': 'form-control', 'placeholder': 'Departamento' } }) }}
+                                                <p class="help-block hidden" id="error-departamento"></p>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset class="form-group">
+                                            <label class="form-label semibold" for="exampleInput">Subservicio</label>
+                                            <div class="col-sm-12">
+                                                {{ form_widget(form.subservicio, {'attr': {'class': 'form-control', 'placeholder': 'Subservicio' } }) }}
+                                                <p class="help-block hidden" id="error-subservicio"></p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <fieldset class="form-group" id="costoservicio">
+                                            <label class="form-label semibold" for="exampleInput">Costo</label>
+                                            <div class="col-sm-12">
+                                                <div class="input-icon">
+                                                    {{ form_widget(form.costoServicio, {'attr': {'class': 'form-control', 'placeholder': 'Costo' } }) }}
+                                                    <i>$</i>
+                                                </div>
+                                                <p class="help-block hidden" id="error-costoservicio"></p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                                <div id="integral-fields">
+
+                                </div>
+                                <div class="col-md-12 mt-20 mb-20">
+                                    <a id="add-service" class="hidden add"><span class="label label-pill label-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span> Agregar Servicio</a>
+                                </div>
+                                <div class="col-md-12">
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Condiciones Comerciales</label>
+                                        <div class="col-sm-12">
+                                            {{ form_widget(form.condicionesComerciales, {'attr': {'class': 'form-control', 'placeholder': 'Condiciones Comerciales' } }) }}
+                                            <p class="help-block hidden" id="error-condiciones"></p>
+                                        </div>
+                                    </fieldset>
+                                    <hr>
+                                </div>
+                                <div class="col-md-6">
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Costo Total</label>
+                                        <div class="col-sm-12">
+                                            <div class="input-icon">
+                                                {{ form_widget(form.costoTotal, {'attr': {'class': 'form-control', 'placeholder': 'Costo Total' } }) }}
+                                                <i>$</i>
+                                            </div>
+                                            <p class="help-block hidden" id="error-costot"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group hidden" id="costototalD">
+                                        <label class="form-label semibold" for="exampleInput">Costo Total con Descuento</label>
+                                        <div class="col-sm-12">
+                                            <div class="input-icon">
+                                                {{ form_widget(form.costoTotalDesc, {'attr': {'class': 'form-control', 'placeholder': 'Costo Total con Descuento' } }) }}
+                                                <i>$</i>
+                                            </div>
+                                            <p class="help-block hidden" id="error-costotD"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group hidden" id="costototalCN">
+                                        <label class="form-label semibold" for="exampleInput">Costo por Convenio</label>
+                                        <div class="col-sm-12">
+                                            <div class="input-icon">
+                                                {{ form_widget(form.costoTotalCN, {'attr': {'class': 'form-control', 'placeholder': 'Costo por Convenio' } }) }}
+                                                <i>$</i>
+                                            </div>
+                                            <p class="help-block hidden" id="error-costotCN"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Costo Total Propuesto</label>
+                                        <div class="col-sm-12">
+                                            <div class="input-icon">
+                                                {{ form_widget(form.costoTotalPropuesto, {'attr': {'class': 'form-control', 'placeholder': 'Costo Total Propuesto' } }) }}
+                                                <i>$</i>
+                                            </div>
+                                            <p class="help-block hidden" id="error-costotP"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Estaciones impactadas</label>
+                                        <div class="col-sm-12">
+                                            <input id="noClientes" value="0" class="form-control text-center" disabled>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Asesores Designados</label>
+                                        <div class="col-sm-12">
+                                            {{ form_widget(form.numeroAsesores, {'attr': {'class': 'form-control', 'placeholder': 'Asesores Designados' } }) }}
+                                            <p class="help-block hidden" id="error-asesores"></p>
+                                        </div>
+                                    </fieldset>
+                                    {#<fieldset class="form-group">
+                                        <div class="col-sm-10 text-center">
+                                            <label for="planType_rutaFlyer" class="btn btn-rounded btn-inline btn-primary"><i class="font-icon font-icon-upload-2"></i> Adjuntar Flyer</label>
+                                            {{ form_widget(form.rutaFlyer) }}
+                                            {% if form.rutaFlyer.vars.errors|length > 0 %}
+                                                <p class="help-block">
+                                                    {% for error in form.rutaFlyer.vars.errors %}
+                                                        {{ error.message }} <br/>
+                                                    {% endfor %}
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </fieldset>#}
+                                </div>
+                                <div class="col-md-6">
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Período de Prospección</label>
+                                        <div class="col-sm-12">
+                                            <label class="form-label semibold">Fecha Inicio</label>
+                                            {{ form_widget(form.fechaInicio, {'attr': {'class': 'form-control', 'placeholder': 'Fecha Inicio' } }) }}
+                                            <p class="help-block hidden" id="error-fechainicio"></p>
+                                            <label class="form-label semibold">Fecha Fin</label>
+                                            {{ form_widget(form.fechaFin, {'attr': {'class': 'form-control', 'placeholder': 'Fecha Fin' } }) }}
+                                            <p class="help-block hidden" id="error-fechafin"></p>
+                                            <p class="help-block hidden" id="error-periodo"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Tiempo de Prospección</label>
+                                        <div class="col-sm-12">
+                                            {{ form_widget(form.tiempo, {'attr': {'class': 'form-control', 'placeholder': 'Tiempo de Prospección' } }) }}
+                                            <p class="help-block hidden" id="error-tiempo"></p>
+                                        </div>
+                                    </fieldset>
+                                    {#<a class="btn btn-block btn-rounded btn-inline btn-primary disabled" href="#"><i class="font-icon font-icon-download-3"></i> Ver Propuesta</a>#}
+                                </div>
+                                <div class="col-md-12">
+                                    {#<a class="btn btn-inline btn-primary disabled" href="#">Guardar</a>#}
+                                </div>
+                            {% elseif flow.getCurrentStepNumber() == 3 %}
+                                <div class="col-md-12 text-center">
+                                    <h3>¿Desea enviar a Revisión el Plan de Prospección?</h3>
+                                </div>
+                            {% endif %}
+                        <div class="col-sm-12 buttons text-center">
+                            {{ form_rest(form) }}
+                            {% if flow.currentStepNumber == 1 or flow.currentStepNumber == 2 %}
+                                {% include '@CraueFormFlow/FormFlow/buttons.html.twig' with {
+                                    craue_formflow_button_label_reset: 'REINICIAR',
+                                    craue_formflow_button_label_back: 'ATRAS',
+                                        craue_formflow_button_label_last: 'SIGUIENTE',
+                                    craue_formflow_button_class_last: 'btn btn-primary float-right boton-siguiente',
+                                    craue_formflow_button_class_back: 'btn btn-secondary float-left hidden',
+                                    craue_formflow_button_class_reset: 'btn  btn-danger float-right mr-10 hidden'
+                                } %}
+                            {% else %}
+                                {% include '@CraueFormFlow/FormFlow/buttons.html.twig' with {
+                                    craue_formflow_button_label_finish: 'ENVIAR',
+                                    craue_formflow_button_label_reset: 'REINICIAR',
+                                    craue_formflow_button_label_back: 'ATRAS',
+                                    craue_formflow_button_class_last: 'btn btn-success boton-enviar',
+                                    craue_formflow_button_class_back: 'btn btn-secondary float-left hidden',
+                                    craue_formflow_button_class_reset: 'btn btn-danger float-right mr-10 hidden'
+                                } %}
+                            {% endif %}
+                        </div>
+                        {% if flow.currentStepNumber == 1 or flow.currentStepNumber == 2 %}
+                        {% else %}
+                            <div class="col-md-12 text-center" style="margin-top: 25px;">
+                                <a class="btn btn-primary" href="{{ path('preview-propuesta') }}" target="_blank"><i class="font-icon font-icon-eye"></i> Ver Propuesta</a>
+                                <a class="btn btn-info disabled" href="#" id="save-plan"><i class="glyphicon glyphicon-floppy-save"></i> Guardar</a>
+                            </div>
+                        {% endif %}
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+                <h3></h3>
+                <hr>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="tabs-2-tab-2">
+                <div class="box-typical box-typical-padding">
+                    <div class="row">
+                        <div class="col-xl-12 dahsboard-column" >
+                            <section class="box-typical box-typical-dashboard panel panel-default scrollable">
+                                <header class="box-typical-header panel-heading"  style="background: #10ACF5; color: white;"  >
+                                    <h3 class="panel-title">En proceso</h3>
+                                </header>
+                                <div class="box-typical-body panel-body">
+                                    <article class="comment-item">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <fieldset class="form-group">
+                                                    <label class="form-label semibold" for="exampleInput">Nombre</label>
+                                                    <input type="text" id="plan_type_nombre" class="form-control" placeholder="Ingrese el nombre del plan">
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <fieldset class="form-group">
+                                                    <span id="date-label-from" class="form-label">Fecha: </span>
+                                                    <input class=" form-control" type="date" {#id="datepicker_from"#} id="fechas" />
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-lg-4" style="margin-top: 30px">
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm" style="width: 100%;">
+                                                <thead>
+
+                                                <tr class="text-center">
+                                                    <th>Plan de prospección</th>
+                                                    <th>Tipo de servicio</th>
+                                                    {#<th>Departamento</th>#}
+                                                    <th>Cantidad de servicios</th>
+                                                    <th>Cantidad de clientes</th>
+                                                    <th>Costo de prospección</th>
+                                                    <th>Fecha de creación</th>
+                                                    <th>Detalle</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="text-center">
+                                                {% for i in lista1 %}
+                                                    {% set break = false %}
+                                                    {% for p in plan %}
+                                                        {% if p.PlanProspeccion.id == i and break == false %}
+                                                            <tr class="has-text-center">
+                                                                <th>{{ p.PlanProspeccion.nombre }}</th>
+                                                                {% if p.planProspeccion.isIntegral == 1 %}
+                                                                    <th>Integral</th>
+                                                                {% else %}
+                                                                    <th>Individual</th>
+                                                                {% endif %}
+                                                                {#<th>{{ p.Subservicio.Servicio.departamentoServicios.nombre }}</th>#}
+                                                                <th>{{ p.PlanProspeccion.CantidadServicio }}</th>
+                                                                <th>{{ p.PlanProspeccion.CantidadClientes }}</th>
+                                                                <th>${{ p.PlanProspeccion.CostoDeProspeccion|number_format(2,'.',',') }}</th>
+                                                                <th>{{ p.PlanProspeccion.fechaInicio|date('d/m/Y') }}</th>
+                                                                <th><a href="{{ path('editar-plan',{'id': p.PlanProspeccion.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></th>
+                                                            </tr>
+                                                            {% set break = true %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </article>
+                                </div><!--.box-typical-body-->
+                            </section><!--.box-typical-dashboard-->
+                        </div><!--.col-->
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-xl-12 dahsboard-column " >
+                            <section class="box-typical box-typical-dashboard panel panel-default scrollable">
+                                <header class="box-typical-header panel-heading"  style="background: #C0392B; color: white;" >
+                                    <h3 class="panel-title">Modificado</h3>
+                                </header>
+                                <div class="box-typical-body panel-body">
+                                    <article class="comment-item">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <fieldset class="form-group">
+                                                    <label class="form-label semibold" for="exampleInput">Nombre</label>
+                                                    <input type="text" id="plan_type_modificado" class="form-control" placeholder="Ingrese el nombre del plan">
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <fieldset class="form-group">
+                                                    <span id="date-label-from2" class="form-label">Fecha: </span>
+                                                    <input class=" form-control" type="date" id="datepicker_from3" />
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm4" style="width: 100%;">
+                                                <thead>
+                                                <tr class="text-center">
+                                                    <th>Plan de prospección</th>
+                                                    <th>Tipo de servicio</th>
+                                                    <th>Cantidad de servicios</th>
+                                                    <th>Cantidad de clientes</th>
+                                                    <th>Costo de prospección</th>
+                                                    <th>Fecha de Creación</th>
+                                                    <th>Detalle</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="text-center">
+                                                {% for i in lista2 %}
+                                                    {% set break = false %}
+                                                    {% for p in plan %}
+                                                        {% if p.PlanProspeccion.id == i and break == false %}
+                                                            <tr class="has-text-center">
+                                                                <th>{{ p.PlanProspeccion.nombre }}</th>
+                                                                {% if p.planProspeccion.isIntegral == 1 %}
+                                                                    <th>Integral</th>
+                                                                {% else %}
+                                                                    <th>Individual</th>
+                                                                {% endif %}
+                                                                <th>{{ p.PlanProspeccion.CantidadServicio }}</th>
+                                                                <th>{{ p.PlanProspeccion.CantidadClientes }}</th>
+                                                                <th>${{ p.PlanProspeccion.CostoDeProspeccion|number_format(2,'.',',') }}</th>
+                                                                <th>{{ p.PlanProspeccion.fechaInicio|date('d/m/Y') }}</th>
+                                                                <th><a href="{{ path('consulta-planprospeccion',{'id': p.PlanProspeccion.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></th>
+                                                            </tr>
+                                                            {% set break = true %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </article>
+                                </div>
+                            </section><!--.box-typical-dashboard-->
+                        </div><!--.col-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

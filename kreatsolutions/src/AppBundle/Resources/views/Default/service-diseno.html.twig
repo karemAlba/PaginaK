@@ -1,0 +1,93 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block title %}Diseño | {{ parent() }}{% endblock %}
+
+{% block services %}
+    current
+{% endblock %}
+
+{% block body %}
+    <div class="about">
+
+        <section class="contact section_sapce2">
+            <div class="row">
+                <div class="container">
+                    <div class="section-title ">
+                        <h2 class="wow pulse animated" data-wow-delay="300ms" data-wow-iteration="infinite" data-wow-duration="2s" style="visibility: visible; animation-duration: 2s; animation-delay: 300ms; animation-iteration-count: infinite; animation-name: pulse;">Diseño, Construcción y Remodelación</h2
+                        <div class="text-content">
+                            <blockquote class="text-center">
+                                Innovación, conocimiento y profesionalismo en cada plano que diseñamos.
+                            </blockquote>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-12 col-xs-12 mb-30">
+                        <div class="service-category-list">
+                            <ul>
+                                <li class="list-active-link"><a href="#">Expendios</a></li>
+                                <li class="list-active-link"><a href="#">CEDIS</a></li>
+                                <li class="list-active-link"><a href="#">Terminales de Almacenamiento</a></li>
+                            </ul>
+                        </div>
+                        <div class="single-contact">
+                            <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios." style="color: white">
+                                <h4 style="color: white">Contáctanos</h4>
+                                <p>Estas interesado en este servicio o tienes dudas, envíanos un mensaje.</p>
+                                <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios."><h5 style="color: white"> <i class="fa fa-whatsapp"></i> WhatsApp</h5></a>
+                                <a href="{{ path('contact') }}"><h5 style="color: white"><i class="fa fa-envelope"></i> Correo Electrónico</h5></a>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Left Side End -->
+                    <div class="col-md-9 col-sm-12 col-xs-12 margin-bottom-30 wow slideInDown text-center">
+                        <img src="{{ asset('assets/img/imagen8.jpg') }}" class="img-rounded margin-top-20 img-responsive" alt="service-consulting" style="border: solid 1px #007B8A; margin-top: -.5px; height: 405px; display: block; margin: auto ; margin-bottom: 5px;" >
+                    </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12 margin-bottom-30" style="margin-top: 5px;" >
+                        <!--Accordions -->
+                        <div class="accordion-example">
+                            <div class="panel-group" id="accordion">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">PROYECTO DE DISEÑO, CONSTRUCCIÓN Y REMODELACIONES</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseOne" class="panel-collapse collapse in">
+                                                <div class="panel-body">
+                                                    <p>El diseño de un Expendio al público, CEDIS o Terminal de Almacenamiento radica en la elaboración de un proyecto ejecutivo, donde se representa en un conjunto de planos de manera gráfica la solución constructiva del diseño arquitectónico, que inicia con la elaboración del anteproyecto donde se trabaja en conjunto con un grupo Técnico interdisciplinario donde intervienen: arquitectos, ingenieros, constructores, electricistas, mecánicos, para detonar la elaboración de planos y memorias técnico descriptivas de las diferentes instalaciones que intervienen en el diseño de un Expendio al público, CEDIS o Terminal de Almacenamiento.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Cumplimiento a dictámenes ante unidades de verificación en Diseño, Construcción, Pre-Arranque, Operación y Mantenimiento</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseTwo" class="panel-collapse collapse ">
+                                                <div class="panel-body">
+                                                    <p>El principal objetivo de desarrollar el proyecto ejecutivo de un <strong>Expendio al público, CEDIS o Terminal de Almacenamiento</strong>, es de dar cumplimiento a las especificaciones, parámetros y requisitos técnicos que se indican en la Norma Oficial Mexicana <strong>NOM-005-ASEA-2016</strong> y <strong>NOM-006-ASEA-2017</strong>, en los rubros de <strong>DISEÑO, CONSTRUCCIÓN, PRE-ARRANQUE Y OPERACIÓN Y MANTENIMIENTO de Expendio al público, CEDIS o Terminal de Almacenamiento</strong></p>
+                                                    <br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!--Fin de columna -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container">
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+
+
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends ('@App/layout.html.twig') %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Consulta de Usuarios</h2>
+                </div>
+                <div class="tbl-cell text-right" >
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regUsuarios') }}">Usuarios</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb1">Consulta de Usuarios</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding">
+            <h4>Filtros de búsqueda</h4>
+            <hr>
+            {{ form_start(form,  {'action':path('consulta-usuarios')}) }}
+            <div class="row">
+                <div class="col-lg-5">
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Nombre</label>
+                        {{ form_widget(form.nombre, {'attr': {'class': 'form-control', 'placeholder': 'Buscar Nombre' } }) }}
+                    </fieldset>
+                </div>
+                <div class="col-lg-5">
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Perfil</label>
+                        {{ form_widget(form.perfil, {'attr': {'class': 'form-control', 'placeholder': 'Buscar Perfil' }}) }}
+                    </fieldset>
+                </div>
+                <div class="col-lg-5">
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Privilegio</label>
+                        {{ form_widget(form.privilegio, {'attr': {'class': 'form-control', 'placeholder': 'Buscar Privilegio' }}) }}
+                    </fieldset>
+                </div>
+                <div class="col-lg-5">
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Usuario</label>
+                        {{ form_widget(form.usuario, {'attr': {'class': 'form-control', 'placeholder': 'Buscar Usuario' }}) }}
+                    </fieldset>
+                </div>
+                <div class="col-lg-12">
+                    <style>
+                        .btn{
+                            margin-top: 15px;
+                            margin-bottom: 15px;
+                        }
+                    </style>
+                    {{ form_widget(form.buscar, {'attr': {'class': 'btn btn-primary'}}) }}
+                    {#<button type="button" class="btn btn-rounded btn-inline btn-info-outline">Exportar Búsqueda</button>#}
+                </div>
+            </div>
+            {{ form_end(form) }}
+            <table id="table-sm" class="table table-bordered table-hover table-sm" style="margin-bottom: 25px;">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Perfil</th>
+                    <th>Privilegios</th>
+                    <th>Detalle</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for n in final %}
+                    {% set ban = 0 %}
+                    {% for u in full %}
+                        {% if n == u.usuarios.id and ban==0 %}
+                            <tr>
+                                <td>{{ u.usuarios.personales.nombre }} {{ u.usuarios.personales.apPaterno }} {{ u.usuarios.personales.apMaterno }}</td>
+                                <td>{{ u.usuarios.nombre }}</td>
+                                <td>{{ u.perfiles.nombre }}</td>
+                                <td>
+                                {% for u in full %}
+                                    {% if n == u.usuarios.id %}
+                                        {{ u.privilegios.nombre }}<br>
+                                    {% endif %}
+                                {% endfor %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('consulta-usuario',{'id':u.usuarios.id}) }}" class="button is-success">
+                                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% set ban = 1 %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

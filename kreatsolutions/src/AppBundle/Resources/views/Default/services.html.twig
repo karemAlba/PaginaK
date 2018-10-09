@@ -1,0 +1,111 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block services %}
+    current
+{% endblock %}
+
+{% block body %}
+    <div class="about">
+        <div class="section_sapce section_primary cover-image2" data-image-src="{{ asset('assets/img/imagen15.jpg') }}">
+            <div class="section-title ">
+                <h2>Servicios</h2>
+            </div>
+        </div>
+
+        <section class="testimonials section_gray wow slideInDown">
+            <div class="row">
+                <div class="container">
+                    <div class="section-title margin-b30 margin-top-45">
+                        <h2>Trabajando en diferentes áreas<span>Para brindarte un mejor servicio</span></h2>
+                    </div>
+                    <div class="col-lg-4 ">
+                        <div class="service-block">
+                            <img src="{{ asset('assets/img/imagen8.jpg') }}" alt="Diseño y Construcción">
+                            <div class="inner-padd clearfix">
+                                <div class="service-block-content">
+                                    <h4>Diseño y Construcción</h4>
+
+                                </div>
+                                <div class="service-block-icon">
+                                    <a href="{{ path ('diseno') }}"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 ">
+                        <div class="service-block">
+                            <img src="{{ asset('assets/img/imagen12.png') }}" alt="Medio Ambiente">
+                            <div class="inner-padd clearfix">
+                                <div class="service-block-content">
+                                    <h4>Medio Ambiente</h4>
+
+                                </div>
+                                <div class="service-block-icon">
+                                    <a href="{{ path('medio-ambiente') }}"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="service-block">
+                            <img src="{{ asset('assets/img/imagen1.jpg') }}" alt="ASEA">
+                            <div class="inner-padd clearfix">
+                                <div class="service-block-content">
+                                    <h4>ASEA</h4>
+                                </div>
+                                <div class="service-block-icon">
+                                    <a href="{{ path ('asea') }}"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4  ">
+                        <div class="service-block">
+                            <img src="{{ asset('assets/img/imagen13.jpg') }}" alt="STPS">
+                            <div class="inner-padd clearfix">
+                                <div class="service-block-content">
+                                    <h4>STPS</h4>
+                                </div>
+                                <div class="service-block-icon">
+                                    <a href="{{ path('stps') }}"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4  ">
+                        <div class="service-block">
+                            <img src="{{ asset('assets/img/imagen11.jpg') }}" alt="CRE">
+                            <div class="inner-padd clearfix">
+                                <div class="service-block-content">
+                                    <h4>CRE</h4>
+                                </div>
+                                <div class="service-block-icon">
+                                    <a href="{{ path('cre') }}"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4  ">
+                        <div class="service-block">
+                            <img src="{{ asset('assets/img/law.jpg') }}" alt="Jurídico">
+                            <div class="inner-padd clearfix">
+                                <div class="service-block-content">
+                                    <h4>Jurídico</h4>
+                                </div>
+                                <div class="service-block-icon">
+                                    <a href="{{ path('juridico') }}"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

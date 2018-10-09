@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Convenio</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ convenio.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ convenio.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Costoautorizacion</th>
+                <td>{{ convenio.costoAutorizacion }}</td>
+            </tr>
+            <tr>
+                <th>Descuentos</th>
+                <td>{{ convenio.descuentos }}</td>
+            </tr>
+            <tr>
+                <th>Condicionescomerciales</th>
+                <td>{{ convenio.condicionesComerciales }}</td>
+            </tr>
+            <tr>
+                <th>Activo</th>
+                <td>{% if convenio.activo %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Fechaalta</th>
+                <td>{% if convenio.fechaAlta %}{{ convenio.fechaAlta|date('Y-m-d') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Isintegral</th>
+                <td>{% if convenio.isIntegral %}Yes{% else %}No{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('convenios_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('convenios_edit', { 'id': convenio.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends ('@App/layout.html.twig') %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+<script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#extraer').click(function() {
+                window.location = "{{ path('extraccion') }}";
+            });
+            $('#tabla-sm').dataTable({
+                "bLengthChange": false,
+                "language":{
+                    "decimal":        ".",
+                    "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                    "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                    "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Mostrando _MENU_ registros",
+                    "loadingRecords": "Cargando...",
+                    "processing":     "Procesando...",
+                    "search":         "Buscar:",
+                    "searchPlaceholder": "Buscar",
+                    "zeroRecords":    "Sin Resultados",
+                    "paginate": {
+                        "first":      "Primero",
+                        "last":       "Último",
+                        "next":       "Siguiente",
+                        "previous":   "Anterior"
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Registro y Actualización </h2>
+                </div>
+                <div class="tbl-cell text-right" >
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regCampanas') }}">SendinBlue</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb1">Actualización</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+
+    <section class="tabs-section">
+        <div class="tabs-section-nav">
+            <div class="tbl">
+                <ul class="nav" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#tabs-2-tab-1" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Registro
+                                <span class="label label-pill label-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-2-tab-2" role="tab" data-toggle="tab">
+                            <span class="nav-link-in">
+                                Actualización
+                                <span class="label label-pill label-danger"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div><!--.tabs-section-nav-->
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="tabs-2-tab-1">
+                <div class="row">
+                    <div class="col-md-6 push-md-4">
+                        <label class="btn btn-info" id="extraer">Extraer campañas <i class="font-icon-left font-icon-upload-2"></i> </label>
+                    </div>
+                </div>
+            </div><!--.tab-pane-->
+            <div role="tabpanel" class="tab-pane fade" id="tabs-2-tab-2">
+                <table id="tabla-sm" class="table is-bordered is-striped is-narrow is-hoverable" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <td>No.</td>
+                        <td>Nombre</td>
+                        <td>Asunto</td>
+                        <td>Remitente</td>
+                        <td>Detalle</td>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for c in campanas %}
+                        <tr class="has-text-centered">
+                            <td>{{ c.numero }}</td>
+                            <td>{{ c.nombre }}</td>
+                            <td>{{ c.asunto }}</td>
+                            <td>{{ c.correoremitente }}</td>
+                            <td>
+                                <a href="{{ path('editar-campana',{'id':c.id}) }}" class="button is-success">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div><!--.tab-pane-->
+        </div><!--.tab-content-->
+    </section><!--.tabs-section-->
+{% endblock %}

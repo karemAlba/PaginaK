@@ -1,0 +1,71 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block javascript %}
+
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Prospección</h2>
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regClientes') }}">Prospección</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Prospectar</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+<div class="tabs-section">
+    <div class="box-typical box-typical-padding">
+        <div class="row">
+            <div class="col-lg-12">
+                <h4><strong>Listado de clientes a prospectar</strong></h4>
+                <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm" style="width: 100%;">
+                    <thead>
+                    <tr class="text-center">
+                        <th># de Permiso</th>
+                        <th>Razón Social</th>
+                        <th>Estado</th>
+                        <th>Detalle</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for x in lista %}
+                        {% for c in cli %}
+                            {% if x==c.planClientes.id %}
+                                <tr>
+                                    <th>{{ c.planClientes.clientes.numeroPermiso }}</th>
+                                    <th>{{ c.planClientes.clientes.razonSocial }}</th>
+                                    <th>
+                                        {% if c.planClientes.planProspeccion.estados is not null %}
+                                            {{ c.planClientes.planProspeccion.estados.nombre }}
+                                        {% else %}
+                                            -----
+                                        {% endif %}
+                                    </th>
+                                    <th>
+                                        {% if app.user.id|tipoperfil==3 or app.user.id|tipoperfil==4 or app.user.id|tipoperfil==5 %}
+                                            <a href="{{ path('cliente-prospecciond',{'cliente': c.planClientes.clientes.id,'asesor':app.request.get('asesor')}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
+                                        {% else %}
+                                            <a href="{{ path('cliente-prospeccion',{'id': c.planClientes.clientes.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
+                                        {% endif %}
+                                    </th>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

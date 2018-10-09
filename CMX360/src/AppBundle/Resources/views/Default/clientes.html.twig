@@ -1,0 +1,187 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/clientes.js') }}"></script>
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Consulta de clientes</h2>
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regClientes') }}">Clientes</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Consulta de clientes</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="tabs-section">
+
+        <div class="box-typical box-typical-padding">
+            <h4>Filtros de búsqueda</h4>
+            <hr>
+            {{ form_start(form,  {'action':path('lista-clientes')}) }}
+            <div class="row">
+                <div class="col-lg-4">
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >No. de permiso</label>
+                        {{ form_widget(form.numeroPermiso, {'attr': {'class': 'form-control', 'placeholder': 'Buscar No. de servicio' } }) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Marca</label>
+                        {{ form_widget(form.marcas, {'attr': {'class': 'form-control' }}) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Grupo</label>
+                        {{ form_widget(form.grupo, {'attr': {'class': 'form-control' }}) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Tipo de cliente</label>
+                        {{ form_widget(form.tipoCliente, {'attr': {'class': 'form-control' }}) }}
+                    </fieldset>
+                </div>
+                <div class="col-lg-4">
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >No. de E.S</label>
+                        {{ form_widget(form.estacionServicio, {'attr': {'class': 'form-control', 'placeholder': 'Buscar No. Estación' } }) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Asociación</label>
+                        {{ form_widget(form.asociacion, {'attr': {'class': 'form-control' }}) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Categoría</label>
+                        {{ form_widget(form.categorias, {'attr': {'class': 'form-control' }}) }}
+                    </fieldset>
+                </div>
+                <div class="col-lg-4">
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Razón social</label>
+                        {{ form_widget(form.razonSocial,{'attr': {'class': 'form-control', 'placeholder': 'Buscar Razón Social' } }) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Uniones</label>
+                        {{ form_widget(form.macrogrupos, {'attr': {'class': 'form-control' }}) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Estado</label>
+                        {{ form_widget(form.estado, {'attr': {'class': 'form-control' }}) }}
+                    </fieldset>
+                    <style>
+                        .btn{
+                            margin-top: 25px;
+                        }
+                    </style>
+                    {{ form_widget(form.buscar, {'attr': {'class': 'btn btn-primary default'}}) }}
+                    <button type="button" class="btn btn-info default">Exportar Búsqueda</button>
+                </div>
+            </div>
+            {{ form_end(form) }}
+
+            <table id="table-sm" class="table table-bordered table-hover table-sm" style="margin-bottom: 25px;">
+                <thead>
+                <tr>
+                    <th width="1">Marca</th>
+                    <th>Asociación</th>
+                    <th>Uniones</th>
+                    <th>Grupo</th>
+                    <th>Estado</th>
+                    <th>Razón Social</th>
+                    <th>Detalle</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in lista %}
+                    {% for n in final %}
+                        {% if n==i.clientes.id %}
+                            <tr>
+                                {% set x = 0 %}
+                                {% for p in clientep %}
+                                    {% if p.clientes.id == i.clientes.id and x==0 %}
+                                        <td>{{ p.productos.marcas.nombre }}</td>
+                                        {% set x = 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if x==0 %}
+                                    <td>-----</td>
+                                {% endif %}
+                                <td>
+                                    {% if i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==1 %}
+                                        {{ i.clientes.grupos.nombre }}
+                                    {% elseif i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==2 %}
+                                        {% for x in grupos %}
+                                            {% if i.clientes.grupos.idGrupoPadre == x.id %}
+                                                {{ x.nombre }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% elseif i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==3 %}
+                                        {% for x in grupos %}
+                                            {% if i.clientes.grupos.idGrupoPadre == x.id %}
+                                                {% for y in grupos %}
+                                                    {% if x.idGrupoPadre == y.id %}
+                                                        {{ y.nombre }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% elseif i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==4 %}
+                                        -----
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==1 %}
+                                        -----
+                                    {% elseif i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==2 %}
+                                        {{ i.clientes.grupos.nombre }}
+                                    {% elseif i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==3 %}
+                                        {% for x in grupos %}
+                                            {% if i.clientes.grupos.idGrupoPadre == x.id %}
+                                                {{ x.nombre }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% elseif i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==4 %}
+                                        -----
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==1 %}
+                                        -----
+                                    {% elseif i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==2 %}
+                                        -----
+                                    {% elseif i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==3 %}
+                                        {{ i.clientes.grupos.nombre }}
+                                    {% elseif i.clientes.grupos is not null and i.clientes.grupos.tipoGrupos.id==4 %}
+                                        -----
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </td>
+                                <td>{{ i.municipios.estados.nombre }}</td>
+                                <td>{{ i.clientes.razonSocial }}</td>
+                                <td><a href="{{ path('consulta-cliente',{'id': i.clientes.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

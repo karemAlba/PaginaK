@@ -1,0 +1,128 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block title %}JURIDICO | {{ parent() }}{% endblock %}
+
+{% block services %}
+    current
+{% endblock %}
+
+{% block body %}
+    <div class="about">
+        <section class="contact section_sapce2">
+            <div class="row ">
+                <div class="container">
+                    <div class="section-title margin-b30">
+                        <h2 class="wow pulse animated" data-wow-delay="300ms" data-wow-iteration="infinite" data-wow-duration="2s" style="visibility: visible; animation-duration: 2s; animation-delay: 300ms; animation-iteration-count: infinite; animation-name: pulse;">JURÍDICO</h2>
+                    </div>
+                    <div class="text-content">
+                        <blockquote class="text-center">
+                            Ofrecemos información, orientación y asesoría especializada para solucionar todos aquellos temas relacionados con el sector hidrocarburos
+                        </blockquote>
+                    </div>
+
+                    <div class="col-md-3 col-sm-12 col-xs-12 mb-30">
+                        <div class="single-contact">
+                            <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios." style="color: white">
+                                <h4 style="color: white">Contáctanos</h4>
+                                <p>Estas interesado en este servicio o tienes dudas, envíanos un mensaje.</p>
+                                <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios."><h5 style="color: white"> <i class="fa fa-whatsapp"></i> WhatsApp</h5></a>
+                                <a href="{{ path('contact') }}"><h5 style="color: white"><i class="fa fa-envelope"></i>Correo Electrónico</h5></a>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Left Side End -->
+                    <div class="col-md-9 col-sm-12 col-xs-12 margin-bottom-30 wow slideInDown">
+                        <img src="{{ asset('assets/img/law.jpg') }}" class="img-rounded margin-top-20 img-responsive" alt="service-consulting" style="border: solid 1px #007B8A; margin-top: -.5px; height: 405px; display: block; margin: auto ;">
+                    </div>
+                    <!--Accordions -->
+                    <div class="col-md-12 col-sm-12 col-xs-12 margin-bottom-30">
+                            <div class="accordion-example">
+                                <div class="panel-group" id="accordion">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseEigth">LICENCIA DE FUNCIONAMIENTO COMERCIAL</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseEigth" class="panel-collapse collapse in">
+                                                    <div class="panel-body text-justify">
+                                                        Nuestra labor consiste en hacer la gestión de la ante la autoridad municipal o estatal, para el debido inicio de funcionamiento de una estación de servicio o de cualquier establecimiento comercial.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">DERECHO ADMINISTRATIVO</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseOne" class="panel-collapse collapse">
+                                                    <div class="panel-body text-justify">
+                                                        Se ofrece el servicio a nuestros clientes, gestionando a su nombre los procedimientos administrativos de su interés, atendiendo todo tipo de asuntos en materia ambiental, de protección al consumidor, autoridades administrativas, atendiendo de manera integral todos los requerimientos y proporcionando una defensa jurídica especializada.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseNine"> DERECHO LABORAL </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseNine" class="panel-collapse collapse">
+                                                    <div class="panel-body text-justify">
+                                                        Nuestros servicios consisten en la representación legal de la parte patronal hacia nuestros clientes, atendiendo las diversas demandas y requerimientos con sus trabajadores, siempre actuando en el marco de lo que los ordenamientos en materia del trabajo disponen.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!--Fin de columna -->
+
+                                        <div class="col-lg-6">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwuelve">DERECHO PENAL</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseTwuelve" class="panel-collapse collapse">
+                                                    <div class="panel-body text-justify">
+                                                        En caso de que se presente alguna situación de este carácter, iniciando desde la etapa de denuncia ante la fiscalía general de justicia de la entidad tratando de llegar a un acuerdo reparatorio, dándole en caso de ser necesario, seguimiento al juicio penal en todas sus etapas de según lo establecido en las disposiciones del nuevo código nacional de procedimientos penales, y sus etapas subsecuentes.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">DERECHO DE AMPARO</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseFour" class="panel-collapse collapse">
+                                                    <div class="panel-body text-justify">
+                                                        El derecho de amparo es un medio procesal constitucional que tiene por objeto la atención y el respeto de los derechos humanos establecidos en la Constitución Política de los Estados Unidos Mexicanos, buscando proteger a nuestros clientes de los actos de todas las autoridades sin distinción de rango, cuando estas violen dichas garantías.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">PERMISO DE VENTA DE PETROLIFEROS MODALIDAD EXPENDIO Y TRANSPORTE</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseFour" class="panel-collapse collapse">
+                                                    <div class="panel-body text-justify">
+                                                        Realizamos el trámite de permiso de venta de petrolíferos a través de la Comisión Reguladora de Energía para realizar la actividad de comercialización de petrolíferos en territorio nacional.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                            <!--End of Accordions -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        </section>
+    </div>
+{% endblock %}

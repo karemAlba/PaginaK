@@ -1,0 +1,116 @@
+{% extends ('@App/layout.html.twig') %}
+
+{% block javascript %}
+    <script>
+        $("#generar").click(function () {
+            $.ajax({
+                type:'POST',
+                url:'{{ path('genPassword') }}',
+                success:function(html){
+                    $("#usuariosType_contrasena").attr('value',html);
+                }
+            });
+        });
+        $('#usuariosType_perfil').val({{ perfil[0].perfiles.id }});
+        $(':submit').click(function (e) {
+            if($('#usuariosType_contrasena').val()==''){
+                $('#password-error').removeClass('hidden');
+                e.preventDefault();
+            }else{
+                $('#password-error').addClass('hidden');
+            }
+            var x = "";
+            $.each($('#usuariosType_privilegios.select2').select2('data'), function (i, val) {
+                x = x + val.id + ".";
+            });
+            $("#usuariosType_lista").attr('value', x);
+
+            if ($("#usuariosType_lista").val() == '') {
+                e.preventDefault();
+                $('#error-privilegio').removeClass('hidden');
+                $('#error-privilegio').html('Selecciona al menos un Privilegio');
+            } else {
+                $('#error-privilegio').addClass('hidden');
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Actualización de Usuarios </h2>
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regUsuarios') }}">Usuarios</a></li>
+                            <li class="breadcrumb-item active" >Actualización</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding">
+            {{ form_start(edit_form) }}
+
+            <fieldset class="form-group">
+                <label class="form-label semibold" for="exampleInput">Nombre</label>
+                <div class="col-sm-10">
+                    <label for=""><strong>{{ usuario.personales.nombre|capitalize }} {{ usuario.personales.apPaterno|capitalize }} {{ usuario.personales.apMaterno|capitalize }}</strong></label>
+                </div>
+            </fieldset>
+            <fieldset class="form-group">
+                <label class="form-label semibold" for="exampleInput">Usuario</label>
+                <div class="col-sm-10">
+                    {{ form_widget(edit_form.nombre, {'attr': {'class': 'form-control', 'placeholder': 'Usuario' , 'readonly':'readonly' } }) }}
+                </div>
+            </fieldset>
+            <fieldset class="form-group">
+                <label class="form-label semibold" for="exampleInput">Contraseña</label>
+                <div class="col-sm-5">
+                    {{ form_widget(edit_form.contrasena, {'attr': {'class': 'form-control', 'placeholder': 'Contraseña', 'readonly':'readonly', 'value':usuario.contrasena } }) }}
+                    <p class="help-block hidden" id="password-error">Genera una Contraseña</p>
+                </div>
+                <div class="col-sm-3">
+                    <a id="generar" class="btn btn-primary">Generar Nueva Contraseña</a>
+                </div>
+            </fieldset>
+            <fieldset class="form-group">
+                <div class="col-sm-5">
+                    <label class="form-label semibold" for="exampleInput">Perfiles</label>
+                    {{ form_widget(edit_form.perfil, {'attr': {'class': 'form-control', 'placeholder': 'Perfiles'} }) }}
+                    <p class="help-block hidden" id="perfil-error">Seleccione un Perfil</p>
+                </div>
+                <div class="col-sm-5">
+                    <label class="form-label semibold" for="exampleInput">Privilegios</label>
+                    {{ form_widget(edit_form.privilegios, {'attr': {'class': 'form-control hidden', 'placeholder': 'Privilegios', 'multiple':'multiple'} }) }}
+                    <select class="form-control select2" multiple="multiple" id="usuariosType_privilegios" name="usuariosType[privilegios]">
+                        {% for p in privilegios %}
+                            <option value="{{ p.id }}" {% if p.id in sel %}selected{% endif %}>{{ p.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    {{ form_widget(edit_form.lista, {'attr': {'class': 'form-control hidden' } }) }}
+                    <p class="help-block hidden" id="error-privilegio"></p>
+                </div>
+            </fieldset>
+            <div class="form-check form-check-inline">
+                <label class="col-sm-2 form-control-label">Activo</label>
+                {{ form_widget(edit_form.activo, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_widget(edit_form.ingresar,{'attr': {'class': 'btn btn-primary default'}}) }}
+                    <a class="btn btn-danger btn-cons m-t-10" href="{{ path('regUsuarios') }}" role="button"> Cancelar</a>
+                </div>
+            </div>
+            {{ form_end(edit_form) }}
+        </div>
+    </div>
+{% endblock %}

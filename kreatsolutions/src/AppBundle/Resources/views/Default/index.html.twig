@@ -1,0 +1,584 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block javascripts %}
+    <script>
+        $(document).on("ready", function(e) {
+            var sync1 = $("#mainslider");
+            var sync2 = $("#mainslider-nav");
+            sync1.owlCarousel({
+                singleItem: true,
+                slideSpeed: 1000,
+                paginationSpeed: 800,
+                navigation: false,
+                pagination: true,
+                autoPlay: 7500,
+                autoHeight: true,
+                afterAction: syncPosition,
+                responsiveRefreshRate: 200,
+            });
+            sync2.owlCarousel({
+                items: 4,
+                itemsDesktop: [1199, 4],
+                itemsDesktopSmall: [979, 4],
+                itemsTablet: [768, 3],
+                itemsMobile: [479, 2],
+                pagination: true,
+                responsiveRefreshRate: 100,
+                afterInit: function(el) {
+                    el.find(".owl-item").eq(0).addClass("synced");
+                }
+            });
+
+            function syncPosition(el) {
+                var current = this.currentItem;
+                $("#mainslider-nav").find(".owl-item").removeClass("synced").eq(current).addClass("synced")
+                if($("#mainslider-nav").data("owlCarousel") !== undefined) {
+                    center(current)
+                }
+            }
+            $("#mainslider-nav").on("click", ".owl-item", function(e) {
+                e.preventDefault();
+                var number = $(this).data("owlItem");
+                sync1.trigger("owl.goTo", number);
+            });
+
+            function center(number) {
+                var sync2visible = sync2.data("owlCarousel").owl.visibleItems;
+                var num = number;
+                var found = false;
+                for(var i in sync2visible) {
+                    if(num === sync2visible[i]) {
+                        var found = true;
+                    }
+                }
+                if(found === false) {
+                    if(num > sync2visible[sync2visible.length - 1]) {
+                        sync2.trigger("owl.goTo", num - sync2visible.length + 2)
+                    } else {
+                        if(num - 1 === -1) {
+                            num = 0;
+                        }
+                        sync2.trigger("owl.goTo", num);
+                    }
+                } else if(num === sync2visible[sync2visible.length - 1]) {
+                    sync2.trigger("owl.goTo", sync2visible[1])
+                } else if(num === sync2visible[0]) {
+                    sync2.trigger("owl.goTo", num - 1)
+                }
+            }
+        });
+
+        // ______________ CAROUSEL
+        $(document).on("ready", function(e) {
+            $("#gallery").owlCarousel({
+                pagination: true,
+                autoPlay: 3000, //Set AutoPlay to 3 seconds
+                items: 3,
+                itemsDesktop: [1199, 3],
+                itemsDesktopSmall: [979, 3]
+            });
+        });
+
+        $(document).on("ready", function(e) {
+            // ______________ TESTIMONIALS
+            $("#testimonials-carousel").owlCarousel({
+                items: 1,
+                autoPlay: 5000,
+                itemsDesktop: [1199, 1],
+                itemsDesktopSmall: [979, 1],
+                itemsTablet: [768, 1]
+            });
+            // ______________ PRICE TABS
+            $('#shared-hosting-price-tabs').responsiveTabs({
+                startCollapsed: 'accordion'
+            });
+            // ______________ FEATURES TABS
+            $('#shared-hosting-features-tabs').responsiveTabs({
+                startCollapsed: 'accordion'
+            });
+            // ______________ VIDEOPOPUP
+            $("a.autoplay").VideoPopUp();
+            $("a.noautoplay").VideoPopUp({
+                autoplay: 0
+            }); // Disable autoplay
+
+            // ______________ COUNTDOWN
+            $("#limited").countdown("2019/08/15", function(event) {
+                $(this).text(
+                    event.strftime('%D Days %H:%M:%S')
+                );
+            });
+            // ______________ PARTNERS
+            $("#datacenter-partners").owlCarousel({
+                autoPlay: 4000, //Set AutoPlay to 3 seconds
+                items: 3,
+                itemsDesktop: [1199, 3],
+                itemsDesktopSmall: [979, 3],
+                pagination: false
+            });
+            // ______________ PARALLAX
+            $('.section-parallax').parallax("50%", 0.4);
+            // ______________ STATS
+            $('.statistics').waypoint(function(e) {
+                $('#myStat1').circliful();
+                $('#myStat2').circliful();
+                $('#myStat3').circliful();
+                $('#myStat4').circliful();
+
+            }, {
+                offset: 800,
+                triggerOnce: true
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block inicio %}
+    current
+{% endblock %}
+
+{% block body %}
+    <!-- Slider -->
+    <div class="slidercontainer wow hidden-md hidden-xs">
+        <div id="mainslider" class="owl-carousel">
+            <div class="item">
+                <div class="row full-width no-gutter section_sapce1 bg_primary cover-image2" data-image-src="{{ asset('assets/img/imagen3.jpg') }}">
+                    <div class="container">
+                        <div class="col-sm-12 col-md-6 custom-info4-column radius" style="width: 550px">
+                            <div class="thequote">
+                                <h5 class="text_dark"><strong>Diseño, Construcción y Remodelación</strong></h5>
+                                <h4 class="text_dark">Expendios al público, CEDIS y Terminales de Almacenamiento</h4>
+                                <ul class="list6">
+                                    <li>Cambio de imagen (Identidad o marca)</li>
+                                    <li>DUE diligence <strong>(compra,venta,renta o abanderamiento)</strong></li>
+                                    <li>Cumplimiento a dictámenes de acuerdo a la <strong>NOM-005-ASEA-2016</strong> </li>
+                                </ul>
+                                <a style="margin-top: 30px" href="{{ path('diseno') }}" class="btn btn-lg btn-new">Más información aquí... </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="row full-width no-gutter section_sapce1 bg_primary cover-image2" data-image-src="{{ asset('assets/img/pruebat.png') }}">
+                    <div class="container">
+                        <div class="col-sm-12 col-md-6 custom-info4-column radius" style="width: 550px">
+                            <div class="thequote">
+                                <h5 class="text_dark"><strong>Cumplimiento en Operación y Mantenimiento para Terminales de Almacenamiento</strong></h5>
+                                    <ul class="text_dark margin-t30">
+                                        <li><strong>NOM-006-ASEA-2017</strong></li>
+                                    </ul>
+                                <a style="margin-top: 50px" href="{{ path('asea') }}" class="btn btn-lg btn-new">Más información aquí...</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="row full-width no-gutter section_sapce1 bg_primary cover-image2" data-image-src="{{ asset('assets/img/imagen1.jpg') }}">
+                    <div class="container">
+                        <div class="col-sm-12 col-md-6 custom-info4-column radius" style="width: 550px">
+                            <div class="thequote">
+                                <h5 class="text_dark"><strong>Cumplimiento ASEA</strong></h5>
+                                <ul class="list6">
+                                    <li><h4><strong>SASISOPA</strong></h4></li>
+                                    <ul class="list6">
+                                        <li>Industrial (TAD, CEDIS y Comercializadoras)</li>
+                                        <li>Comercio (Expendio al público)</li>
+                                    </ul>
+                                    <li><h4><strong>Operación y Mantenimiento para expendios al público</strong></h4></li>
+                                    <ul class="list6">
+                                        <li>NOM-005-ASEA-2016</li>
+                                    </ul>
+                                </ul>
+                                <a href="{{ path('asea') }}" class="btn btn-lg btn-new">Más información aquí...</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="row full-width no-gutter section_sapce1 bg_primary cover-image2" data-image-src="{{ asset('assets/img/imagen4.png') }}">
+                    <div class="container">
+                        <div class="col-sm-12 col-md-6 custom-info4-column radius" style="width: 550px">
+                            <div class="thequote">
+                                <h3 class="text_dark"><strong>STPS</strong></h3>
+                                <h4 class="text_dark margin-top-30">Acondicionamos su centro de trabajo y capacitamos al personal para responder efectivamente ante la presencia de riesgos</h4>
+                                <a style="margin-top: 60px" href="{{ path('stps') }}" class="btn btn-lg btn-new">Más información aquí...</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Slider -->
+
+    <section class="overlay hidden-xs hidden-sm wow bounceIn">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-4 ovr-img">
+                        <div class="ovr-img-wrap">
+                            <i class="fa fa-certificate fa-2x" aria-hidden="true"></i>
+                        </div>
+                        <h2>Especialistas en el sector hidrocarburos </h2>
+                        <p style="margin-bottom: 24px;">Con más de 100 servicios a su disposición.</p>
+
+                    </div>
+                    <div class="col-md-4 ovr-img">
+                        <div class="ovr-img-wrap">
+                            <i class="fa fa-users fa-2x" aria-hidden="true"></i>
+                        </div>
+                        <h2>Proactividad y dinamismo</h2>
+                        <p>Cambiamos conforme a las nuevas regulaciones o necesidades del mercado</p>
+                    </div>
+                    <div class="col-md-4 ovr-img">
+                        <div class="ovr-img-wrap">
+                            <i class="fa fa-building-o fa-2x" aria-hidden="true"></i>
+                        </div>
+                        <h2>Socialmente responsables </h2>
+                        <p>Comprometidos con nuestros empleados, clientes, proveedores y el medio ambiente </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--Carousel -->
+    <div class="section-title margin-b30 margin-t80">
+        <h2>¡En Kreatsolutions lo hacemos por usted!</h2>
+    </div>
+    <div id="gallery" class="wow bounceIn">
+        <div class="item">
+            <div class="boxes">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <!-- Icon -->
+                        {#<i class="mdi mdi-office-building"></i>#}
+                        <img src="{{ asset('assets/img/diseño y construcción.jpg') }}" alt="Diseño y construcción" class="img-responsive">
+                    </div>
+                    <!-- Title -->
+                    <div class="col-lg-9">
+                        <h3 class="text-center">Diseño y construcción</h3>
+                        <p class="justify">Innovación, conocimiento y profesionalismo en cada plano que diseñamos.</p>
+                        <p><a href="{{ path('diseno') }}" class="btn btn-primary btn-lg btn-block">Leer más...</a></p>
+                    </div>
+                </div>
+                <!-- Order -->
+
+            </div>
+        </div>
+        <div class="item">
+            <div class="boxes">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <!-- Icon -->
+                        {#<i class="mdi mdi-barley"></i>#}
+                        <img src="{{ asset('assets/img/Medio ambiente.jpg') }}" alt="Medio Ambiente" class="img-responsive">
+                    </div>
+                    <!-- Title -->
+                    <div class="col-lg-9">
+                        <h3>Medio ambiente</h3>
+                        <p style="font-size: 13.5px; text-align: justify">Alineados con lo requerido por la autoridad brindamos asesoría, tramitología y actividades diversas que cumplen con los requerimientos medio ambientales</p>
+                        <div class="row">
+                            <a href="{{ path('medio-ambiente') }}" class="btn btn-primary btn-lg btn-block">Leer más...</a>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Order -->
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="boxes  ">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <!-- Icon -->
+                        {#<i class="mdi mdi-verified"></i>#}
+                        <img src="{{ asset('assets/img/ASEA.JPG') }}" alt="ASEA" class="img-responsive">
+                    </div>
+                    <!-- Title -->
+                    <div class="col-lg-9">
+                        <h3>ASEA</h3>
+                        <p class="text-justify">Contamos con conocimiento pleno para adecuar su negocio y este pueda afrontar de manera positiva todo requerimiento ante la ASEA.</p>
+                        <a href="{{ path('asea') }}" class="btn btn-primary btn-lg btn-block">Leer más...</a>
+                    </div>
+                </div>
+                <!-- Order -->
+            </div>
+        </div>
+        <div class="item">
+            <div class="boxes">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <!-- Icon -->
+                        {#<i class="mdi mdi-alert-decagram"></i>#}
+                        <img src="{{ asset('assets/img/STPS.JPG') }}" alt="STPS" class="img-responsive">
+                    </div>
+                    <!-- Title -->
+                    <div class="col-lg-9">
+                        <h3>STPS</h3>
+                        <p class="text-justify">Acondicionamos su centro de trabajo y capacitamos al personal para responder efectivamente ante la presencia de riesgos.</p>
+                        <a href="{{ path('stps') }}" class="btn btn-primary btn-lg btn-block">Leer más...</a>
+                    </div>
+                </div>
+                <!-- Order -->
+            </div>
+        </div>
+        <div class="item">
+            <div class="boxes">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <!-- Icon -->
+                        {#<i class="mdi mdi-folder-key"></i>#}
+                        <img src="{{ asset('assets/img/CRE.JPG') }}" alt="CRE" class="img-responsive">
+                    </div>
+                    <!-- Title -->
+                    <div class="col-lg-9">
+                        <h3>CRE</h3>
+                        <p class="text-justify">Preparamos su negocio para que cumpla de manera positiva con las actividades que demanda la CRE.</p>
+                        <a href="{{ path('cre') }}" class="btn btn-primary btn-lg btn-block">Leer más...</a>
+                    </div>
+                </div>
+                <!-- Order -->
+            </div>
+        </div>
+        <div class="item">
+
+            <div class="boxes">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <!-- Icon -->
+                        {#<i class="mdi mdi-battery-charging"></i>#}
+                        <img src="{{ asset('assets/img/SENER.JPG') }}" alt="SENER" class="img-responsive">
+                    </div>
+                    <!-- Title -->
+                    <div class="col-lg-9">
+                        <h3>SENER</h3>
+                        <p style=" text-align: justify">En cumplimiento al marco legal vigente facilitamos asesoría, tramitología y actividades diversas que cumplen con los requerimientos solicitados por la autoridad.</p>
+                    </div>
+                </div>
+                <!-- Order -->
+            </div>
+        </div>
+        <div class="item">
+            <div class="boxes">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <!-- Icon -->
+                        {#<i class="mdi mdi-scale-balance"></i>#}
+                        <img src="{{ asset('assets/img/CRE.JPG') }}" alt="CRE" class="img-responsive">
+                    </div>
+                    <!-- Title -->
+                    <div class="col-lg-9">
+                        <h3>Jurídico</h3>
+                        <p style="font-size: 13.5px; text-align: justify">Ofrecemos información, orientación y asesoría especializada para solucionar todos aquellos temas relacionados con el sector hidrocarburos .</p>
+                        <a href="{{ path('juridico') }}" class="btn btn-primary btn-lg btn-block">Leer más...</a>
+                    </div>
+                </div>
+                <!-- Order -->
+            </div>
+        </div>
+
+
+    </div>
+    <!--End of Carousel  -->
+
+    <!-- Counter Area Start -->
+    <div class="counter section_sapce cover-image" data-image-src="{{ asset('images/subbanners/counter-bg.jpg') }}">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4 col-md-4 margin-top-15 margin-bottom-15">
+                    <!-- Counter Item Start -->
+                    <div class="counter-holder margin-top-15">
+                        <p class="counter-text  text_white"> Estados en donde Kreatsolutions está presente</p>
+                        <div class="counter-number  text_white">22</div>
+                    </div>
+                    <!-- Counter Item End -->
+                </div>
+
+                <div class="col-sm-4 col-md-4 margin-top-15 margin-bottom-15">
+                    <!-- Counter Item Start -->
+                    <div class="counter-holder margin-top-15">
+                        <p class="counter-text text_white">Horas trabajadas</p>
+                        <div class="counter-number text_white">103,680</div>
+                    </div>
+                    <!-- Counter Item End -->
+                </div>
+
+                <div class="col-sm-4 col-md-4 margin-top-15 margin-bottom-15">
+                    <!-- Counter Item Start -->
+                    <div class="counter-holder margin-top-15">
+                        <p class="counter-text text_white">Servicios realizados</p>
+                        <div class="counter-number text_white">1,500</div>
+                    </div>
+                    <!-- Counter Item End -->
+                </div>
+            </div>
+        </div>
+    </div><!-- Counter Area End -->
+
+    {#<!-- Testimonials -->#}
+    {#<section class="testimonials section_gray section_sapce wow bounceInDown">#}
+        {#<div class="row">#}
+            {#<div class="container">#}
+                {#<div class="col-sm-12">#}
+                    {#<div class="section-title  margin-b50">#}
+                        {#<h2>Testimonios <span>Clientes Satisfechos</span></h2>#}
+                    {#</div>#}
+                    {#<div id="testimonials-carousel" class="owl-carousel">#}
+                        {#<div class="item">#}
+                            {#<div class="col-md-12 testimonial-content">#}
+                                {#<div class=" col-md-2 testimonialimg"><img src="{{ asset('assets/img/testimonial-1.png') }}" alt="" /> </div>#}
+                                {#<div class=" col-md-10 whoclient">#}
+                                    {#<h5>Johnson Leh, Dueño de <a href="">Soft. Enterprise</a></h5>#}
+                                    {#<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias architecto est eum explicabo facere nostrum repellat suscipit ullam, velit. Animi fugit nemo obcaecati porro quasi! Aspernatur in laborum suscipit totam.</p>#}
+                                {#</div>#}
+                            {#</div>#}
+                        {#</div>#}
+                        {#<div class="item">#}
+                            {#<div class=" col-md-12 testimonial-content">#}
+                                {#<div class=" col-md-2 testimonialimg"><img src="{{ asset('assets/img/testimonial-2.png') }}" alt="" /> </div>#}
+                                {#<div class=" col-md-10 whoclient">#}
+                                    {#<h5>Sam Michael , Administrador de <a href="">HGBV</a></h5>#}
+                                    {#<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda, atque cupiditate dolores ea eos esse fugiat iure libero nesciunt odit, officiis optio provident quidem sequi sint temporibus velit! Aliquam, in?</p>#}
+                                {#</div>#}
+                            {#</div>#}
+                        {#</div>#}
+                        {#<div class="item">#}
+                            {#<div class=" col-md-12 testimonial-content">#}
+                                {#<div class=" col-md-2 testimonialimg"><img src="{{ asset('assets/img/testimonial-3.png') }}" alt="" /> </div>#}
+                                {#<div class=" col-md-10 whoclient">#}
+                                    {#<h5>David White, Director Operativo de <a href="">Jahsin Tech</a></h5>#}
+                                    {#<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet, aperiam aut autem, beatae commodi consequuntur dolor error excepturi fugiat iure mollitia odit perferendis provident quaerat quam quis rem ut voluptas.</p>#}
+                                {#</div>#}
+                            {#</div>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</section>#}
+    {#<!-- End of Testimonials -->#}
+
+
+
+
+    {#<!--Extra Info -->#}
+    {#<section class="section_sapce bg_gray wow bounceInLeft">#}
+        {#<div class="container">#}
+            {#<div class="section-title  margin-b50">#}
+                {#<h2>Estamos para servirte<span>Con nosotros siempre tendras</span></h2>#}
+            {#</div>#}
+
+            {#<div class="row main-head">#}
+                {#<div class="col-md-12 margin-b30">#}
+                    {#<p>En Kreatsolutions estamos para servirte</p>#}
+                {#</div>#}
+            {#</div>#}
+
+            {#<div class="row">#}
+                {#<div class="col-sm-12 col-md-6">#}
+                    {#<div class="pop-video-container margin-top-15">#}
+                        {#<!--Youtube Video Link-->#}
+                        {#<a class="autoplay" href="https://www.youtube.com/watch?v=mLvOprHLMR0"><i class="fa fa-play fa-3x" aria-hidden="true"></i></a>#}
+                        {#<img src="https://img.youtube.com/vi/mLvOprHLMR0/maxresdefault.jpg" alt="">#}
+                    {#</div>#}
+                {#</div>#}
+                {#<div class="col-sm-12 col-md-6">#}
+                    {#<div class="margin-b30">#}
+                        {#<div class="col-sm-12">#}
+                            {#<div class="left_icons">#}
+                                {#<div class="single_box_left">#}
+                                    {#<i class="feature-icon">#}
+                                        {#<i class="fa fa-shield fa-2x text_primary"></i>#}
+                                    {#</i>#}
+                                {#</div>#}
+                                {#<div class="single_box_right">#}
+                                    {#<h3>COMPROMISO</h3>#}
+                                    {#Ponemos a nuestros clientes primero. Siempre nos enfocamos en construir relaciones a largo plazo y entender a detalle las necesidades de nuestros clientes.#}
+                                {#</div>#}
+                            {#</div>#}
+                        {#</div>#}
+                    {#</div>#}
+
+                    {#<div class="margin-b30">#}
+                        {#<div class="col-sm-12">#}
+                            {#<div class="left_icons">#}
+                                {#<div class="single_box_left">#}
+                                    {#<i class="feature-icon">#}
+                                        {#<i class="fa fa-paper-plane fa-2x text_primary"></i>#}
+                                    {#</i>#}
+                                {#</div>#}
+                                {#<div class="single_box_right">#}
+                                    {#<h3>DINAMISMO</h3>#}
+                                    {#Asumimos pleno control de las actividades, tenemos iniciativa, aprendizaje continuo y combinamos eficacia con eficiencia; convirtiendo toda necesidad en oportunidades de negocio#}
+                                {#</div>#}
+                            {#</div>#}
+                        {#</div>#}
+                    {#</div>#}
+
+                    {#<div class="margin-b30">#}
+                        {#<div class="col-sm-12">#}
+                            {#<div class="left_icons">#}
+                                {#<div class="single_box_left">#}
+                                    {#<i class="feature-icon">#}
+                                        {#<i class="fa fa-gears fa-2x text_primary"></i>#}
+                                    {#</i>#}
+                                {#</div>#}
+                                {#<div class="single_box_right">#}
+                                    {#<h3>LEALTAD</h3>#}
+                                    {#Permanecemos con el cliente durante el tiempo necesario; obteniendo como resultado la satisfacción y recomendación de nuestros clientes.#}
+                                {#</div>#}
+                            {#</div>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</section>#}
+    {#<!--End of Extra Info -->#}
+
+    <!--trial Version-->
+    <section class="trail section_sapce3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 trail-con text-center">
+
+                    <h1>Tiene dudas, <span>envíenos un mensaje</span></h1>
+                </div>
+                <div class="col-md-3 trail-ver text-center">
+                   <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios."><i class="fa fa-whatsapp"></i> WhatsApp</a>
+                </div>
+                <div class="col-md-3 trail-ver text-center">
+                    <a href="{{ path('contact') }}"><i class="fa fa-envelope"></i> Correo Electrónico</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--end of trail version-->
+
+    <!-- Partners -->
+    <div class="partners section_sapce3 bg_gray">
+        <div class="row">
+            <div class="container">
+                <div class="col-sm-12">
+                    <div class="section-title hide-sm hide-xs" style="margin-bottom: 70px">
+                        <h2 style="font-size: 30px">Le ayudamos para iniciar operaciones o regularizarte ante las siguientes Instituciones</h2>
+                    </div>
+                    <div id="datacenter-partners">
+                        <div class="item"><img src="{{ asset('assets/img/unidades/asea.png') }}" alt="ASEA"> </div>
+                        <div class="item"><img src="{{ asset('assets/img/unidades/cre.png') }}" alt="CRE"> </div>
+                        <div class="item"><img src="{{ asset('assets/img/unidades/profeco.png') }}" alt="PROFECO"> </div>
+                        <div class="item"><img src="{{ asset('assets/img/unidades/semarnat.png') }}" alt="SEMARNAT"> </div>
+                        <div class="item"><img src="{{ asset('assets/img/unidades/sener.png') }}" alt="SENER"> </div>
+                        <div class="item"><img src="{{ asset('assets/img/unidades/stps.png') }}" alt="STPS"> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Partners -->
+{% endblock %}

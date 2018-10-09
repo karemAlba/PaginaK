@@ -1,0 +1,626 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script>
+        eTable = $('#table-pros').DataTable({
+            "sDom": '<l<t>ip>',
+            "paging": true,
+            "bLengthChange": false,
+            "language":{
+                "decimal":        ".",
+                "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":      "Mostrando _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Buscar:",
+                "searchPlaceholder": "Ingresa el nombre del Plan",
+                "zeroRecords":    "Sin Resultados",
+                "paginate": {
+                    "first":      "Primero",
+                    "last":       "Último",
+                    "next":       "Siguiente",
+                    "previous":   "Anterior"
+                }
+            }
+        });
+
+        eTable = $('#table-servicios').DataTable({
+            "sDom": '<l<t>ip>',
+            "paging": true,
+            "bLengthChange": true,
+            "language":{
+                "decimal":        ".",
+                "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrando _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Buscar:",
+                "searchPlaceholder": "Ingresa el nombre del Plan",
+                "zeroRecords":    "Sin Resultados",
+                "paginate": {
+                    "first":      "Primero",
+                    "last":       "Último",
+                    "next":       "Siguiente",
+                    "previous":   "Anterior"
+                }
+            }
+        });
+
+        $('#prospeccion-nom').keyup(function(){
+            eTable.search($(this).val()).draw()
+        });
+
+        $('#fecha-prospeccion').on('change',function () {
+            var fecha = $(this).val();
+            var date = formato(fecha);
+            console.log(date);
+            eTable.search(date).draw();
+        });
+
+        function formato(texto){
+            return texto.replace(/^(\d{4})-(\d{2})-(\d{2})$/g,'$3/$2/$1');
+        }
+
+
+        // Date range filter
+        minDateFilter = "";
+        maxDateFilter = "";
+
+        $.fn.dataTableExt.afnFiltering.push(
+            function(oSettings, aData, iDataIndex) {
+                if (typeof aData._date == 'undefined') {
+                    aData._date = new Date(aData[0]).getTime();
+                }
+
+                if (minDateFilter && !isNaN(minDateFilter)) {
+                    if (aData._date < minDateFilter) {
+                        return false;
+                    }
+                }
+
+
+
+                return true;
+            }
+        );
+
+
+            var n1 = {{ prosH|length }};
+            var n2 = {{ pros|length }};
+
+            var suma = parseInt(n1) + parseInt(n2);
+            llamadas.innerHTML = +suma  ;
+    </script>
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Prospección</h2>
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('prospeccion') }}">Prospección</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Prospectar</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding cliente">
+            <h4><strong>Cliente</strong></h4>
+            <hr>
+            <div class="tabs-section-nav tabs-section-nav-inline" style="margin-bottom: 15px;">
+                <ul class="nav" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#tabs-4-tab-1" role="tab" data-toggle="tab">
+                            Cliente
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-4-tab-2" role="tab" data-toggle="tab">
+                            Datos de contacto
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-4-tab-3" role="tab" data-toggle="tab">
+                            Domicilio Físico
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-4-tab-4" role="tab" data-toggle="tab">
+                            Domicilio Fiscal
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-4-tab-5" role="tab" data-toggle="tab">
+                            Sector
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tabs-4-tab-6" role="tab" data-toggle="tab">
+                            Datos de específicos
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="tabs-4-tab-1">
+                    <div class="box-typical box-typical-padding cliente">
+                        <div class="row" >
+                            <div class="col-lg-6">
+                                <h6># Permiso</h6>
+                                {% if cli.numeroPermiso is not null %}
+                                    <p>{{ cli.numeroPermiso }}</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                                <h6>Razón Social</h6>
+                                <p>{{ cli.razonSocial }}</p>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <h6>Estación de servicio</h6>
+                                        <p>
+                                            {% if cli.estacionServicio is not empty %}
+                                                {{ cli.estacionServicio }}
+                                            {% else %}
+                                                -----
+                                            {% endif %}
+                                        </p>
+                                        <h6>Teléfono de la empresa</h6>
+                                        <p>
+                                            {% if cli.telefonoEmpresa is not empty %}
+                                                {{ cli.telefonoEmpresa }}
+                                            {% else %}
+                                                -----
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <h6>RFC</h6>
+                                        {% if cli.rfc is not empty %}
+                                            <p>{{ cli.rfc }}</p>
+                                        {% else %}
+                                            <p>-----</p>
+                                        {% endif %}
+                                        <h6>Email de la empresa</h6>
+                                        {% if cli.correoEmpresa is not empty %}
+                                            <p>{{ cli.correoEmpresa }}</p>
+                                        {% else %}
+                                            <p>-----</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <h6>Tipo de cliente</h6>
+                                <p>{{ cli.tipoClientes }}</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <h6>Calle</h6>
+                                <p>
+                                    {% if domicilio.calle is not empty %}
+                                        {{ domicilio.calle }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                                <h6>Estado</h6>
+                                <p>{{ domicilio.municipios.estados.nombre }}</p>
+                                <h6>Municipio</h6>
+                                <p>{{ domicilio.municipios.nombre }}</p>
+                                <h6>Colonia</h6>
+                                <p>
+                                    {% if domicilio.colonias is not null %}
+                                        {{ domicilio.colonias.nombre }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                                <h6>Codigo postal</h6>
+                                <p>
+                                    {% if domicilio.colonias is not null %}
+                                        {{ domicilio.colonias.codigoPostal }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-12 dahsboard-column "  >
+                            <section class="box-typical box-typical-dashboard panel panel-default scrollable">
+                                <header class="box-typical-header panel-heading">
+                                    <h5 class="panel-title"><strong>Datos de la llamada teléfonica</strong></h5>
+                                </header>
+                                <div class="box-typical-body panel-body">
+                                    <article class="comment-item">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <h6>Estatus de llamada</h6>
+                                                <p>
+                                                    {% if pros is not null %}
+                                                        {{ pros.estatusSeguimientoProspeccion.nombre }}
+                                                    {% else %}
+                                                        -----
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h6>Cantidad de llamadas realizadas al cliente</h6>
+                                                <p id="llamadas"></p>
+                                            </div>
+                                        </div>
+                                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-pros" style="width: 100%;">
+                                            <thead class="text-center">
+                                            <tr class="text-center">
+                                                <th>Estatus de llamada</th>
+                                                <th>Nombre del contacto</th>
+                                                <th>Detalle</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for h in prosH %}
+                                                    <tr>
+                                                        <td>{{ h.estatusSeguimientoProspeccion.nombre }}</td>
+                                                        <td>{{ h.responsableContactos.nombre }}</td>
+                                                        <td><a href="#" id="{{ h.id }}" data-toggle="modal" data-target="#estatus"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <div class="modal fade" id="estatus" tabindex="-1" role="dialog" aria-labelledby="estatus" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Datos de la llamada teléfonica</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-lg-6">
+                                                                <h6>Hora de inicio</h6>
+                                                                <p>
+                                                                    {% if pros is not null %}
+                                                                        {{ pros.horaInicio }}
+                                                                    {% else %}
+                                                                        -----
+                                                                    {% endif %}
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <h6>Hora de Finalización</h6>
+                                                                <p>{% if pros is not null %}
+                                                                        {{ pros.horaFin }}
+                                                                    {% else %}
+                                                                        -----
+                                                                    {% endif %}</p>
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <h6>Estatus de llamada</h6>
+                                                                <p>
+                                                                    {% if pros is not null %}
+                                                                        {{ pros.estatusSeguimientoProspeccion.nombre }}
+                                                                    {% else %}
+                                                                        -----
+                                                                    {% endif %}
+                                                                </p>
+                                                                <br>
+                                                                {% if pros is not null %}
+                                                                    <h6><strong>Llamada reprogramada</strong></h6>
+                                                                    <div class="col-lg-6">
+                                                                        <h6>Fecha</h6>
+                                                                        <p>{{ pros.fechaReprograma|date('d/m/Y') }}</p>
+                                                                    </div>
+                                                                    <div class="col-lg-6">
+                                                                        <h6>Hora</h6>
+                                                                        <p>{{ pros.horaReprograma }}</p>
+                                                                    </div>
+                                                                {% else %}
+
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div><!--.box-typical-body-->
+                            </section><!--.box-typical-dashboard-->
+                        </div><!--.col-->
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="box-typical box-typical-padding cliente">
+                                <h5 class="panel-title"><strong>Servicios contratados por el cliente</strong></h5>
+                                <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-servicios" style="width: 100%;">
+                                    <thead>
+                                    <tr class="text-center">
+                                        <th>Departamento</th>
+                                        <th>Servicio</th>
+                                        <th>Subservicio</th>
+                                        <th>Origen del servicio</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                    {% for s in ps %}
+                                        <tr>
+                                            <td>{{ s.subservicio.servicio.departamentoServicios.nombre }}</td>
+                                            <td>{{ s.subservicio.servicio.nombre }}</td>
+                                            <td>{{ s.subservicio.nombre }}</td>
+                                            <td>{% if s.isAdicional == 1 %}Necesidad Detectada{% else %}Plan de Prospección{% endif %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!--Fin de Clientes-->
+                <div role="tabpanel" class="tab-pane fade" id="tabs-4-tab-2"><!--Inicio de Datos contácto-->
+                    <div class="box-typical box-typical-padding cliente">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6>Nombre del contacto</h6>
+                                <p>
+                                    {% if pros is not null %}
+                                        {{ pros.responsableContactos.nombre }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                                <h6>Teléfono del contacto</h6>
+                                <p>
+                                    {% if pros is not null %}
+                                        {{ pros.responsableContactos.telefono }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-lg-6">
+                                <h6>Email del contacto</h6>
+                                <p>
+                                    {% if pros is not null %}
+                                        {{ pros.responsableContactos.correo }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                                <h6>Cargo del contacto</h6>
+                                <p>
+                                    {% if pros is not null %}
+                                        {{ pros.responsableContactos.tipoResponsables.nombre }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--Fin de Datos contácto-->
+
+                <div role="tabpanel" class="tab-pane fade" id="tabs-4-tab-3"><!--Inicio de Domicilio Físico-->
+                    <div class="box-typical box-typical-padding cliente">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6>Calle</h6>
+                                <p>
+                                    {% if domicilio.calle is not empty %}
+                                        {{ domicilio.calle }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                                <h6>Estado</h6>
+                                <p>{{ domicilio.municipios.estados.nombre }}</p>
+                                <h6>Municipio</h6>
+                                <p>{{ domicilio.municipios.nombre }}</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <h6>Colonia</h6>
+                                <p>
+                                    {% if domicilio.colonias is not null %}
+                                        {{ domicilio.colonias.nombre }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                                <h6>Codigo postal</h6>
+                                <p>
+                                    {% if domicilio.colonias is not null %}
+                                        {{ domicilio.colonias.codigoPostal }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--Fin de Domicilio Físico-->
+
+                <div role="tabpanel" class="tab-pane fade" id="tabs-4-tab-4"><!--Inicio de Domicilio Físcal-->
+                    <div class="box-typical box-typical-padding cliente">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6>Calle</h6>
+                                {% if domiciliof is not null %}
+                                    <p>{{ domiciliof.calle }}</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                                <h6>Estado</h6>
+                                {% if domiciliof is not null %}
+                                    <p>{{ domiciliof.municipios.estados.nombre }}</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                                <h6>Municipio</h6>
+                                {% if domiciliof is not null %}
+                                    <p>{{ domiciliof.municipios.nombre }}</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-6">
+                                <h6>Colonia</h6>
+                                {% if domiciliof is not null %}
+                                    <p>{{ domiciliof.colonias.nombre }}</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                                <h6>Código Postal</h6>
+                                {% if domiciliof is not null %}
+                                    <p>{{ domiciliof.colonias.codigoPostal }}</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div><!--Fin de Domicilio Físcal-->
+
+                <div role="tabpanel" class="tab-pane fade" id="tabs-4-tab-5"><!--Inicio de Sector-->
+                    <div class="box-typical box-typical-padding cliente">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6>Sector</h6>
+                                <p>{{ cli.categorias.segmentos.sectores.nombre }}</p>
+                                <h6>Segmento</h6>
+                                <p>{{ cli.categorias.segmentos.nombre }}</p>
+                                <h6>Categoría</h6>
+                                <p>{{ cli.categorias.nombre }}</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <h6>Marca</h6>
+                                <p>
+                                    {% if pc.planProspeccion.marcas is not null %}
+                                        {{ pc.planProspeccion.marcas.nombre }}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                                <h6>Producto</h6>
+                                <p>
+                                    {% if productos|length>0 %}
+                                        {% for p in productos %}{{ p.productos.nombre }}{% if loop.last %}{% else %} - {% endif %}{% endfor %}
+                                    {% else %}
+                                        -----
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--Fin de Sector-->
+
+                <div role="tabpanel" class="tab-pane fade" id="tabs-4-tab-6"><!--Inicio de Datos específicos-->
+                    <div class="box-typical box-typical-padding cliente">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6>¿Es independiente?</h6>
+                                {% if domicilio.clientes.grupos is not null %}
+                                    <p>{% if domicilio.clientes.grupos.nombre=='Independiente' %}Si{% else %}No{% endif %}</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                                <h6>Asociación</h6>
+                                {% if cli.grupos is not null and cli.grupos.tipoGrupos.id==1 %}
+                                    <p>{{ cli.grupos.nombre }}</p>
+                                {% elseif cli.grupos is not null and cli.grupos.tipoGrupos.id==2 %}
+                                    {% for x in grupos %}
+                                        {% if c.clientes.grupos.idGrupoPadre == x.id %}
+                                            <p>{{ x.nombre }}</p>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% elseif cli.grupos is not null and cli.grupos.tipoGrupos.id==3 %}
+                                    {% if cli.grupos.idGrupoPadre == 0 %}
+                                        <p>-----</p>
+                                    {% else %}
+                                        {% for x in grupos %}
+                                            {% if cli.grupos.idGrupoPadre == x.id %}
+                                                {% if x.idGrupoPadre==0 %}
+                                                    <p>-----</p>
+                                                {% else %}
+                                                    {% for y in grupos %}
+                                                        {% if x.idGrupoPadre == y.id %}
+                                                            <p>{{ y.nombre }}</p>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% elseif cli.grupos is not null and cli.grupos.tipoGrupos.id==4 %}
+                                    <p>-----</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+
+                            </div>
+                            <div class="col-lg-6">
+                                <h6>Unión</h6>
+                                {% if cli.grupos is not null and cli.grupos.tipoGrupos.id==1 %}
+                                    <p> -----</p>
+                                {% elseif cli.grupos is not null and cli.grupos.tipoGrupos.id==2 %}
+                                    <p>{{ cli.grupos.nombre }}</p>
+                                {% elseif cli.grupos is not null and cli.grupos.tipoGrupos.id==3 %}
+                                    {% for x in grupos %}
+                                        {% if cli.grupos.idGrupoPadre == x.id %}
+                                            <p>{{ x.nombre }}</p>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% elseif cli.grupos is not null and cli.grupos.tipoGrupos.id==4 %}
+                                    <p>-----</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                                <h6>Grupo</h6>
+                                {% if cli.grupos is not null and cli.grupos.tipoGrupos.id==1 %}
+                                    <p>-----</p>
+                                {% elseif cli.grupos is not null and cli.grupos.tipoGrupos.id==2 %}
+                                    <p>-----</p>
+                                {% elseif cli.grupos is not null and cli.grupos.tipoGrupos.id==3 %}
+                                    <p>{{ cli.grupos.nombre }}</p>
+                                {% elseif cli.grupos is not null and cli.grupos.tipoGrupos.id==4 %}
+                                    <p>-----</p>
+                                {% else %}
+                                    <p>-----</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div><!--Fin de Datos específicos-->
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

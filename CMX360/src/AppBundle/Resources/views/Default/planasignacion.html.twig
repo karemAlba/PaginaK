@@ -1,0 +1,289 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script>
+    $(document).ready(function() {
+        $('#table').dataTable({
+            "paging": true,
+            "searching":false,
+            "bLengthChange": true,
+            "language":{
+                "decimal":        ".",
+                "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrando _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Buscar:",
+                "zeroRecords":    "Sin Resultados",
+                "paginate": {
+                    "first":      "Primero",
+                    "last":       "Último",
+                    "next":       "Siguiente",
+                    "previous":   "Anterior"
+                }
+            }
+        });
+        var a = parseInt({{ plan.numeroAsesores }});
+        var c = parseInt({{ pc|length }});
+        var t = parseInt(c/a);
+        var r = c%a;
+        $('input[name="numero[]"]').each(function() {
+            if(r!=0){
+                $(this).val(t+1);
+                r=r-1;
+            }else{
+                $(this).val(t);
+            }
+        });
+        $('.asesor').click(function() {
+            $(this).select();
+        });
+        $('.asesor').bind('keyup',function() {
+            var x = 0;
+            $('input[name="numero[]"]').each(function() {
+                x = parseInt(x) + parseInt($(this).val());
+            });
+            if(x>c){
+                $('#numAsesores').html('El número de clientes asignado es mayor al número de Clientes en el Plan');
+                $('#numAsesores').removeClass('hidden');
+            }else if(x<c){
+                $('#numAsesores').html('Hay clientes sin asignar');
+                $('#numAsesores').removeClass('hidden');
+            }else{
+                $('#numAsesores').addClass('hidden');
+            }
+        });
+        $('.lista').on('change',function() {
+            var i = $(this).val();
+            var id = $(this).attr('id');
+            $('.lista').each(function() {
+                if($(this).attr('id')!=id){
+                    $(this).find("option[value=" + i + "]").attr('disabled','disabled');
+                }
+            });
+        });
+        $('a.as').attr('data-toggle','modal').click(function() {
+            var x = $(this).attr('id');
+            var no = 0;
+            $('.asesor').each(function() {
+                if($(this).attr('id')<x){
+                    no = parseInt(no) + parseInt($(this).val());
+                }
+            });
+
+            $.ajax({
+                type:'POST',
+                url:'{{ path('asignar-clientes') }}',
+                data:'plan={{ plan.id }}&clientes='+no+'&limite='+$('#'+x).val(),
+                success:function(html){
+                    $('#body-tabla').html('');
+                    $.each(html, function(i,item) {
+                        $('#body-tabla').append('<tr><td>'+item.marca+'</td><td>'+item.asociacion+'</td><td>'+item.union+'</td><td>'+item.grupo+'</td><td>'+item.estado+'</td><td>'+item.permiso+'</td></tr>');
+                    });
+                    $('#clientes').on('show.bs.modal', function () {
+                           $(this).find('.modal-body').css({
+                                  width:'auto',
+                                  height:'auto',
+                                  'max-height':'100%'
+                           });
+                    });
+                }
+            });
+        });
+        $(':submit').click(function(e) {
+            {% for i in 1..plan.numeroAsesores %}
+                if($('#asesor{{ i }} option:selected').prop('disabled') == true){
+                    e.preventDefault();
+                    $('#numAsesores').html('Seleccione Asesor');
+                    $('#numAsesores').removeClass('hidden');
+                }else{
+                    $('#numAsesores').addClass('hidden');
+                }
+            {% endfor %}
+        });
+    });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <style>
+        a.btn:focus, a.btn:hover {
+            color: #ac6bec;
+        }
+    </style>
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Asignación</h2>
+                </div>
+                <div class="tbl-cell text-right" >
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regPlan') }}">Plan Prospección</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb1">Asignación</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+
+    <section class="tabs-section">
+        <div class="tabs-section-nav">
+            <div class="tbl">
+                <ul class="nav" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#tabs-2-tab-1" role="tab" data-toggle="tab">
+                                <span class="nav-link-in">
+                                    Asignar
+                                    <span class="label label-pill label-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+                                </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="tab-content cliente">
+            <div role="tabpanel" class="tab-pane fade in active" id="tabs-2-tab-1">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h6>Nombre del Plan de Prospección</h6>
+                        <p>{{ plan.nombre|title }}</p>
+                    </div>
+                    <div class="col-sm-4">
+                        <h6>Tipo de Servicio</h6>
+                        <p>{{ plan.isIntegral|integral }}</p>
+                    </div>
+                    <div class="col-sm-4">
+                        <h6>Costo</h6>
+                        <p>$ {{ plan.costodeProspeccion|number_format(2,'.',',') }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h6>Asesores Asignados</h6>
+                        <p>{{ plan.numeroAsesores }}</p>
+                    </div>
+                    <div class="col-sm-4">
+                        <h6>Estaciones Impactadas</h6>
+                        <p>{{ pc|length }}</p>
+                    </div>
+                    <div class="col-sm-4">
+                        <h6>Período de Prospección</h6>
+                        <p>{{ plan.fechaInicio|date('d/m/Y') }} - {{ plan.fechaFin|date('d/m/Y') }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-push-4 col-sm-4 mt-20 mb-20">
+                        <a class="btn btn-info btn-block" data-toggle="modal" data-target="#servicios" href="#"><i class="font-icon font-icon-eye"></i> Ver Listado de Servicios</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <h6>Distribución de Clientes por Asesor</h6>
+                </div>
+                <form action="{{ path('guardar-asignacion') }}" method="post">
+                {% for i in 1..plan.numeroAsesores %}
+                    <div class="row mb-20">
+                        <div class="col-md-4">
+                            <input name="plan" value="{{ plan.id }}" class="hidden">
+                            <input type="number" min="0" step="1" class="form-control asesor" name="numero[]" id="{{ i }}">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-control lista" name="asesor[]" id="asesor{{ i }}">
+                                <option value="null" disabled="disabled" selected>Selecciona un Asesor</option>
+                                {% for a in lista %}
+                                    <option value="{{ a.id }}">{{ a.nombre|title }} {{ a.apellido|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <a class="btn btn-primary btn-block as" href="#" data-toggle="modal" id="{{ i }}" data-target="#clientes"><i class="font-icon font-icon-eye"></i> Ver Listado de Clientes</a>
+                        </div>
+                    </div>
+                {% endfor %}
+                    <p class="help-block hidden" id="numAsesores"></p>
+                    <div class="row mt-20 mb-20">
+                        <div class="col-md-4">
+                            <h6>Total de Clientes</h6>
+                            <input value="{{ pc|length }}" disabled class="form-control text-center">
+                        </div>
+                    </div>
+                    <button class="btn btn-success mt-20" type="submit" id="enviar">Asignar</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="servicios" tabindex="-1" role="dialog" aria-labelledby="Servicios" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Servicios</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table" style="width: 100%;">
+                        <thead>
+                        <tr class="text-center">
+                            <th>Empresa</th>
+                            <th>Departamento</th>
+                            <th>Servicio</th>
+                        </tr>
+                        </thead>
+                        <tbody class="text-center">
+                        {% for s in ps %}
+                            <tr class="has-text-center">
+                                <td>{{ s.subservicio.servicio.departamentoServicios.empresa.nombre }}</td>
+                                <td>{{ s.subservicio.servicio.departamentoServicios.nombre }}</td>
+                                <td>{{ s.subservicio.servicio.nombre }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="clientes" tabindex="-1" role="dialog" aria-labelledby="Clientes" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Clientes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: scroll;">
+                    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="clientes-tabla">
+                        <thead>
+                        <tr class="text-center">
+                            <th>Marca</th>
+                            <th>Asociación</th>
+                            <th>Unión</th>
+                            <th>Grupo</th>
+                            <th>Estado</th>
+                            <th># de Permiso</th>
+                        </tr>
+                        </thead>
+                        <tbody class="text-center" id="body-tabla">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

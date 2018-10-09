@@ -1,0 +1,321 @@
+{% extends ('@App/layout.html.twig') %}
+
+{% block javascript %}
+    <script>
+        function validate(evt) {
+            var theEvent = evt || window.event;
+            var key = theEvent.keyCode || theEvent.which;
+            key = String.fromCharCode( key );
+            var regex = /[0-9]/;
+            if( !regex.test(key) ) {
+                theEvent.returnValue = false;
+                if(theEvent.preventDefault) theEvent.preventDefault();
+            }
+        }
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#foto')
+                            .attr('src', e.target.result)
+                            .width(100);
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+            $(document).ready(function(){
+                $(':submit').click(function (e) {
+                    if($('#departamento option:selected').prop('disabled') == true){
+                        e.preventDefault();
+                        $('#departamento-error').removeClass('hidden');
+                    }else{
+                        $('#departamento-error').addClass('hidden');
+                    }
+                    if($('#cargo option:selected').prop('disabled') == true){
+                        e.preventDefault();
+                        $('#cargo-error').removeClass('hidden');
+                    }else{
+                        $('#cargo-error').addClass('hidden');
+                    }
+                    if($('#core_bundle_personales_type_generos option:selected').prop('disabled') == true){
+                        e.preventDefault();
+                        $('#genero-error').removeClass('hidden');
+                    }else{
+                        $('#genero-error').addClass('hidden');
+                    }
+                    if($('#core_bundle_personales_type_estatusLaborales option:selected').prop('disabled') == true){
+                        e.preventDefault();
+                        $('#estatus-error').removeClass('hidden');
+                    }else{
+                        $('#estatus-error').addClass('hidden');
+                    }
+                });
+                $('#departamento').on('change',function(){
+                    var departamentoID = $(this).val();
+                    if(departamentoID){
+                        $.ajax({
+                            type:'POST',
+                            url:'{{ path('departamentos-json') }}',
+                            data:'departamento='+departamentoID,
+                            success:function(html){
+                                $('#fcargo').removeClass('hidden');
+                                $('#cargo').find('option').remove();
+                                $('#cargo').append('<option disabled selected>Selecciona Cargo</option>');
+                                $.each(html, function(i,item) {
+                                    $('#cargo').append('<option value="'+item.id+'">'+item.cargo+'</option>');
+                                })
+                            }
+                        });
+                    }
+                });
+            });
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Actualización de Personal</h2>
+
+                </div>
+                <div class="tbl-cell text-right">
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regPersonal') }}">Personal</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Actualización</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    {% if not edit_form.vars.valid %}
+        <p style="font-size: 16px;" class="help-block">* Algunos campos presentan errores.</p>
+    {% endif %}
+    {{ form_start(edit_form) }}
+
+    <style>
+        #core_bundle_personales_type_rutaFotografia{
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+        .foto{
+            background: white;
+            border: 1px solid black;
+            width: 100px;
+            display: block;
+            margin-bottom: 15px;
+            border-radius: 10px 10px 10px 10px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding">
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset class="form-group">
+                        <div class="col-sm-10 text-center">
+                            <img src="{% if personales.rutaFotografia is null %}{{ asset('assets/img/photo.png') }}{% else %}{{ asset('uploads/personales/fotos/'~personales.rutaFotografia) }}{% endif %}" class="foto" id="foto"/>
+                            <label for="core_bundle_personales_type_rutaFotografia" class="btn btn-primary text-center">Adjuntar Foto</label>
+                            {{ form_widget(edit_form.rutaFotografia, {'attr': {'onchange':"readURL(this);"}}) }}
+                            {% if edit_form.rutaFotografia.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.rutaFotografia.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">Nombre</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.nombre, {'attr': {'class': 'form-control', 'placeholder': 'Nombre' } }) }}
+                            {% if edit_form.nombre.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.nombre.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">Apellido Paterno</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.apPaterno, {'attr': {'class': 'form-control', 'placeholder': 'Apellido paterno' } }) }}
+                            {% if edit_form.apPaterno.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.apPaterno.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">Apellido Materno</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.apMaterno, {'attr': {'class': 'form-control', 'placeholder': 'Apellido materno' } }) }}
+                            {% if edit_form.apMaterno.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.apMaterno.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <div class="col-sm-6">
+                            <label class="form-label semibold" for="exampleInput">Teléfono</label>
+                            {{ form_widget(edit_form.telefono, {'attr': {'class': 'form-control', 'placeholder': 'Teléfono' } }) }}
+                            {% if edit_form.telefono.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.telefono.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label semibold" for="exampleInput">Edad</label>
+                            {{ form_widget(edit_form.edad, {'attr': {'class': 'form-control', 'placeholder': 'Edad' } }) }}
+                            {% if edit_form.edad.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.edad.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">Email</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.correo, {'attr': {'class': 'form-control', 'placeholder': 'E-mail' } }) }}
+                            {% if edit_form.correo.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.correo.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">CURP</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.curp, {'attr': {'class': 'form-control', 'placeholder': 'CURP' } }) }}
+                            {% if edit_form.curp.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.curp.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset class="form-group" id="fdepartamento">
+                        <label class="form-label semibold" for="exampleInput">Departamento</label>
+                        <div class="col-sm-10">
+                            <select id="departamento" name="departamento" class="form-control">
+                                {% for d in listaD %}
+                                    <option {% if d.id == departamento %}selected{% endif %} value="{{ d.id }}">{{ d.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <p class="help-block hidden" id="departamento-error">Selecciona Departamento</p>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group" id="fcargo">
+                        <label class="form-label semibold" for="exampleInput">Cargo</label>
+                        <div class="col-sm-10">
+                            <select id="cargo" name="cargo" class="form-control">
+                                {% for c in listaC %}
+                                    <option {% if c.id == cargo %}selected{% endif %} value="{{ c.id }}">{{ c.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <p class="help-block hidden" id="cargo-error">Selecciona Cargo</p>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">RFC</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.rfc, {'attr': {'class': 'form-control', 'placeholder': 'RFC' } }) }}
+                            {% if edit_form.rfc.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.rfc.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">Número NOI</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.noi, {'attr': {'class': 'form-control', 'placeholder': 'NOI' } }) }}
+                            {% if edit_form.noi.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.noi.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">Género</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.generos, {'attr': {'class': 'form-control', 'placeholder': 'Género' } }) }}
+                            <p class="help-block hidden" id="genero-error">Selecciona Género</p>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">Fecha de Ingreso</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.fechaIngreso, {'attr': {'class': 'form-control', 'placeholder': 'Fecha de Ingreso' } }) }}
+                            {% if edit_form.fechaIngreso.vars.errors|length > 0 %}
+                                <p class="help-block">
+                                    {% for error in edit_form.fechaIngreso.vars.errors %}
+                                        {{ error.message }} <br/>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" for="exampleInput">Estatus</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(edit_form.estatusLaborales, {'attr': {'class': 'form-control', 'placeholder': 'Estatus' } }) }}
+                            <p class="help-block hidden" id="estatus-error">Selecciona Estatus</p>
+                        </div>
+                    </fieldset>
+                    <div class="form-check form-check-inline">
+                        <label class="col-sm-2 form-control-label">Activo</label>
+                        {{ form_widget(edit_form.activo, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_widget(edit_form.registrar,{'attr': {'class': 'btn btn-primary default'}}) }}
+                    <a class="btn btn-danger btn-cons m-t-10" href="{{ path('regPersonal') }}" role="button"> Cancelar</a>
+                </div>
+            </div>
+
+            {{ form_end(edit_form) }}
+        </div>
+    </div>
+{% endblock %}

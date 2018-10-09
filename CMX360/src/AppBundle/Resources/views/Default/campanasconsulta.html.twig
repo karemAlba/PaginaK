@@ -1,0 +1,142 @@
+{% extends ('@App/layout.html.twig') %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#campanaType_tipo').append('<option disabled selected value="null">Selecciona un Tipo de Campaña</option>');
+            $('#table-sm').dataTable({
+                "searching": false,
+                "bLengthChange": false,
+                "language":{
+                    "decimal":        ".",
+                    "emptyTable":     "No hay Resultados que Coincidan con la Búsqueda",
+                    "info":           "Mostrando del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "infoEmpty":      "Mostrando 0 de 0 de un total de 0 registros",
+                    "infoFiltered":   "(Filtrado de _MAX_ registros)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Mostrando _MENU_ registros",
+                    "loadingRecords": "Cargando...",
+                    "processing":     "Procesando...",
+                    "search":         "Buscar:",
+                    "searchPlaceholder": "Buscar",
+                    "zeroRecords":    "Sin Resultados",
+                    "paginate": {
+                        "first":      "Primero",
+                        "last":       "Último",
+                        "next":       "Siguiente",
+                        "previous":   "Anterior"
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Consulta SendinBlue</h2>
+                </div>
+                <div class="tbl-cell text-right" >
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regCampanas') }}">SendinBlue</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb1">Consulta</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="tabs-section">
+
+        <div class="box-typical box-typical-padding">
+            {{ form_start(form,  {'action':path('lista-campanas')}) }}
+            <div class="row">
+                <div class="col-lg-6">
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Número</label>
+                        {{ form_widget(form.numero,{'attr': {'class': 'form-control', 'placeholder': 'Ingrese el número' } }) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Nombre</label>
+                        {{ form_widget(form.nombre,{'attr': {'class': 'form-control', 'placeholder': 'Ingrese el nombre' } }) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Asunto</label>
+                        {{ form_widget(form.asunto,{'attr': {'class': 'form-control', 'placeholder': 'Ingrese el asunto' } }) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Remitente</label>
+                        {{ form_widget(form.nombreRemitente,{'attr': {'class': 'form-control', 'placeholder': 'Ingrese el remitente' } }) }}
+                    </fieldset>
+                </div>
+                <div class="col-lg-6">
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Correo del remitente</label>
+                        {{ form_widget(form.correoRemitente,{'attr': {'class': 'form-control', 'placeholder': 'Ingrese correo del remitente' } }) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Correo del destinatario</label>
+                        {{ form_widget(form.correoDestinatario,{'attr': {'class': 'form-control', 'placeholder': 'Ingrese correo del destinatario' } }) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Fecha de envio</label>
+                        {{ form_widget(form.fechaEnvio,{'attr': {'class': 'form-control'}} ) }}
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="form-label semibold" >Tipo de campaña</label>
+                        {{ form_widget(form.tipo,{'attr': {'class': 'form-control'} }) }}
+                    </fieldset>
+                    <style>
+                        .btn{
+                            margin-top: 25px;
+                        }
+                    </style>
+                    {{ form_widget(form.buscar, {'attr': {'class': 'btn btn-inline btn-primary'}}) }}
+                </div>
+            </div>
+            {{ form_end(form) }}
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <table id="table-sm" class="table table-bordered table-hover table-sm" style="margin-bottom: 25px;">
+                        <thead>
+                        <tr>
+                            <th width="1">No.</th>
+                            <th>Nombre</th>
+                            <th>Asunto</th>
+                            <th>Remitente</th>
+                            <th>Detalle</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in lista %}
+                            {% for n in final %}
+                                {% if n==i.id %}
+                                    <tr>
+                                        <td>{{ i.numero }}</td>
+                                        <td>{{ i.nombre }}</td>
+                                        <td>{{ i.asunto }}</td>
+                                        <td>{{ i.nombreremitente }}</td>
+                                        <td><a href="{{ path('consulta-campana',{'id': i.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

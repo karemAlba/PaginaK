@@ -1,0 +1,455 @@
+@font-face {
+    font-family: 'GANDHISERIF-REGULAR';
+    src: url(../fonts/GANDHISERIF-REGULAR.OTF) format('truetype');
+    font-style: normal;
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'GANDHISERIF-BOLD';
+    src: url(../fonts/GANDHISERIF-BOLD.OTF) format('truetype');
+    font-weight: 200;
+}
+body{
+    background-image: url("../images/CMXFondo.png");
+    background-size: cover;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+}
+/*Clientes - Registro Clientes*/
+.header-text{
+    max-height: 50px;
+    margin-top: -5px;
+    margin-left: 10px;
+}
+.site-header{
+    background: #A3C9E5;
+    padding: 10px 15px 0 0;
+    height: 65px;
+    border-bottom: solid 0px black;
+}
+.site-header .user-menu.dropdown .dropdown-toggle:hover, .site-header .user-menu.dropdown.open .dropdown-toggle {
+    color: #C9D3D2;
+}
+.site-header .user-menu.dropdown .dropdown-toggle{
+    color: white;
+}
+.site-header .header-alarm:hover {
+    color: #C9D3D2;
+}
+.dropdown-item:hover {
+    color: #C9D3D2;
+}
+.dropdown-item:hover .font-icon {
+    color: #C9D3D2;
+}
+.dropdown-item {
+    color: white;
+}
+.dropdown-item .font-icon {
+    color: white;
+}
+.dropdown-menu {
+    border-color: #000000;
+    background: #A3C9E5;
+}
+.dropdown-divider {
+    background-color: #000000;
+}
+.show-hide-sidebar{
+    width: 25px;
+}
+.show-hide-sidebar span:after, .show-hide-sidebar span:before, .show-hide-sidebar span{
+    height: 3px;
+    background: white;
+}
+.show-hide-sidebar span:before{
+    top: -6px;
+}
+.show-hide-sidebar span:after{
+    bottom: -6px;
+}
+.show-hide-sidebar:hover span, .show-hide-sidebar:hover span:after, .show-hide-sidebar:hover span:before {
+    background-color: #C9D3D2;
+}
+.site-header .header-alarm {
+    color: white;
+}
+.page-content{
+    padding-top: 65px;
+    padding-bottom: 0px;
+}
+.control-panel .page-content {
+    padding-right: 0px;
+}
+.page-content .container-fluid{
+    padding-left: 5px;
+    padding-right: 0px;
+}
+.with-side-menu .page-content {
+    padding-left: 235px;
+}
+.side-menu .jspPane {
+    padding-top: 80px !important
+}
+.side-menu {
+    border-right: 0px;
+}
+.side-menu-list a i{
+    color: #373A51;
+}
+.side-menu-list .lbl, .side-menu-list span{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    color: black;
+    font-size: 0.9rem;
+}
+.side-menu-list a:hover,.side-menu-list li > span:hover {
+    background-color: #C9D3D2;
+}
+.side-menu-list > li.aquamarine .fa,
+.side-menu-list > li.aquamarine .font-icon,
+.side-menu-list > li.aquamarine .glyphicon {
+    color: #373A51;
+}
+.side-menu-list > li.aquamarine .with-sub > span,
+.side-menu-list > li.aquamarine.opened a,
+.side-menu-list > li.aquamarine.opened > span {
+    border-left-color: #373A51;
+}
+.section-header{
+    background-image: url("../images/CMXFondo.png");
+    background-size: cover;
+    padding: 15px 15px;
+}
+
+
+.section-header h2{
+    font-family: GANDHISERIF-BOLD,sans-serif;
+    font-size: 1.5rem;
+    margin-left: 15px;
+    color: #C9D3D2;
+}
+.breadcrumb {
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: #C9D3D2;
+    background-color: transparent;
+    font-family: GANDHISERIF-BOLD,sans-serif;
+}
+.breadcrumb-item a{
+    color: #C9D3D2;
+}
+.breadcrumb-item a:hover{
+    color: white;
+}
+.breadcrumb-item+.breadcrumb-item::before {
+    color: white;
+    content: "/";
+}
+hr {
+    border-top: 1px solid white;
+    margin: 0em;
+    margin-left: 30px;
+    margin-right: 30px;
+    height: 0px;
+}
+
+.tabs-section{
+    padding: 50px 30px 30px;
+    background-image: url("../images/CMXFondo.png");
+    background-size: cover;
+    margin-bottom: 0px;
+}
+
+.tabs-section-nav {
+    border-top: 0px;
+}
+.tabs-section-nav .nav-link.active .nav-link-in {
+    border-top-color: #373A51;
+}
+.tabs-section-nav .nav-item:first-child .nav-link {
+    border-left: 0px;
+}
+.tabs-section-nav .nav-item:last-child .nav-link {
+    border-right: 0px;
+}
+.tabs-section > .tab-content:not(.no-styled) {
+    border: 0px;
+}
+
+
+.label-success {
+    background-color: #373A51;
+}
+.label-danger {
+    background-color: #E41D1B;
+}
+.tabs-section-nav span{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-size: 0.9rem;
+}
+.tabs-section-nav span.glyphicon{
+    font-family: 'Glyphicons Halflings',sans-serif;
+}
+.craue_formflow_steplist .craue_formflow_current_step .icon,
+.craue_formflow_steplist .craue_formflow_done_step .icon {
+    background-color: #373A51;
+}
+.steps-icon-progress .craue_formflow_done_step:before,
+.steps-icon-progress .craue_formflow_current_step:before {
+    background-color: #373A51;
+}
+.steps-icon-progress .caption {
+    color: #8A9A9C!important;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+.form-label{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.label{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+input.form-control,select.form-control{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+.btn.btn-danger-outline, .btn.btn-danger-outline:focus{
+    color: #E41D1B;
+    border-color: #E41D1B;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.btn.btn-danger-outline:hover,.btn.btn-danger-outline:focus:hover {
+    background: #E41D1B;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.btn.btn-primary-outline, .btn.btn-primary-outline:focus,.btn.btn-success-outline, .btn.btn-success-outline:focus {
+    color: #1D1934;
+    border-color: #1D1934;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.btn.btn-primary-outline:hover, .btn.btn-primary-outline:focus:hover, .btn.btn-success-outline:hover, .btn.btn-success-outline:focus:hover {
+    background: #1D1934;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn.btn-primary{
+    background: #595378 ;
+    border-color: #595378;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn.btn-primary:hover{
+    background: #9EADE5;
+    border-color: #9EADE5;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn.btn-success{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn.btn-warning{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn.btn-danger{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn.btn-info{
+    background: #5F6DB2;
+    border-color: #5F6DB2;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn.btn-info:hover{
+    background: #7688E1;
+    border-color: #7688E1;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.btn.btn-secondary-outline, .btn.btn-secondary-outline:focus {
+    color: #8A9A9C;
+    border-color: #8A9A9C;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.btn.btn-secondary-outline:hover, .btn.btn-secondary-outline:focus:hover {
+    background: #8A9A9C;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.help-block {
+    color: #E41D1B!important;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+.select2-selection__choice{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-size: 0.8rem!important;
+}
+.select2-results__option {
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-size: 0.9rem;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected]{
+    color: #E41D1B;
+}
+.select2-results__option:hover {
+    color: #E41D1B;
+    font-weight: 900;
+}
+.dataTables_wrapper label{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600!important;
+    font-size: 0.9rem;
+}
+.dataTables_wrapper select.form-control{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600!important;
+    font-size: 0.85rem;
+}
+.dataTables_wrapper input.form-control, .dataTable td, .dataTable th{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 500!important;
+    font-size: 0.85rem;
+}
+.dataTable a, a:focus, a:hover {
+    color: #E41D1B;
+}
+.dataTables_info{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.dataTables_paginate li{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+.page-item.active .page-link {
+    border-color: #E41D1B !important;
+    background-color: #E41D1B !important;
+}
+.page-link:focus, .page-link:hover, .page-link {
+    color: #E41D1B;
+}
+/*Clientes - Carga Masiva*/
+.label-primary {
+    background-color: #E41D1B;
+}
+label.btn {
+    border: solid 1px #E41D1B;
+    background: #E41D1B;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+}
+/*Clientes - Consulta Clientes*/
+.box-typical-sigem  {
+    border-radius: 0px;
+    border: solid 0px #d8e2e7;
+    padding: 50px 30px 30px!important;
+    background-image: url("../images/CMXFondo.png");
+    background-size: cover;
+}
+.box-typical-sigem .sigem-content{
+    background: white;
+    border-radius: 0 0 5px 5px;
+    padding: 15px;
+    -webkit-box-shadow: 0px 0px 15px 2px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0px 0px 15px 2px rgba(0,0,0,0.5);
+    box-shadow: 0px 0px 15px 2px rgba(0,0,0,0.5);
+}
+.sigem-content h4{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+}
+/*Clientes - Consulta de Cliente*/
+.tabs-section-nav.tabs-section-nav-inline .nav-item {
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+}
+.cliente p ,.cliente h5, .cliente h6 , .cliente h4{
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+}
+/*Personal - Registro*/
+.side-menu-list > li.blue .fa,
+.side-menu-list > li.blue .font-icon,
+.side-menu-list > li.blue .glyphicon {
+    color: #373A51;
+}
+.side-menu-list > li.blue .with-sub > span,
+.side-menu-list > li.blue.opened a,
+.side-menu-list > li.blue.opened > span {
+    border-left-color: #373A51;
+}
+/*Error Page*/
+#particles-js {
+    background-image: url('../images/CMXFondo.png');
+}
+/*Login Page*/
+.btn-signin, .btn-signin:hover, .btn-signin:focus, .btn-signin:active{
+    background-color: #00827E;
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+}
+#remember {
+    font-family: GANDHISERIF-REGULAR,sans-serif;
+    display: none;/*Temporal*/
+}
+@media (max-width: 767px){
+    .site-header .site-header-content .site-header-content-in {
+        margin-left: 60px;
+    }
+    .site-header .hamburger {
+        margin: 0 0 0 0px;
+    }
+    .site-header .site-header-content{
+        width: 80%;
+    }
+    .with-side-menu .page-content {
+        padding-left: 0px;
+    }
+    .hamburger:hover span, .hamburger:hover span:after, .hamburger:hover span:before {
+        background-color: white;
+    }
+    .tabs-section{
+        padding: 20px 10px 10px;
+    }
+    .box-typical-sigem {
+        padding: 20px 10px 10px!important;
+    }
+}

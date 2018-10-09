@@ -1,0 +1,119 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block title %}ASEA | {{ parent() }}{% endblock %}
+
+{% block services %}
+    current
+{% endblock %}
+
+{% block body %}
+    <div class="about">
+        <section class="contact section_sapce2">
+            <div class="row">
+                <div class="container">
+                    <div class="section-title margin-b30">
+                        <h2 class="wow pulse animated" data-wow-delay="300ms" data-wow-iteration="infinite" data-wow-duration="2s" style="visibility: visible; animation-duration: 2s; animation-delay: 300ms; animation-iteration-count: infinite; animation-name: pulse;">ASEA</h2>
+                    </div>
+                    <div class="text-content">
+                        <blockquote class="text-center">
+                            Contamos con conocimiento pleno
+                            para adecuar su negocio y este pueda afrontar de manera positiva todo
+                            requerimiento ante la ASEA
+                        </blockquote>
+                    </div>
+                    <div class="col-md-3 col-sm-12 col-xs-12 mb-30">
+                        <div class="single-contact">
+                            <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios." style="color: white">
+                                <h4 style="color: white">Contáctanos</h4>
+                                <p>Estas interesado en este servicio o tienes dudas, envíanos un mensaje.</p>
+                                <a target="_blank" href="https://wa.me/5217226022780/?text=Hola%2C+quiero+informacion+de+sus+servicios."><h5 style="color: white"> <i class="fa fa-whatsapp"></i> WhatsApp</h5></a>
+                                <a href="{{ path('contact') }}"><h5 style="color: white"><i class="fa fa-envelope"></i> Electrónico</h5></a>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Left Side End -->
+                    <div class="col-md-9 col-sm-12 col-xs-12 margin-bottom-30 wow slideInDown">
+                        <img src="{{ asset('assets/img/imagen1.jpg') }}" class="img-rounded margin-top-20 img-responsive" alt="service-consulting" style="border: solid 1px #007B8A; margin-top: -.5px; height: 405px; display: block; margin: auto ;">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container ">
+                    <div class="col-md-12 col-sm-12 col-xs-12 margin-bottom-30">
+                        <!--Accordions -->
+                        <div class="accordion-example">
+                            <div class="panel-group" id="accordion">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">SASISOPA DIVISIÓN COMERCIO (Expendio al público)</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseTwo" class="panel-collapse collapse in">
+                                                <div class="panel-body">
+                                                    <p style="text-align: justify">Conformación, Implementación, Capacitación y Autorización de los Sistemas
+                                                        de Administración de Seguridad Industrial, Seguridad Operativa y Protección
+                                                        al Medio Ambiente aplicables a las actividades de Expendio al Público de Gas
+                                                        Natural, Distribución y Expendio al Público de Gas Licuado de Petróleo y de
+                                                        Petrolíferos.</p>
+                                                    <br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">SASISOPA DIVISIÓN INDUSTRIAL (Centros de Distribución – CEDIS y Terminales de Almacenamiento – TAD)</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseOne" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p style="text-align: justify">Conformación, implementación y autorización de los Sistemas de Administración de Seguridad Industrial, Seguridad Operativa y Protección al Medio Ambiente aplicables a las actividades del Sector Hidrocarburos (Publicados en el DOF Viernes 13 de Mayo de 2016) siguientes:
+                                                        <br>
+                                                        I.	El reconocimiento y exploración superficial, y la exploración y extracción de hidrocarburos;
+                                                        <br>
+                                                        II.	El tratamiento, refinación, enajenación, transporte y almacenamiento del petróleo;
+                                                        <br>
+                                                        III.	El procesamiento, compresión, licuefacción, descompresión y regasificación, así como el transporte, almacenamiento y distribución de gas natural;
+                                                        <br>
+                                                        IV.	El transporte y almacenamiento de gas licuado de petróleo;
+                                                        <br>
+                                                        V.	El transporte y almacenamiento de petrolíferos.
+                                                        <br>
+                                                        VI. El transporte por ducto y el almacenamiento, que se encuentre vinculado a ductos de petroquímicos producto del procesamiento del gas natural y de la refinación del petróleo
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">CUMPLIMIENTO EN OPERACIÓN Y MANTENIMIENTO A LA NOM-005-ASEA-2016</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseFour" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p class="justify">Tramite a realizar en dos modalidades:</p>
+                                                    <ul class="list6">
+                                                        <li><strong>• Pre-verificación</strong> </li>
+                                                        <li><strong>• Desarrollo del sistema de control documental</strong></li>
+                                                        <li><strong>• Implementación anual</strong></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!--Fin de columna -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+
+{% endblock %}

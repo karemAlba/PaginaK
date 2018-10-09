@@ -1,0 +1,878 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/separate/elements/steps.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/clientesedit.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('a[href="#tabs-2-tab-1"]').click(function () {
+                window.location = "{{ path('regClientes') }}";
+            });
+            $('#clientesType_numeroPermiso').bind('keyup', function() {
+                var permiso = $('#clientesType_numeroPermiso').val();
+                var folio = $('#clientesType_folioGenerico').val();
+                $.ajax({
+                        type:'POST',
+                        url:'{{ path('permiso-editar') }}',
+                        data:'permiso='+permiso+'&folio='+folio,
+                        success:function(html){
+                            if(html==1){
+                                $('#error-permiso').removeClass('hidden');
+                                $('#error-permiso').html('El Número de Permiso EXISTE');
+                            }else{
+                                $('#error-permiso').addClass('hidden');
+                                $('#error-permiso').html('');
+                            }
+                        }
+                    });
+            });
+            $( "#clientesType_igual" ).click(function() {
+                if($(this).is(':checked')){
+                    $("#clientesType_calleFiscal").val($('#clientesType_calle').val());
+                    $("#clientesType_codigoPostalFiscal").val($('#clientesType_codigoPostal').val());
+                    var codigo = $("#clientesType_codigoPostalFiscal").val();
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('estado-codigo') }}',
+                        data:'codigo='+codigo,
+                        success:function(html){
+                            $("#clientesType_estadoFiscal").val(html.estado);
+                            var estadoID = html.estado;
+                            if(estadoID){
+                                $.ajax({
+                                    type:'POST',
+                                    url:'{{ path('municipios-json') }}',
+                                    data:'estado='+estadoID,
+                                    success:function(mun){
+                                        $('#clientesType_municipioFiscal').find('option').remove();
+                                        $.each(mun, function(i,item) {
+                                            if(html.municipio==item.id){
+                                                $('#clientesType_municipioFiscal').append('<option value="'+item.id+'" selected>'+item.municipio+'</option>');
+                                            }else{
+                                                $('#clientesType_municipioFiscal').append('<option value="'+item.id+'">'+item.municipio+'</option>');
+                                            }
+                                        });
+                                        var municipioID = html.municipio;
+                                        if(municipioID){
+                                            $.ajax({
+                                                type:'POST',
+                                                url:'{{ path('colonias-json') }}',
+                                                data:'municipio='+municipioID,
+                                                success:function(html){
+                                                    $('#clientesType_coloniaFiscal').find('option').remove();
+                                                    $('#clientesType_coloniaFiscal').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                                                    $.each(html, function(i,item) {
+                                                        if(item.codigo==codigo){
+                                                            if(item.id==$('#clientesType_colonia').val()){
+                                                                $('#clientesType_coloniaFiscal').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'" selected>'+item.colonia+'</option>');
+                                                            }else{
+                                                                $('#clientesType_coloniaFiscal').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'">'+item.colonia+'</option>');
+                                                            }
+                                                        }
+                                                    })
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }else{
+                    $("#clientesType_calleFiscal").val('');
+                    $("#clientesType_codigoPostalFiscal").val('');
+                    $("#clientesType_estadoFiscal").val('null');
+                    $('#clientesType_municipioFiscal').find('option').remove();
+                    $('#clientesType_municipioFiscal').append('<option disabled selected value="null">Selecciona un Municipio</option>');
+                    $('#clientesType_coloniaFiscal').find('option').remove();
+                    $('#clientesType_coloniaFiscal').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                }
+            });
+            $('#clientesType_codigoPostal').bind('keyup', function() {
+                if($("#clientesType_codigoPostal").val().length==5){
+                    var codigo = $("#clientesType_codigoPostal").val();
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('estado-codigo') }}',
+                        data:'codigo='+codigo,
+                        success:function(html){
+                            $("#clientesType_estado").val(html.estado);
+                            var estadoID = html.estado;
+                            if(estadoID){
+                                $.ajax({
+                                    type:'POST',
+                                    url:'{{ path('municipios-json') }}',
+                                    data:'estado='+estadoID,
+                                    success:function(mun){
+                                        $('#clientesType_municipio').find('option').remove();
+                                        $.each(mun, function(i,item) {
+                                            if(html.municipio==item.id){
+                                                $('#clientesType_municipio').append('<option value="'+item.id+'" selected>'+item.municipio+'</option>');
+                                            }else{
+                                                $('#clientesType_municipio').append('<option value="'+item.id+'">'+item.municipio+'</option>');
+                                            }
+                                        });
+                                        var municipioID = html.municipio;
+                                        if(municipioID){
+                                            $.ajax({
+                                                type:'POST',
+                                                url:'{{ path('colonias-json') }}',
+                                                data:'municipio='+municipioID,
+                                                success:function(html){
+                                                    $('#clientesType_colonia').find('option').remove();
+                                                    $('#clientesType_colonia').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                                                    $.each(html, function(i,item) {
+                                                        if(item.codigo==codigo){
+                                                            $('#clientesType_colonia').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'">'+item.colonia+'</option>');
+                                                        }
+                                                    })
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+            $('#clientesType_codigoPostalFiscal').bind('keyup', function() {
+                if($("#clientesType_codigoPostalFiscal").val().length==5){
+                    var codigo = $("#clientesType_codigoPostalFiscal").val();
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('estado-codigo') }}',
+                        data:'codigo='+codigo,
+                        success:function(html){
+                            $("#clientesType_estadoFiscal").val(html.estado);
+                            var estadoID = html.estado;
+                            if(estadoID){
+                                $.ajax({
+                                    type:'POST',
+                                    url:'{{ path('municipios-json') }}',
+                                    data:'estado='+estadoID,
+                                    success:function(mun){
+                                        $('#clientesType_municipioFiscal').find('option').remove();
+                                        $.each(mun, function(i,item) {
+                                            if(html.municipio==item.id){
+                                                $('#clientesType_municipioFiscal').append('<option value="'+item.id+'" selected>'+item.municipio+'</option>');
+                                            }else{
+                                                $('#clientesType_municipioFiscal').append('<option value="'+item.id+'">'+item.municipio+'</option>');
+                                            }
+                                        });
+                                        var municipioID = html.municipio;
+                                        if(municipioID){
+                                            $.ajax({
+                                                type:'POST',
+                                                url:'{{ path('colonias-json') }}',
+                                                data:'municipio='+municipioID,
+                                                success:function(html){
+                                                    $('#clientesType_coloniaFiscal').find('option').remove();
+                                                    $('#clientesType_coloniaFiscal').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                                                    $.each(html, function(i,item) {
+                                                        if(item.codigo==codigo){
+                                                            $('#clientesType_coloniaFiscal').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'">'+item.colonia+'</option>');
+                                                        }
+                                                    })
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+            $("#clientesType_calle").attr("value","{{ datos.calle }}");
+            $("#clientesType_estado").val({{ datos.municipios.estados.id }});
+            {% if datosF is not null %}
+                $("#clientesType_estadoFiscal").val({{ datosF.municipios.estados.id }});
+            {% else %}
+                $('#clientesType_estadoFiscal').append(new Option("Selecciona un Estado", "null",true,true));
+                $("#clientesType_estadoFiscal option[value='']").remove();
+            {% endif %}
+            $("#clientesType_sector").val({{ datos.clientes.categorias.segmentos.sectores.id }});
+
+            $('#clientesType_asociacion').find('option').remove();
+            $('#clientesType_asociacion').append('<option disabled selected value="null">Selecciona una Asociación</option>');
+            {% for a in asociaciones %}
+                $('#clientesType_asociacion').append('<option value="{{ a.id }}">{{ a.nombre }}</option>');
+            {% endfor %}
+            $('#clientesType_asociacion').append('<option value="new">Nueva Asociación</option>');
+            $('#clientesType_asociacion').on('change',function(){
+                if($(this).val()=='new'){
+                    $('#fasociacion').removeClass('hidden');
+                    $('#clientesType_macrogrupo').find('option').remove();
+                    $('#clientesType_macrogrupo').append('<option disabled selected value="null">Selecciona una Unión</option>');
+                    $('#clientesType_macrogrupo').append('<option value="new">Nueva Unión</option>');
+                    $('#funion').addClass('hidden');
+                    $('#clientesType_nuevomacrogrupo').val('');
+                    $('#fgrupo').addClass('hidden');
+                    $('#clientesType_nuevogrupo').val('');
+                }else{
+                    $('#fasociacion').addClass('hidden');
+                    var asoID = $(this).val();
+                    if(asoID){
+                        $.ajax({
+                            type:'POST',
+                            url:'{{ path('asociacion-json') }}',
+                            data:'asociacion='+asoID,
+                            success:function(html){
+                                $('#clientesType_macrogrupo').find('option').remove();
+                                $('#clientesType_macrogrupo').append('<option disabled selected value="null">Selecciona una Unión</option>');
+                                $.each(html, function(i,item) {
+                                    $('#clientesType_macrogrupo').append('<option value="'+item.id+'" data-padre="'+item.padre+'">'+item.union+'</option>');
+                                });
+                                $('#clientesType_macrogrupo').append('<option value="new">Nueva Unión</option>');
+                                $('#clientesType_grupo').find('option').remove();
+                                $('#clientesType_grupo').append('<option disabled selected value="null">Selecciona un Grupo</option>');
+                                $('#clientesType_grupo').append('<option value="new">Nuevo Grupo</option>');
+                                $('#funion').addClass('hidden');
+                                $('#clientesType_nuevomacrogrupo').val('');
+                                $('#fgrupo').addClass('hidden');
+                                $('#clientesType_nuevogrupo').val('');
+                            }
+                        });
+                    }
+                }
+            });
+
+            $('#clientesType_macrogrupo').find('option').remove();
+            $('#clientesType_macrogrupo').append('<option disabled selected value="null">Selecciona una Unión</option>');
+            {% for m in macros %}
+                $('#clientesType_macrogrupo').append('<option value="{{ m.id }}" data-padre="{{ m.idGrupoPadre }}">{{ m.nombre }}</option>');
+            {% endfor %}
+            $('#clientesType_macrogrupo').append('<option value="new">Nueva Unión</option>');
+            $('#clientesType_macrogrupo').on('change',function(){
+                if($(this).val()=='new'){
+                    $('#funion').removeClass('hidden');
+                    $('#clientesType_grupo').find('option').remove();
+                    $('#clientesType_grupo').append('<option disabled selected value="null">Selecciona un Grupo</option>');
+                    $('#clientesType_grupo').append('<option value="new">Nuevo Grupo</option>');
+                    $('#fgrupo').addClass('hidden');
+                    $('#clientesType_nuevogrupo').val('');
+                }else{
+                    $('#funion').addClass('hidden');
+                    if($(this).find(':selected').data('padre')!=0){
+                        $('#clientesType_asociacion').val($(this).find(':selected').data('padre'));
+                    }
+                    var grupoID = $(this).val();
+                    if(grupoID){
+                        $.ajax({
+                            type:'POST',
+                            url:'{{ path('union-json') }}',
+                            data:'union='+grupoID,
+                            success:function(html){
+                                $('#clientesType_grupo').find('option').remove();
+                                $('#clientesType_grupo').append('<option disabled selected value="null">Selecciona un Grupo</option>');
+                                $.each(html, function(i,item) {
+                                    $('#clientesType_grupo').append('<option value="'+item.id+'" data-padre="'+item.padre+'">'+item.grupo+'</option>');
+                                });
+                                $('#clientesType_grupo').append('<option value="new">Nuevo Grupo</option>');
+                                $('#fgrupo').addClass('hidden');
+                                $('#clientesType_nuevogrupo').val('');
+                            }
+                        });
+                    }
+                }
+            });
+
+            $('#clientesType_grupo').find('option').remove();
+            $('#clientesType_grupo').append('<option disabled selected value="null">Selecciona un Grupo</option>');
+            {% for g in grupos %}
+                $('#clientesType_grupo').append('<option value="{{ g.id }}" data-padre="{{ g.idGrupoPadre }}">{{ g.nombre }}</option>');
+            {% endfor %}
+            $('#clientesType_grupo').append('<option value="new">Nuevo Grupo</option>');
+            $('#clientesType_grupo').on('change',function(){
+                if($(this).val()=='new'){
+                    $('#fgrupo').removeClass('hidden');
+                }else{
+                    $('#fgrupo').addClass('hidden');
+                    if($(this).find(':selected').data('padre')!=0){
+                        $('#clientesType_macrogrupo').val($(this).find(':selected').data('padre'));
+                        if($('#clientesType_macrogrupo').find(':selected').data('padre')!=0){
+                            $('#clientesType_asociacion').val($('#clientesType_macrogrupo').find(':selected').data('padre'));
+                        }
+                    }
+                }
+            });
+
+            $( "input[name='clientesType[independiente]']" ).click(function() {
+                if($(this).val()==1){
+                    $('#noindependiente').addClass('hidden');
+                }else{
+                    $('#noindependiente').removeClass('hidden');
+                }
+            });
+            {% if datos.clientes.grupos is not null and datos.clientes.grupos.tipoGrupos.id==1 %}
+                $("#clientesType_asociacion").val({{ datos.clientes.grupos.id }});
+            {% elseif datos.clientes.grupos is not null and datos.clientes.grupos.tipoGrupos.id==2 %}
+                $("#clientesType_macrogrupo").val({{ datos.clientes.grupos.id }});
+                $("#clientesType_asociacion").val({{ datos.clientes.grupos.idGrupoPadre }});
+            {% elseif datos.clientes.grupos is not null and datos.clientes.grupos.tipoGrupos.id==3 %}
+                $("#clientesType_grupo").val({{ datos.clientes.grupos.id }});
+                $("#clientesType_macrogrupo").val({{ datos.clientes.grupos.idGrupoPadre }});
+                $("#clientesType_asociacion").val({{ asoc }});
+            {% endif %}
+            {% if datos.clientes.grupos is not null and datos.clientes.grupos.id==1 %}
+                $('#clientesType_independiente_0').prop('checked',true);
+            {% else %}
+                $('#clientesType_independiente_1').prop('checked',true);
+            {% endif %}
+            if($('#clientesType_independiente_0').is(':checked')){
+                $('#noindependiente').addClass('hidden');
+            }else{
+                $('#noindependiente').removeClass('hidden');
+            }
+            {% for m in municipiocliente %}
+                $('#clientesType_municipio').append('<option value="{{ m.id }}" {% if datos.municipios.id == m.id %}selected{% endif %}>{{ m.nombre }}</option>');
+            {% endfor %}
+            {% if datos.colonias is not null and coloniascliente|length>0 %}
+                {% for c in coloniascliente %}
+                    $('#clientesType_colonia').append('<option value="{{ c.id }}" data-codigo="{{ c.codigoPostal }}" {% if datos.colonias.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>');
+                {% endfor %}
+            {% else %}
+                $('#clientesType_colonia').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                {% for c in coloniascliente %}
+                    $('#clientesType_colonia').append('<option value="{{ c.id }}" data-codigo="{{ c.codigoPostal }}">{{ c.nombre }}</option>');
+                {% endfor %}
+            {% endif %}
+            {% if datosF is not null %}
+                $("#clientesType_calleFiscal").attr("value","{{ datosF.calle }}");
+                $("#clientesType_estadoFiscal").val({{ datosF.municipios.estados.id }});
+            {% endif %}
+            {% if municipioclienteF is not null %}
+                {% for m in municipioclienteF %}
+                    $('#clientesType_municipioFiscal').append('<option value="{{ m.id }}" {% if datosF.municipios.id == m.id %}selected{% endif %}>{{ m.nombre }}</option>');
+                {% endfor %}
+            {% endif %}
+            {% if coloniasclienteF is not null %}
+                {% for c in coloniasclienteF %}
+                    $('#clientesType_coloniaFiscal').append('<option value="{{ c.id }}" data-codigo="{{ c.codigoPostal }}" {% if datosF.colonias.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>');
+                {% endfor %}
+            {% endif %}
+
+            $('#clientesType_marca').find('option').remove();
+            {% if datosP|length > 0 %}
+                {% for m in marcas %}
+                    $('#clientesType_marca').append('<option value="{{ m.id }}" {% if datosP[0].productos.marcas.id==m.id %}selected{% endif %}>{{ m.nombre }}</option>');
+                {% endfor %}
+            {% else %}
+                $('#clientesType_marca').append('<option disabled selected value="null">Selecciona una Marca</option>');
+                {% for m in marcas %}
+                    $('#clientesType_marca').append('<option value="{{ m.id }}">{{ m.nombre }}</option>');
+                {% endfor %}
+            {% endif %}
+            {% if datosP|length > 0 %}
+                $('#clientesType_marca').val({{ datosP[0].productos.marcas.id }});
+            {% endif %}
+            $('#clientesType_segmento').find('option').remove();
+            {% for s in segmentos %}
+                $('#clientesType_segmento').append('<option value="{{ s.id }}">{{ s.nombre }}</option>');
+            {% endfor %}
+            $("#clientesType_segmento").val({{ datos.clientes.categorias.segmentos.id }});
+            $('#clientesType_categoria').find('option').remove();
+            {% for c in categorias %}
+                $('#clientesType_categoria').append('<option value="{{ c.id }}">{{ c.nombre }}</option>');
+            {% endfor %}
+            $("#clientesType_categoria").val({{ datos.clientes.categorias.id }});
+            /*$('#clientesType_marca').append('<option value="new">Nueva Marca</option>');
+            $('#clientesType_marca').on('change',function(){
+                if($(this).val()=='new'){
+                    $('#fmarca').removeClass('hidden');
+                    $('#productos').addClass('hidden');
+                }else{
+                    $('#fmarca').addClass('hidden');
+                    $('#productos').removeClass('hidden');
+                }
+            });*/
+            $('#clientesType_codigoPostal').val($('#clientesType_colonia option:selected').attr('data-codigo'));
+            $('#clientesType_codigoPostalFiscal').val($('#clientesType_coloniaFiscal option:selected').attr('data-codigo'));
+            $('#clientesType_estado').on('change',function(){
+                var estadoID = $(this).val();
+                $('#clientesType_colonia').find('option').remove();
+                $('#clientesType_colonia').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                if(estadoID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('municipios-json') }}',
+                        data:'estado='+estadoID,
+                        success:function(html){
+                            $('#clientesType_municipio').find('option').remove();
+                            $('#clientesType_municipio').append('<option disabled selected value="null">Selecciona un Municipio</option>');
+                            $.each(html, function(i,item) {
+                                $('#clientesType_municipio').append('<option value="'+item.id+'">'+item.municipio+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+            $('#clientesType_municipio').on('change',function(){
+                var municipioID = $(this).val();
+                if(municipioID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('colonias-json') }}',
+                        data:'municipio='+municipioID,
+                        success:function(html){
+                            $('#clientesType_colonia').find('option').remove();
+                            $('#clientesType_colonia').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                            $.each(html, function(i,item) {
+                                $('#clientesType_colonia').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'">'+item.colonia+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+            $('#clientesType_colonia').on('change',function(){
+                var codigo = $(this).find(':selected').attr('data-codigo');
+                $('#clientesType_codigoPostal').val(codigo);
+            });
+            $('#clientesType_estadoFiscal').on('change',function(){
+                var estadoID = $(this).val();
+                $('#clientesType_coloniaFiscal').find('option').remove();
+                $('#clientesType_coloniaFiscal').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                if(estadoID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('municipios-json') }}',
+                        data:'estado='+estadoID,
+                        success:function(html){
+                            $('#clientesType_municipioFiscal').find('option').remove();
+                            $('#clientesType_municipioFiscal').append('<option disabled selected value="null">Selecciona un Municipio</option>');
+                            $.each(html, function(i,item) {
+                                $('#clientesType_municipioFiscal').append('<option value="'+item.id+'">'+item.municipio+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+            $('#clientesType_municipioFiscal').on('change',function(){
+                var municipioID = $(this).val();
+                if(municipioID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('colonias-json') }}',
+                        data:'municipio='+municipioID,
+                        success:function(html){
+                            $('#clientesType_coloniaFiscal').find('option').remove();
+                            $('#clientesType_coloniaFiscal').append('<option disabled selected value="null">Selecciona una Colonia</option>');
+                            $.each(html, function(i,item) {
+                                $('#clientesType_coloniaFiscal').append('<option value="'+item.id+'" data-codigo="'+item.codigo+'">'+item.colonia+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+            $('#clientesType_coloniaFiscal').on('change',function(){
+                var codigo = $(this).find(':selected').attr('data-codigo');
+                $('#clientesType_codigoPostalFiscal').val(codigo);
+            });
+            $('#clientesType_sector').on('change',function(){
+                var sectorID = $(this).val();
+                if(sectorID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('sector-json') }}',
+                        data:'sector='+sectorID,
+                        success:function(html){
+                            $('#clientesType_segmento').find('option').remove();
+                            $('#clientesType_segmento').append('<option disabled selected value="null">Selecciona un Segmento</option>');
+                            $.each(html, function(i,item) {
+                                $('#clientesType_segmento').append('<option value="'+item.id+'">'+item.seg+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+            $('#clientesType_segmento').on('change',function(){
+                var segmentoID = $(this).val();
+                if(segmentoID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('segmento-json') }}',
+                        data:'segmento='+segmentoID,
+                        success:function(html){
+                            $('#clientesType_categoria').find('option').remove();
+                            $('#clientesType_categoria').append('<option disabled selected value="null">Selecciona una Categoría</option>');
+                            $.each(html, function(i,item) {
+                                $('#clientesType_categoria').append('<option value="'+item.id+'">'+item.cat+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+            $('#clientesType_marca').on('change',function(){
+                var marcaID = $(this).val();
+                $('#clientesType_productos').find('option').remove();
+                if(marcaID){
+                    $.ajax({
+                        type:'POST',
+                        url:'{{ path('producto-json') }}',
+                        data:'marca='+marcaID,
+                        success:function(html){
+                            $('#clientesType_productos').find('option').remove();
+                            $.each(html, function(i,item) {
+                                $('#clientesType_productos').append('<option value="'+item.id+'">'+item.producto+'</option>');
+                            })
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding cliente">
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="tabs-2-tab-1">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="steps-icon-progress">
+                                {% include '@CraueFormFlow/FormFlow/stepList.html.twig' %}
+                            </div>
+                            {{ form_start(form) }}
+                            {{ form_errors(form) }}
+                            {% if flow.getCurrentStepNumber() == 1 %}
+                                <div class="col-md-12">
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Razón Social</label>
+                                        <div class="col-sm-11">
+                                            {{ form_widget(form.razonSocial, {'attr': {'class': 'form-control', 'placeholder': 'Razón Social' } }) }}
+                                            <p class="help-block hidden" id="error-razon"></p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-6">
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Folio Genérico</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.folioGenerico, {'attr': {'class': 'form-control', 'placeholder': 'Número de Permiso' } }) }}
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Número de Permiso</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.numeroPermiso, {'attr': {'class': 'form-control', 'placeholder': 'Número de Permiso' } }) }}
+                                            <p class="help-block hidden" id="error-permiso"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">RFC</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.rfc, {'attr': {'class': 'form-control', 'placeholder': 'RFC' } }) }}
+                                            <p class="help-block hidden" id="error-rfc"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Activo</label>
+                                        <div class="col-sm-2">
+                                            {{ form_widget(form.activo, {'attr': {'class': 'form-control', 'placeholder': 'Activo' } }) }}
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-6">
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Estación de Servicio</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.estacionServicio, {'attr': {'class': 'form-control', 'placeholder': 'Estación de Servicio' } }) }}
+                                            <p class="help-block hidden" id="error-estacion"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Teléfono de la Empresa</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.telefonoEmpresa, {'attr': {'class': 'form-control', 'placeholder': 'Teléfono de la Empresa' } }) }}
+                                            <p class="help-block hidden" id="error-telefono"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Correo Electrónico de la Empresa</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.correoEmpresa, {'attr': {'class': 'form-control', 'placeholder': 'Correo Electrónico de la Empresa' } }) }}
+                                            <p class="help-block hidden" id="error-correo"></p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            {% elseif flow.getCurrentStepNumber() == 2 %}
+                                <div class="col-md-6">
+                                    <h4>Domicilio Físico</h4>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Calle</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.calle, {'attr': {'class': 'form-control', 'placeholder': 'Calle' } }) }}
+                                            <p class="help-block hidden" id="error-calle"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Estado</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.estado, {'attr': {'placeholder': 'Estado' } }) }}
+                                            <p class="help-block hidden" id="error-estado"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Municipio</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.municipio, {'attr': {'placeholder': 'Municipio' } }) }}
+                                            <p class="help-block hidden" id="error-municipio"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Colonia</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.colonia, {'attr': {'placeholder': 'Colonia' } }) }}
+                                            <p class="help-block hidden" id="error-colonia"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Código Postal</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.codigoPostal, {'attr': {'placeholder': 'Código Postal' } }) }}
+                                            <p class="help-block hidden" id="error-codigo"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Coordenadas</label>
+                                        <div class="col-sm-10">
+                                            <div class="col-sm-6">
+                                                {{ form_widget(form.coordenadaX, {'attr': {'class': 'form-control', 'placeholder': 'Coordenada Y' } }) }}
+                                                <p class="help-block hidden" id="error-coorx"></p>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                {{ form_widget(form.coordenadaY, {'attr': {'class': 'form-control', 'placeholder': 'Coordenada X' } }) }}
+                                                <p class="help-block hidden" id="error-coory"></p>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4>Domicilio Fiscal</h4>
+                                    <fieldset class="form-group" id="check-igual">
+                                        <label class="form-label semibold" for="exampleInput">Utilizar domicilio Físico</label>
+                                        <div class="col-sm-2">
+                                            {{ form_widget(form.igual, {'attr': {'class': 'form-control' } }) }}
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Calle</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.calleFiscal, {'attr': {'class': 'form-control', 'placeholder': 'Calle' } }) }}
+                                            {% if form.calleFiscal.vars.errors|length > 0 %}
+                                                <p class="help-block" id="error-nombre">
+                                                    {% for error in form.calleFiscal.vars.errors %}
+                                                        {{ error.message }} <br/>
+                                                    {% endfor %}
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Estado</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.estadoFiscal, {'attr': {'placeholder': 'Estado' } }) }}
+                                            {% if form.estadoFiscal.vars.errors|length > 0 %}
+                                                <p class="help-block" id="error-nombre">
+                                                    {% for error in form.estadoFiscal.vars.errors %}
+                                                        {{ error.message }} <br/>
+                                                    {% endfor %}
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Municipio</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.municipioFiscal, {'attr': {'placeholder': 'Municipio' } }) }}
+                                            {% if form.municipioFiscal.vars.errors|length > 0 %}
+                                                <p class="help-block" id="error-nombre">
+                                                    {% for error in form.municipioFiscal.vars.errors %}
+                                                        {{ error.message }} <br/>
+                                                    {% endfor %}
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Colonia</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.coloniaFiscal, {'attr': {'placeholder': 'Colonia' } }) }}
+                                            {% if form.coloniaFiscal.vars.errors|length > 0 %}
+                                                <p class="help-block" id="error-nombre">
+                                                    {% for error in form.coloniaFiscal.vars.errors %}
+                                                        {{ error.message }} <br/>
+                                                    {% endfor %}
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Código Postal</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.codigoPostalFiscal, {'attr': {'placeholder': 'Código Postal' } }) }}
+                                            <p class="help-block hidden" id="error-codigo"></p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            {% elseif flow.getCurrentStepNumber() == 3 %}
+                                <div class="col-md-6">
+                                    <h4>Datos Específicos</h4>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Tipo de Cliente</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.tipoClientes, {'attr': {'class': 'form-control', 'placeholder': 'Tipo de Cliente' } }) }}
+                                            <p class="help-block hidden" id="error-tipoCliente"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Sector</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.sector, {'attr': {'class': 'form-control', 'placeholder': 'Sector' } }) }}
+                                            <p class="help-block hidden" id="error-sector"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Segmento</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.segmento, {'attr': {'class': 'form-control', 'placeholder': 'Segmento' } }) }}
+                                            <p class="help-block hidden" id="error-segmento"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Categoría</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.categoria, {'attr': {'class': 'form-control', 'placeholder': 'Categoría' } }) }}
+                                            <p class="help-block hidden" id="error-categoria"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Marca</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.marca, {'attr': {'class': 'form-control', 'placeholder': 'Marca' } }) }}
+                                            <p class="help-block hidden" id="error-marca"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group hidden" id="fmarca">
+                                        <label class="form-label semibold" for="exampleInput">Nueva Marca</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.nuevamarca, {'attr': {'class': 'form-control', 'placeholder': 'Nueva Marca' } }) }}
+                                            <p class="help-block hidden" id="error-nuevamarca"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group" id="productos">
+                                        <label class="form-label semibold" for="exampleInput">Productos</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.productos, {'attr': {'class': 'form-control hidden input-prod' } }) }}
+                                            <select class="form-control select2" multiple="multiple" id="clientesType_productos" name="clientesType[productos]">
+                                                {% for p in productos %}
+                                                    <option value="{{ p.id }}" {% if p.id in clientep %}selected{% endif %}>{{ p.nombre }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            {{ form_widget(form.lista, {'attr': {'class': 'form-control hidden' } }) }}
+                                            <p class="help-block hidden" id="error-producto"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">¿Es Independiente?</label>
+                                        <div class="col-sm-10">
+                                            <div class="form-control">
+                                                <label class="inline-block mr-10">
+                                                    {{ form_widget(form.independiente.0) }} Si
+                                                </label>
+                                                <label class="inline-block">
+                                                    {{ form_widget(form.independiente.1) }} No
+                                                </label>
+                                            </div>
+                                            <p class="help-block hidden" id="error-independiente"></p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-6" id="noindependiente">
+                                    <p id="error-grupos" class="hidden help-block"></p>
+                                    <fieldset class="form-group" style="margin-top: 2.7rem;">
+                                        <label class="form-label semibold" for="exampleInput">Asociación</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.asociacion, {'attr': {'class': 'form-control', 'placeholder': 'Asociación' } }) }}
+                                            <p class="help-block hidden" id="error-asociacion"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group hidden" id="fasociacion">
+                                        <label class="form-label semibold" for="exampleInput">Nueva Asociación</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.nuevaasociacion, {'attr': {'class': 'form-control', 'placeholder': 'Nueva Asociación' } }) }}
+                                            <p class="help-block hidden" id="error-nuevaasociacion"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Unión</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.macrogrupo, {'attr': {'class': 'form-control', 'placeholder': 'Unión' } }) }}
+                                            <p class="help-block hidden" id="error-union"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group hidden" id="funion">
+                                        <label class="form-label semibold" for="exampleInput">Nueva Unión</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.nuevomacrogrupo, {'attr': {'class': 'form-control', 'placeholder': 'Nueva Unión' } }) }}
+                                            <p class="help-block hidden" id="error-nuevaunion"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group">
+                                        <label class="form-label semibold" for="exampleInput">Grupo</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.grupo, {'attr': {'class': 'form-control', 'placeholder': 'Grupo' } }) }}
+                                            <p class="help-block hidden" id="error-grupo"></p>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="form-group hidden" id="fgrupo">
+                                        <label class="form-label semibold" for="exampleInput">Nuevo Grupo</label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(form.nuevogrupo, {'attr': {'class': 'form-control', 'placeholder': 'Nuevo Grupo' } }) }}
+                                            <p class="help-block hidden" id="error-nuevogrupo"></p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            {% elseif flow.getCurrentStepNumber() == 4 %}
+                                <div class="col-md-12 text-center">
+                                    <h3>Da clic en Enviar para Finalizar el Registro</h3>
+                                </div>
+                            {% endif %}
+                            <div class="col-sm-12 buttons">
+                                {{ form_rest(form) }}
+                                {% if flow.currentStepNumber == 1 or flow.currentStepNumber == 2 or flow.currentStepNumber == 3 %}
+                                    {% include '@CraueFormFlow/FormFlow/buttons.html.twig' with {
+                                        craue_formflow_button_label_reset: 'reestablecer',
+                                        craue_formflow_button_label_back: 'atras',
+                                        craue_formflow_button_label_last: 'siguiente',
+                                        craue_formflow_button_class_last: 'btn btn-primary boton-siguiente float-right',
+                                        craue_formflow_button_class_back: 'btn btn-secondary float-left',
+                                        craue_formflow_button_class_reset: 'btn btn-danger float-right mr-10'
+                                    } %}
+                                {% else %}
+                                    {% include '@CraueFormFlow/FormFlow/buttons.html.twig' with {
+                                        craue_formflow_button_label_finish: 'enviar',
+                                        craue_formflow_button_label_reset: 'reestablecer',
+                                        craue_formflow_button_label_back: 'atras',
+                                        craue_formflow_button_class_last: 'btn btn-success float-right',
+                                        craue_formflow_button_class_back: 'btn btn-secondary float-left',
+                                        craue_formflow_button_class_reset: 'btn btn-danger float-right mr-10'
+                                    } %}
+                                {% endif %}
+                            </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                    <h3></h3>
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

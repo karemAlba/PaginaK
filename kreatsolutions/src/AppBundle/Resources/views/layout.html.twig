@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Kreatsolutions 45{% endblock %}</title>
+    <link rel="shortcut icon" href="{{ asset('assets/img/kreat-logo.png') }}" />
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Hind:400,500,600,700" rel="stylesheet">
+
+    <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap-theme.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/block_grid_bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/font-awesome.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/owl.carousel.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/owl.theme.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/animate.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/jquery.circliful.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/slicknav.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/video-popup.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/responsive.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet"/>
+    <link href="{{ asset('css/smartphoto.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/materialdesignicons.min.css') }}" rel="stylesheet"/>
+    <link href="{{ asset('assets/css/kreatsolutions.css') }}" rel="stylesheet"/>
+    {% block stylesheets %}
+    {% endblock %}
+</head>
+
+<body>
+
+<div class="loading animated-middle">
+    <div class="loader">Cargando...</div>
+</div>
+
+<div class="top">
+    <div class="row">
+        <div class="container">
+            <div class="col-sm-3 hidden-sm hidden-xs">
+                <div class="logo">
+                    <a href="{{ path('homepage') }}"><img alt="" src="{{ asset('assets/img/LogoColor.png') }}"></a>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <ul class="nav nav-pills horarios">
+                    <li>Área Comercial |</li>
+                    <li><i class="fa fa-phone"></i>: <a href="tel:017222382277">01 (722) 238 22 77</a></li>
+                    <li><i class="fa fa-envelope"></i>: <a href="mailto:services@kreatsolutions.com.mx">services@cmx360.com.mx</a></li>
+                </ul>
+                <ul class="nav nav-pills horarios">
+                    <li>Área operativa |</li>
+                    <li><i class="fa fa-phone"></i>: <a href="tel:017226909233">01 (722) 690 92 33</a></li>
+                    <li><i class="fa fa-envelope"></i>: <a href="mailto:contacto@kreatsolutions.com.mx">contacto@kreatsolutions.com.mx</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Top Bar-->
+
+<!--Main Menu-->
+<div class="main_menu">
+    <div class="row">
+        <div class="container">
+            <div class="col-sm-12">
+                <a class="navbar-brand" href="#"><img src="{{ asset('assets/img/LogoColor.png') }}" style="max-height: 45px;"></a>
+                <nav id="desktop-menu">
+                    <ul class="sf-menu" id="navigation">
+                        <li class=" {% block inicio %}>{% endblock %} "><a href="{{ path('homepage') }}">Inicio</a></li>
+                        <li class="{% block about %}>{% endblock %} "> <a href="{{ path('about') }}" >Conózcanos</a></li>
+                        <li class=" {% block services %}>{% endblock %}"> <a href="{{ path('services') }}">Áreas</a>
+                            <ul>
+                                <li> <a href="{{ path('diseno') }}">Diseño y Construcción</a></li>
+                                <li> <a href="{{ path('medio-ambiente') }}">Medio Ambiente</a></li>
+                                <li> <a href="{{ path('asea') }}">ASEA</a> </li>
+                                <li> <a href="{{ path('stps') }}">STPS</a> </li>
+                                <li> <a href="{{ path('cre') }}">CRE</a> </li>
+                                <li> <a href="{{ path('juridico') }}">Jurídico</a> </li>
+                            </ul>
+                        </li >
+                        {#<li class=" {% block proyects %} {% endblock %}"> <a href="">Proyectos</a></li>#}
+                        <li class=" {% block contact %} {% endblock %}"><a href="{{ path('contact') }}">Contacto</a></li>
+
+
+
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div><!--End Main Menu-->
+
+{% block body %}
+{% endblock %}
+
+<!--  Footer -->
+<footer class="footer ">
+    <div class="row  main-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8">
+                    <h4 class="text-center">Contáctos</h4>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-6" >
+                            <p>Área Comercial</p>
+                            <p><i class="fa fa-envelope-o"></i> E-mail: services@cmx360.com.mx</p>
+                            <p><i class="fa fa-phone"></i> Teléfono : 01 (722) 238 22 77</p>
+                            <p><i class="fa fa-map-marker"></i> Dirección: Calle Rodolfo Soto No. 103 Tercer Piso, Col. San Bernandino
+                            <br> Toluca, Edo. México  C.P. 50080</p>
+                        </div>
+
+                        <div class="col-lg-6" style=" border-left: 1px solid; border-right: 1px solid; margin-top: 25px;">
+                            <p>Área Operativa</p>
+                            <p><i class="fa fa-envelope-o"></i> E-mail: contacto@kreatsolutions.com.mx</p>
+                            <p><i class="fa fa-phone"></i> Teléfono : 01 (722) 690 92 33</p>
+                            <p><i class="fa fa-map-marker"></i> Dirección: Calle Paricutín Nº 25, Col. Xinantécatl <br> Metepec, Edo. de México. C.P. 52169</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4" style="margin-top: 25px;">
+                    <h4>Enlaces de Interés</h4>
+                    <br>
+                    <ul>
+                        <li> <a href="" data-toggle="modal" data-target="#modal1">Aviso de privacidad</a> </li>
+                        <li> <a href="{{ path('bolsa') }}">Bolsa de Trabajo</a> </li>
+                        {#<li> <a href="{{ path('areas') }}">Áreas de Influencia</a> </li>#}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row  copyright">
+        <div class="container">
+            <div class=" padding-t30 clearfix">
+                <div class="col-sm-7 text-right">
+                    <p class="copyright text-center">Copyright © 2018 <a href="http://kreatsolutions.com.mx" target="_blank">Kreatsolutions 45 S.A. de C.V.</a> Todos los Derechos Reservados.</p>
+                </div>
+                {#<div class="col-sm-5">#}
+                    {#<div class="social-links">#}
+                        {#<a href="#"><i class="fa fa-facebook"></i></a>#}
+                        {#<a href="#"><i class="fa fa-twitter"></i></a>#}
+                        {#<a href="#"><i class="fa fa-instagram"></i></a>#}
+                    {#</div>#}
+                {#</div>#}
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Aviso de privacidad</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-justify">
+                <p>El presente Aviso de Privacidad tiene por objeto la protección de los DATOS PERSONALES que para tal efecto provengan del titular de los mismos o de su representante legal, y que sea proporcionado a KREATSOLUTIONS 45 S.A. DE C.V. con la finalidad de desarrollar las actividades propias como unidad de verificación.</p>
+                <br>
+                <p>En términos de lo establecido por el artículo 27 fracción V de la Ley, podrá consultar nuestro AVISO DE PRIVACIDAD integral en la siguiente dirección electrónica www.kreatsolutions.com.mx</p>
+                <br>
+                <p><strong>AVISO INTEGRAL</strong></p>
+                <p><strong>TÉRMINOS Y CONDICIONES</strong></p>
+                <p>La autorización y consentimiento para el uso de los DATOS PERSONALES, así como su oposición para el tratamiento de los mismos, invariablemente se deberá llevar a cabo por escrito, a través de una solicitud que podrá ser indistintamente en formato de papel, formato digital, correo electrónico, o cualquier otro documento estructurado y comúnmente utilizado, DATOS PERSONALES que serán tratados de forma legítima y controlada a efecto de garantizar su privacidad. Cualquier información concerniente a la información que sea proporcionada por el titular de los DATOS personales o de su representante legal y que se encuentre en posesión de KREATSOLUTIONS 45 S.A. DE C.V. y que formen parte de la relación comercial entre ambos, será tratada de conformidad a la ley.</p>
+
+                <p>Mediante la autorización y consentimiento para el uso y tratamiento de sus DATOS PERSONALES en los términos antes señalados, el titular de los mismos o de su representante legal facultan expresamente a KREATSOLUTIONS 45 S.A. DE C.V. a transferirlos a las autoridades, poderes, entidades, órganos y organismos gubernamentales de los tres órdenes de gobierno y las personas físicas o morales, siempre y cuando medie petición debidamente fundada y motivada y no sea contraria a la ley.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  End of Footer -->
+
+<!--  Back to Top -->
+<a href="#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+
+<!--  Scripts -->
+<script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('js/hoverIntent.js') }}"></script>
+<script src="{{ asset('js/superfish.min.js') }}"></script>
+<script src="{{ asset('js/owl.carousel.js') }}"></script>
+<script src="{{ asset('js/wow.min.js') }}"></script>
+<script src="{{ asset('js/video-popup.js') }}"></script>
+<script src="{{ asset('js/jquery.circliful.min.js') }}"></script>
+<script src="{{ asset('js/waypoints.min.js') }}"></script>
+<script src="{{ asset('js/jquery.responsiveTabs.js') }}"></script>
+<script src="{{ asset('js/jquery.counterup.min.js') }}"></script>
+<script src="{{ asset('js/jquery.sticky.js') }}"></script>
+<script src="{{ asset('js/jquery.slicknav.min.js') }}"></script>
+<script src="{{ asset('js/jquery.parallax-1.1.3.js') }}"></script>
+<script src="{{ asset('js/jquery-smartphoto.min.js') }}"></script>
+<script src="{{ asset('js/jquery.countdown.js') }}"></script>
+<script src="{{ asset('js/custom.js') }}"></script>
+{% block javascripts %}
+{% endblock %}
+
+</body>
+
+</html>

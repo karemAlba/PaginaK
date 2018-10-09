@@ -1,0 +1,38 @@
+{% extends '@App/layout2.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="card card-container">
+            <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
+            <a href="{{ path('dash') }}" ><img id="logo-img" class="img-fluid" width="50%" style="margin-left: auto; margin-right: auto;"  src="{{ asset('assets/img/LOGO.png') }}" /></a>
+            <p id="profile-name" class="profile-name-card"></p>
+            <h1 style="font-family: 'Bangers', cursive;" align="center">¡¡Error 404!!</h1>
+            <img class="img-fluid" src="{{ asset('assets/img/engranes.gif') }}" alt="error" style="width: 45%; margin-left: auto; margin-right: auto;    ">
+            <h2 align="center" style=" font-family: 'Bangers', cursive;  margin-top: 10%; font-size: 20px; ">¡Ops! La página solicitada no existe.</h2>
+        </div><!-- /card-container -->
+    </div><!-- /container -->
+    <div id="particles-js"></div>
+
+
+    <!--<div class="container-fluid">
+        <div class="row">
+            {#<div class="col-lg-6 text-center">
+                <img src="{{ asset('assets/img/error.png') }}" alt="Logo-CMX360" class="img-fluid">
+            </div>#}
+            <div class="col-lg-12 ">
+                <img src="{{ asset('assets/img/LOGO.png') }}" width="40%" style="margin-left: 35%">
+                <h1 style="color: #f0f0f0; font-family: 'Bangers', cursive; font-size: 520%" align="center">¡¡Error 404!!</h1>
+                <img src="{{ asset('assets/img/engranes.gif') }}" alt="" style="width: 25%; margin-left: 35%;    ">
+                <h2 align="center" style="color: #f0f0f0; font-family: 'Bangers', cursive;    ">Opps! La página solicitada no existe</h2>
+
+            </div>
+        </div>
+    </div>-->
+{% endblock %}
+
+
+
+
+
+
+

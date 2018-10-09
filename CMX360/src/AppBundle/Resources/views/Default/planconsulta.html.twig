@@ -1,0 +1,445 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/planconsulta.js') }}"></script>
+
+{% endblock %}
+
+{% block body %}
+    <header class="section-header">
+        <div class="tbl">
+            <div class="tbl-row">
+                <div class="tbl-cell">
+                    <h2 class="inline-block">Consulta Plan Prospección</h2>
+                </div>
+                <div class="tbl-cell text-right" >
+                    <nav class="inline-block" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('regCampanas') }}">Plan Prospección</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb1">Consulta</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr>
+    <div class="tabs-section">
+        <div class="box-typical box-typical-padding">
+            {% if 1 in privilegios or 7 in privilegios %}
+                <div class="row">
+                    <div class="col-xl-12 dahsboard-column" >
+                        <section class="box-typical box-typical-dashboard panel panel-default scrollable">
+                            <header class="box-typical-header panel-heading"  style="background: #10ACF5; color: white;"  >
+                                <h3 class="panel-title">En proceso</h3>
+                            </header>
+                            <div class="box-typical-body panel-body">
+                                <article class="comment-item">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <label class="form-label semibold" for="exampleInput">Nombre</label>
+                                                <input type="text" id="plan_type_nombre" class="form-control" placeholder="Ingrese el nombre del plan">
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <span id="date-label-from" class="form-label">Fecha: </span>
+                                                <input class=" form-control" type="date" {#id="datepicker_from"#} id="fechas" />
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm" style="width: 100%;">
+                                            <thead>
+                                            <tr class="text-center">
+                                                <th>Plan de prospección</th>
+                                                <th>Tipo de servicio</th>
+                                                {#<th>Departamento</th>#}
+                                                <th>Cantidad de servicios</th>
+                                                <th>Cantidad de clientes</th>
+                                                <th>Costo de prospección</th>
+                                                <th>Fecha de creación</th>
+                                                <th>Detalle</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="text-center">
+                                            {% for i in lista1 %}
+                                                {% set break = false %}
+                                                {% for p in plan %}
+                                                    {% if p.PlanProspeccion.id == i and break == false %}
+                                                        <tr class="has-text-center">
+                                                            <th>{{ p.PlanProspeccion.nombre }}</th>
+                                                            {% if p.planProspeccion.isIntegral == 1 %}
+                                                                <th>Integral</th>
+                                                            {% else %}
+                                                                <th>Individual</th>
+                                                            {% endif %}
+                                                            <th>{{ p.PlanProspeccion.CantidadServicio }}</th>
+                                                            <th>{{ p.PlanProspeccion.CantidadClientes }}</th>
+                                                            <th>${{ p.PlanProspeccion.CostoDeProspeccion|number_format(2,'.',',') }}</th>
+                                                            <th>{{ p.PlanProspeccion.fechaInicio|date('d/m/Y') }}</th>
+                                                            <th><a href="{{ path('consulta-planprospeccion',{'id': p.PlanProspeccion.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></th>
+                                                        </tr>
+                                                        {% set break = true %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </article>
+                            </div><!--.box-typical-body-->
+                        </section><!--.box-typical-dashboard-->
+                    </div><!--.col-->
+                </div>
+            {% endif %}
+
+            {% if 1 in privilegios or 7 in privilegios or 3 in privilegios or 4 in privilegios %}
+                <div class="row">
+                    <div class="col-xl-12 dahsboard-column" >
+                        <section class="box-typical box-typical-dashboard panel panel-default scrollable">
+                            <header class="box-typical-header panel-heading"  style="background: #F17A0A; color: white;" >
+                                <h3 class="panel-title">En revisión</h3>
+                            </header>
+                            <div class="box-typical-body panel-body">
+                                <article class="comment-item">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <label class="form-label semibold" for="exampleInput">Nombre</label>
+                                                <input type="text" id="plan_type_revision" class="form-control" placeholder="Ingrese el nombre del plan">
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <span id="date-label-from1" class="form-label">Fecha: </span>
+                                                <input class=" date form-control" type="date" id="datepicker_from1" />
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm1" style="width: 100%;">
+                                            <thead>
+                                            <tr class="text-center">
+                                                <th>Plan de prospección</th>
+                                                <th>Tipo de servicio</th>
+                                                <th>Cantidad de servicios</th>
+                                                <th>Cantidad de clientes</th>
+                                                <th>Costo de prospección</th>
+                                                <th>Fecha de Creación</th>
+                                                <th>Detalle</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="text-center">
+                                            {% for i in lista2 %}
+                                                {% set break = false %}
+                                                {% for p in plan %}
+                                                    {% if p.PlanProspeccion.id == i and break == false %}
+                                                        <tr class="has-text-center">
+                                                            <th>{{ p.PlanProspeccion.nombre }}</th>
+                                                            {% if p.planProspeccion.isIntegral == 1 %}
+                                                                <th>Integral</th>
+                                                            {% else %}
+                                                                <th>Individual</th>
+                                                            {% endif %}
+                                                            <th>{{ p.PlanProspeccion.CantidadServicio }}</th>
+                                                            <th>{{ p.PlanProspeccion.CantidadClientes }}</th>
+                                                            <th>${{ p.PlanProspeccion.CostoDeProspeccion|number_format(2,'.',',') }}</th>
+                                                            <th>{{ p.PlanProspeccion.fechaInicio|date('d/m/Y') }}</th>
+                                                            <th><a href="{{ path('consulta-planprospeccion',{'id': p.PlanProspeccion.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></th>
+                                                        </tr>
+                                                        {% set break = true %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </article>
+                            </div><!--.box-typical-body-->
+                        </section><!--.box-typical-dashboard-->
+                    </div><!--.col-->
+                </div>
+            {% endif %}
+
+            {% if 1 in privilegios or 7 in privilegios or 3 in privilegios or 4 in privilegios %}
+                <div class="row">
+                    <div class="col-xl-12 dahsboard-column" >
+                        <section class="box-typical box-typical-dashboard panel panel-default scrollable">
+                            <header class="box-typical-header panel-heading"  style="background: #7EBF09; color: white;" >
+                                <h3 class="panel-title">Autorizados</h3>
+                            </header>
+                            <div class="box-typical-body panel-body">
+                                <article class="comment-item">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <label class="form-label semibold" for="exampleInput">Nombre</label>
+                                                <input type="text" id="plan_type_autorizado" class="form-control" placeholder="Ingrese el nombre del plan">
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <span id="date-label-from2" class="form-label">Fecha: </span>
+                                                <input class=" form-control" type="date" id="datepicker_from2" />
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm2" style="width: 100%;">
+                                            <thead>
+
+                                            <tr class="text-center">
+                                                <th>Plan de prospección</th>
+                                                <th>Tipo de servicio</th>
+                                                <th>Cantidad de servicios</th>
+                                                <th>Cantidad de clientes</th>
+                                                <th>Costo de prospección</th>
+                                                <th>Autorizado por</th>
+                                                <th>Detalle</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="text-center">
+                                            {% for i in lista3 %}
+                                                {% set break = false %}
+                                                {% for p in plan %}
+                                                    {% if p.PlanProspeccion.id == i and break == false %}
+                                                        <tr class="has-text-center">
+                                                            <th>{{ p.PlanProspeccion.nombre }}</th>
+                                                            {% if p.planProspeccion.isIntegral == 1 %}
+                                                                <th>Integral</th>
+                                                            {% else %}
+                                                                <th>Individual</th>
+                                                            {% endif %}
+                                                            <th>{{ p.PlanProspeccion.CantidadServicio }}</th>
+                                                            <th>{{ p.PlanProspeccion.CantidadClientes }}</th>
+                                                            <th>${{ p.PlanProspeccion.CostoDeProspeccion|number_format(2,'.',',') }}</th>
+                                                            <th>{{ p.PlanProspeccion.fechaInicio|date('d/m/Y') }}</th>
+                                                            <th><a href="{{ path('consulta-planprospeccion',{'id': p.PlanProspeccion.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></th>
+                                                        </tr>
+                                                        {% set break = true %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </article>
+                            </div>
+                        </section><!--.box-typical-dashboard-->
+                    </div><!--.col-->
+                </div>
+            {% endif %}
+
+            {% if 1 in privilegios or 7 in privilegios %}
+                <div class="row">
+                    <div class="col-xl-12 dahsboard-column " >
+                        <section class="box-typical box-typical-dashboard panel panel-default scrollable">
+                            <header class="box-typical-header panel-heading"  style="background: #C0392B; color: white;" >
+                                <h3 class="panel-title">Modificado</h3>
+                            </header>
+                            <div class="box-typical-body panel-body">
+                                <article class="comment-item">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <label class="form-label semibold" for="exampleInput">Nombre</label>
+                                                <input type="text" id="plan_type_modificado" class="form-control" placeholder="Ingrese el nombre del plan">
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <span id="date-label-from2" class="form-label">Fecha: </span>
+                                                <input class=" form-control" type="date" id="datepicker_from3" />
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm4" style="width: 100%;">
+                                            <thead>
+                                            <tr class="text-center">
+                                                <th>Plan de prospección</th>
+                                                <th>Tipo de servicio</th>
+                                                <th>Cantidad de servicios</th>
+                                                <th>Cantidad de clientes</th>
+                                                <th>Costo de prospección</th>
+                                                <th>Fecha de Creación</th>
+                                                <th>Detalle</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="text-center">
+                                            {% for i in lista4 %}
+                                                {% set break = false %}
+                                                {% for p in plan %}
+                                                    {% if p.PlanProspeccion.id == i and break == false %}
+                                                        <tr class="has-text-center">
+                                                            <th>{{ p.PlanProspeccion.nombre }}</th>
+                                                            {% if p.planProspeccion.isIntegral == 1 %}
+                                                                <th>Integral</th>
+                                                            {% else %}
+                                                                <th>Individual</th>
+                                                            {% endif %}
+                                                            <th>{{ p.PlanProspeccion.CantidadServicio }}</th>
+                                                            <th>{{ p.PlanProspeccion.CantidadClientes }}</th>
+                                                            <th>${{ p.PlanProspeccion.CostoDeProspeccion|number_format(2,'.',',') }}</th>
+                                                            <th>{{ p.PlanProspeccion.fechaInicio|date('d/m/Y') }}</th>
+                                                            <th><a href="{{ path('consulta-planprospeccion',{'id': p.PlanProspeccion.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></th>
+                                                        </tr>
+                                                        {% set break = true %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </article>
+                            </div>
+                        </section><!--.box-typical-dashboard-->
+                    </div><!--.col-->
+                </div>
+            {% endif %}
+
+            {% if 1 in privilegios or 6 in privilegios %}
+                <div class="row">
+                    <div class="col-xl-12 dahsboard-column " >
+                        <section class="box-typical box-typical-dashboard panel panel-default scrollable">
+                            <header class="box-typical-header panel-heading"  style="background: #595378; color: white;" >
+                                <h3 class="panel-title">Asignado a asesores</h3>
+                            </header>
+                            <div class="box-typical-body panel-body">
+                                <article class="comment-item">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <label class="form-label semibold" for="exampleInput">Nombre</label>
+                                                <input type="text" id="plan_type_asignado" class="form-control" placeholder="Ingrese el nombre del plan">
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <span id="date-label-from2" class="form-label">Fecha: </span>
+                                                <input class=" form-control" type="date" id="fechas1" />
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm5" style="width: 100%;">
+                                            <thead>
+                                            <tr class="text-center">
+                                                <th>Plan de prospección</th>
+                                                <th>Tipo de servicio</th>
+                                                <th>Cantidad de servicios</th>
+                                                <th>Cantidad de clientes</th>
+                                                <th>Costo de prospección</th>
+                                                <th>Fecha de Creación</th>
+                                                <th>Detalle</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="text-center">
+                                            {% for i in lista5 %}
+                                                {% set break = false %}
+                                                {% for p in plan %}
+                                                    {% if p.PlanProspeccion.id == i and break == false %}
+                                                        <tr class="has-text-center">
+                                                            <th>{{ p.PlanProspeccion.nombre }}</th>
+                                                            {% if p.planProspeccion.isIntegral == 1 %}
+                                                                <th>Integral</th>
+                                                            {% else %}
+                                                                <th>Individual</th>
+                                                            {% endif %}
+                                                            <th>{{ p.PlanProspeccion.CantidadServicio }}</th>
+                                                            <th>{{ p.PlanProspeccion.CantidadClientes }}</th>
+                                                            <th>${{ p.PlanProspeccion.CostoDeProspeccion|number_format(2,'.',',') }}</th>
+                                                            <th>{{ p.PlanProspeccion.fechaInicio|date('d/m/Y') }}</th>
+                                                            <th><a href="{{ path('consulta-planprospeccion',{'id': p.PlanProspeccion.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></th>
+                                                        </tr>
+                                                        {% set break = true %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </article>
+                            </div>
+                        </section><!--.box-typical-dashboard-->
+                    </div><!--.col-->
+                </div>
+            {% endif %}
+
+            {% if 1 in privilegios or 6 in privilegios or 7 in privilegios %}
+                <div class="row">
+                    <div class="col-xl-12 dahsboard-column" >
+                        <section class="box-typical box-typical-dashboard panel panel-default scrollable">
+                            <header class="box-typical-header panel-heading"  style="background: #304E9D; color: white;" >
+                                <h3 class="panel-title">Asignado a Ventas</h3>
+                            </header>
+                            <div class="box-typical-body panel-body">
+                                <article class="comment-item">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <label class="form-label semibold" for="exampleInput">Nombre</label>
+                                                <input type="text" id="plan_type_ventas" class="form-control" placeholder="Ingrese el nombre del plan">
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <fieldset class="form-group">
+                                                <span id="date-label-from2" class="form-label">Fecha: </span>
+                                                <input class=" form-control" type="date" id="fechasv" />
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="table-sm6" style="width: 100%;">
+                                            <thead>
+                                            <tr class="text-center">
+                                                <th>Plan de prospección</th>
+                                                <th>Tipo de servicio</th>
+                                                <th>Cantidad de servicios</th>
+                                                <th>Cantidad de clientes</th>
+                                                <th>Costo de prospección</th>
+                                                <th>Fecha de Creación</th>
+                                                <th>Detalle</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="text-center">
+                                            {% for i in lista6 %}
+                                                {% set break = false %}
+                                                {% for p in plan %}
+                                                    {% if p.PlanProspeccion.id == i and break == false %}
+                                                        <tr class="has-text-center">
+                                                            <th>{{ p.PlanProspeccion.nombre }}</th>
+                                                            {% if p.planProspeccion.isIntegral == 1 %}
+                                                                <th>Integral</th>
+                                                            {% else %}
+                                                                <th>Individual</th>
+                                                            {% endif %}
+                                                            <th>{{ p.PlanProspeccion.CantidadServicio }}</th>
+                                                            <th>{{ p.PlanProspeccion.CantidadClientes }}</th>
+                                                            <th>${{ p.PlanProspeccion.CostoDeProspeccion|number_format(2,'.',',') }}</th>
+                                                            <th>{{ p.PlanProspeccion.fechaInicio|date('d/m/Y') }}</th>
+                                                            <th><a href="{{ path('consulta-planprospeccion',{'id': p.PlanProspeccion.id}) }}"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></th>
+                                                        </tr>
+                                                        {% set break = true %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </article>
+                            </div>
+                        </section><!--.box-typical-dashboard-->
+                    </div><!--.col-->
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

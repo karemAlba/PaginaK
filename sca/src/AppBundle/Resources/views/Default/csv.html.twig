@@ -1,0 +1,49 @@
+{% extends '@App/Default/layout.html.twig' %}
+
+{% block javascript %}
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#carga-form').submit();
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <style>
+        #csv_type_csv{
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+        .hidden{
+            display: none!important;
+        }
+    </style>
+    <hr>
+    <div class="row" style="padding: 15px">
+
+        <div class="col-lg-6 col-lg-push-3 text-center">
+            {{ form_start(form,  {'action':path('csv')}) }}
+
+                    {{ form_widget(form.tipo, {'attr': {'class': 'form-control'}}) }}
+                    <hr>
+                    <label for="csv_type_csv" class="btn btn-success btn-rounded"><i class="mdi mdi-upload"></i> Cargar CSV</label>
+                    <p>{{ form_widget(form.csv , {'attr': {'onchange':"readURL(this);"}})  }}</p>
+
+                    <p>{{ form_widget(form.enviar, {'attr': {'class ': 'btn btn-success hidden'} }) }}</p>
+            {{ form_end(form) }}
+        </div>
+
+    </div>
+
+
+
+{% endblock %}

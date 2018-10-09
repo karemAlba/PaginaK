@@ -1,0 +1,34 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/service_container.html
+parameters:
+#    parameter_name: value
+
+services:
+#    service_name:
+#        class: AppBundle\Directory\ClassName
+#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    permiso:
+      class: AppBundle\Controller\DefaultController
+      calls:
+      - [setContainer, ["@service_container"]]
+
+    cmx360.form.flow.clienteReg:
+        class: CoreBundle\Form\ClientesFlow
+        parent: craue.form.flow
+
+    cmx360.form.flow.planReg:
+      class: CoreBundle\Form\PlanFlow
+      parent: craue.form.flow
+
+    twig.extension.intl:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - { name: twig.extension }
+
+    app.twig_extension:
+        class: CoreBundle\Twig\CoreExtension
+        public: false
+        tags:
+            - { name: twig.extension }
+        arguments:
+          doctrine: '@doctrine'
